@@ -1,3 +1,25 @@
+#                         The MIT License
+#
+# Copyright (c) 2012 Marcelo Guimarães <ataxexe@gmail.com>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
 module Yummi
 
   class Table
@@ -9,8 +31,8 @@ module Yummi
       @header = []
       @title = nil
       @colors = {
-        :title => :yellow,
-        :header => :light_blue,
+        :title => :intense_yellow,
+        :header => :intense_blue,
         :value => nil
       }
 
@@ -26,6 +48,15 @@ module Yummi
       @default_align = :right
 
       @max_width = []
+    end
+
+    def no_colors
+      @colors = {
+        :title => nil,
+        :header => nil,
+        :value => nil
+      }
+      @no_colors = true
     end
 
     def header= header
@@ -74,7 +105,7 @@ module Yummi
           align = (@align[j] or @default_align)
           color = color_map[i][j]
           value = Aligner.send align, column.to_s, width
-          value = Color.colorize value, color
+          value = Color.colorize value, color unless @no_colors
           string << value
           string << (" " * @colspan)
         end
@@ -113,7 +144,7 @@ module Yummi
           _data << (formatter ? formatter.call(column) : column)
         end
         if @row_colorizer
-          row_data = RowData::new @aliases, row
+          row_data = IndexedData::new @aliases, row
           row_color = @row_colorizer.call row_data
           _colors.collect! { row_color } if row_color
         end
@@ -135,23 +166,6 @@ module Yummi
         max = [row[column].to_s.length, max].max
       end
       max
-    end
-
-  end
-
-  class RowData
-
-    def initialize aliases, data
-      @aliases = aliases
-      @data = data
-    end
-
-    def [] value
-      if value.is_a? Fixnum
-        @data[value]
-      else
-        @data[@aliases.index(value)]
-      end
     end
 
   end
