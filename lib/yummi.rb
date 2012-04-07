@@ -196,6 +196,22 @@ module Yummi
       end
     end
 
+    def self.unit params
+      lambda do |value|
+        result = value
+        units = params[:range]
+        units.each_index do |i|
+          minimun = (params[:step] ** i)
+          result = "%.#{params[:precision]}f #{units[i]}" % (value.to_f / minimun) if value >= minimun
+        end
+        result
+      end
+    end
+
+    def self.bytes precision = 1
+      unit :range => %w{B KB MB GB TB}, :step => 1024, :precision => precision
+    end
+
   end
 
   class IndexedData
