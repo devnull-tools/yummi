@@ -93,6 +93,7 @@ module Yummi
       color = keys[1].to_i
       "#{TYPES[type]};3#{color - 1}"
     end
+
     # Escape the given text with the given color code
     def self.escape(key)
       return key unless key
@@ -100,6 +101,7 @@ module Yummi
       color ||= parse(key)
       "\033[#{color}m"
     end
+
     # Colorize the given text with the given color
     def self.colorize(str, color)
       col, nocol = [color, :nothing].map { |key| Color.escape(key) }
@@ -123,22 +125,22 @@ module Yummi
   module IndexedDataColorizer
 
     def self.if first, operation, second, params
-      lambda do |row|
-        params[:with] if row[first].send operation, row[second]
+      lambda do |index, data|
+        params[:with] if data[first].send operation, data[second]
       end
     end
 
     def self.unless first, operation, second, params
-      lambda do |row|
-        params[:with] unless row[first].send operation, row[second]
+      lambda do |index, data|
+        params[:with] unless data[first].send operation, data[second]
       end
     end
 
     def self.case *args
-      lambda do |value|
+      lambda do |index, value|
         color = nil
         args.each do |arg|
-          _color = self.if(*arg).call(value)
+          _color = self.if(*arg).call(index, value)
           color = _color if _color
         end
         color
