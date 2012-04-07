@@ -22,6 +22,7 @@
 
 require_relative "yummi/version"
 require_relative "yummi/table"
+require_relative "yummi/logger"
 
 module Yummi
 

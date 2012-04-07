@@ -1,0 +1,59 @@
+#                         The MIT License
+#
+# Copyright (c) 2012 Marcelo Guimarães <ataxexe@gmail.com>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+require 'logger'
+
+module Yummi
+
+  module Formatter
+
+    class LogFormatter < Logger::Formatter
+
+      attr_accessor :colors
+
+      def initialize
+        @colors = {
+          :debug => nil,
+          :info => :green,
+          :warn => :yellow,
+          :error => :red,
+          :fatal => :intense_red,
+          :any => :intense_gray
+        }
+      end
+
+      alias_method :super_call, :call
+
+      def call(severity, time, program_name, message)
+        color = @colors[severity.downcase.to_sym]
+        Yummi::Color.colorize output(severity, time, program_name, message), color
+      end
+
+      def output severity, time, program_name, message
+        super_call severity, time, program_name, message
+      end
+
+    end
+
+  end
+
+end
