@@ -46,8 +46,6 @@ module Yummi
       @row_colorizer = nil
 
       @default_align = :right
-
-      @max_width = []
     end
 
     def no_colors
