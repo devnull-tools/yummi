@@ -47,7 +47,7 @@ colorizer = Yummi::Colorizer.case(
 table.colorize :value, :using => colorizer
 table.colorize :total, :using => colorizer
 # colorize rows that Value is greather than Total
-table.row_colorizer Yummi::RowColorizer.if(:value, :>, :total, :with => :white)
+table.row_colorizer Yummi::IndexedDataColorizer.if(:value, :>, :total, :with => :white)
 # formats booleans using Yes or No
 table.format :eletronic, :using => Yummi::Formatter.yes_or_no
 # shows values without minus signal and rounded

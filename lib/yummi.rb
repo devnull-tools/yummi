@@ -120,7 +120,7 @@ module Yummi
 
   end
 
-  module RowColorizer
+  module IndexedDataColorizer
 
     def self.if first, operation, second, params
       lambda do |row|
