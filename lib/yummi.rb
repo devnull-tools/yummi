@@ -124,6 +124,18 @@ module Yummi
 
   module IndexedDataColorizer
 
+    def self.odd params
+      lambda do |index, data|
+        params[:with] if index.odd?
+      end
+    end
+
+    def self.even params
+      lambda do |index, data|
+        params[:with] if index.even?
+      end
+    end
+
     def self.if first, operation, second, params
       lambda do |index, data|
         params[:with] if data[first].send operation, data[second]
@@ -203,6 +215,27 @@ module Yummi
 
   end
 
+  class LinkedBlocks
+
+    def initialize params = {}
+      @blocks = []
+      @call_all = params[:call_all]
+    end
+
+    def << block
+      @blocks << block
+    end
+
+    def call *args
+      result = nil
+      @blocks.each do |block|
+        break if result and not @call_all
+        result = block.call *args
+      end
+      result
+    end
+
+  end
 
 end
 

@@ -70,7 +70,8 @@ module Yummi
     end
 
     def row_colorizer colorizer = nil, &block
-      @row_colorizer = (colorizer or block)
+      @row_colorizer ||= Yummi::LinkedBlocks::new
+      @row_colorizer << (colorizer or block)
     end
 
     def colorize index, params = {}, &block
