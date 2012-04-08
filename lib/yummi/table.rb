@@ -58,8 +58,19 @@ module Yummi
     end
 
     def header= header
-      @aliases = header.map { |n| n.downcase.gsub(' ', '_').to_sym } if @aliases.empty?
-      @header = header
+      max = 0
+      header.each_index do |i|
+        max = [max, header[i].split("\n").size].max
+      end
+      @header = []
+      max.times { @header << [] }
+      header.each_index do |i|
+        names = header[i].split("\n")
+        names.each_index do |j|
+          @header[j][i] = names[j]
+        end
+      end
+      @aliases = header.map { |n| n.downcase.gsub(' ', '_').gsub("\n", '_').to_sym } if @aliases.empty?
     end
 
     def align index, type
@@ -119,15 +130,16 @@ module Yummi
       color_map = []
       output = []
 
-      _colors = []
-      _data = []
-
-      @header.each do |h|
-        _colors << @colors[:header]
-        _data << h
+      @header.each do |line|
+        _colors = []
+        _data = []
+        line.each do |h|
+          _colors << @colors[:header]
+          _data << h
+        end
+        color_map << _colors
+        output << _data
       end
-      color_map << _colors
-      output << _data
 
       @data.each_index do |row_index|
         row = @data[row_index]
@@ -135,7 +147,7 @@ module Yummi
         _data = []
 
         row.each_index do |col_index|
-          next if @header and not @header[col_index]
+          next if @header and @header[0].size < col_index + 1
           column = row[col_index]
           colorizer = @colorizers[col_index]
           _colors << (colorizer ? colorizer.call(column) : @colors[:value])

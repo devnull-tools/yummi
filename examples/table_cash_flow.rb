@@ -27,7 +27,7 @@ opt = OptionParser::new
 
 @table = Yummi::Table::new
 # setting the header sets the aliases automaically
-@table.header = ['Description', 'Value', 'Total', 'Eletronic']
+@table.header = ['Description', 'Value', 'Total', 'Eletronic', "Authentication\nCode"]
 # sets the title
 @table.title = 'Cash Flow'
 # aligns the first column to the left
@@ -40,10 +40,10 @@ opt = OptionParser::new
 # shows totals rounded
 @table.format :total, :with => "%.2f"
 # table data
-@table.data = [['Initial', 0, 0, false],
-               ['Deposit', 100, 100, true],
-               ['Withdraw', -50, 50, true],
-               ['Withdraw', -100, -50, true],
+@table.data = [['Initial', 0, 0, false, ""],
+               ['Deposit', 100, 100, true, "QAWSEDRFTGH535"],
+               ['Withdraw', -50, 50, true, "34ERDTF6GYU"],
+               ['Withdraw', -100, -50, true, "2344EDRFT5"],
                ['Deposit', 50, 0, false],
                ['Deposit', 600, 600, false]]
 
