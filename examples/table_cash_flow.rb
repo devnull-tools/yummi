@@ -55,20 +55,23 @@ opt.on '--color TYPE', 'Specify the color type (zebra,full,none)' do |type|
     when 'full'
       @table.colorize :description, :with => :purple
       # colorize booleans based on their values
-      @table.colorize :eletronic, :using => Yummi::Colorizer.case(
-        [:==, true, :with => :blue],
-        [:==, false, :with => :cyan]
-      )
+      @table.colorize :eletronic do |b|
+        b ? :blue : :cyan
+      end
       # colorize the values based on comparison
-      colorizer = Yummi::Colorizer.case(
-        [:<, 0, :with => :red],
-        [:>, 0, :with => :green],
-        [:==, 0, :with => :brown]
-      )
+      colorizer = lambda do |value|
+        if value < 0 then
+          :red
+        else
+          value > 0 ? :green : :brown
+        end
+      end
       @table.colorize :value, :using => colorizer
       @table.colorize :total, :using => colorizer
       # colorize rows that Value is greather than Total
-      @table.row_colorizer Yummi::IndexedDataColorizer.if(:value, :>, :total, :with => :white)
+      @table.row_colorizer do |i, data|
+        :white if data[:value] > data[:total]
+      end
     when 'none'
       @table.no_colors
     else

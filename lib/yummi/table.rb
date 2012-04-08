@@ -40,7 +40,7 @@ module Yummi
 
       @aliases = []
 
-      @align = {}
+      @align = []
       @formatters = []
       @colorizers = []
       @row_colorizer = nil
@@ -135,6 +135,7 @@ module Yummi
         _data = []
 
         row.each_index do |col_index|
+          next if @header and not @header[col_index]
           column = row[col_index]
           colorizer = @colorizers[col_index]
           _colors << (colorizer ? colorizer.call(column) : @colors[:value])

@@ -25,23 +25,33 @@ require_relative '../lib/yummi'
 
 opt = OptionParser::new
 
-@basedir = File.join(ENV['HOME'], '*')
+@basedir = ENV['HOME']
 
 @table = Yummi::Table::new
 # setting the header sets the aliases automaically
-@table.header = ['Name', 'Size', 'Directory']
+@table.header = ['Name', 'Size']
+@table.aliases << :directory
 # sets the title
 @table.title = 'Files in home folder'
 # aligns the first column to the left
 @table.align :name, :left
-# formats booleans using Yes or No
-@table.format :directory, :using => Yummi::Formatter.yes_or_no
 # formats size for easily reading
 @table.format :size, :using => Yummi::Formatter.bytes
 
-@table.row_colorizer Yummi::IndexedDataColorizer.odd :with => :intense_gray
-@table.row_colorizer Yummi::IndexedDataColorizer.even :with => :intense_white
-
+opt.on '--color TYPE', 'Specify the color type (zebra,file,none)' do |type|
+  case type
+    when 'zebra'
+      @table.row_colorizer Yummi::IndexedDataColorizer.odd :with => :intense_gray
+      @table.row_colorizer Yummi::IndexedDataColorizer.even :with => :intense_white
+    when 'file'
+      @table.row_colorizer do |i, data|
+        data[:directory] ? :intense_gray : :intense_white
+      end
+    when 'none'
+      @table.no_colors
+    else
+  end
+end
 opt.on '--basedir BASEDIR', 'Selects the basedir to list files' do |basedir|
   @basedir = basedir
 end
@@ -51,10 +61,10 @@ opt.on '--help', 'Prints this message' do
 end
 
 opt.parse ARGV
-files = Dir[@basedir]
+files = Dir[File.join(@basedir, '*')]
 data = []
 files.each do |f|
-  data << [f, File.size(f), File.directory?(f)]
+  data << [f, File.size(f), File.directory?(f)] # the last value will not be printed
 end
 @table.data = data
 @table.print

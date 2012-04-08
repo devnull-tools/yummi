@@ -136,56 +136,6 @@ module Yummi
       end
     end
 
-    def self.if first, operation, second, params
-      lambda do |index, data|
-        params[:with] if data[first].send operation, data[second]
-      end
-    end
-
-    def self.unless first, operation, second, params
-      lambda do |index, data|
-        params[:with] unless data[first].send operation, data[second]
-      end
-    end
-
-    def self.case *args
-      lambda do |index, value|
-        color = nil
-        args.each do |arg|
-          _color = self.if(*arg).call(index, value)
-          color = _color if _color
-        end
-        color
-      end
-    end
-
-  end
-
-  module Colorizer
-
-    def self.if operation, argument, params
-      lambda do |value|
-        params[:with] if value.send operation, argument
-      end
-    end
-
-    def self.unless operation, argument, params
-      lambda do |value|
-        params[:with] unless value.send operation, argument
-      end
-    end
-
-    def self.case *args
-      lambda do |value|
-        color = nil
-        args.each do |arg|
-          _color = self.if(*arg).call(value)
-          color = _color if _color
-        end
-        color
-      end
-    end
-
   end
 
   module Formatter
