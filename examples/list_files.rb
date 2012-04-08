@@ -28,7 +28,7 @@ opt = OptionParser::new
 @basedir = ENV['HOME']
 
 @table = Yummi::Table::new
-# setting the header sets the aliases automaically
+# setting the header sets the aliases automatically
 @table.header = ['Name', 'Size']
 @table.aliases << :directory
 # sets the title

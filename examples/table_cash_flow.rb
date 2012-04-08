@@ -26,7 +26,7 @@ require_relative '../lib/yummi'
 opt = OptionParser::new
 
 @table = Yummi::Table::new
-# setting the header sets the aliases automaically
+# setting the header sets the aliases automatically
 @table.header = ['Description', 'Value', 'Total', 'Eletronic', "Authentication\nCode"]
 # sets the title
 @table.title = 'Cash Flow'
