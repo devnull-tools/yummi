@@ -25,7 +25,7 @@ require_relative "yummi/table"
 require_relative "yummi/logger"
 
 module Yummi
-
+  # Base for colorizing
   module Color
     # Colors from default linux terminal scheme
     COLORS = {
@@ -107,7 +107,6 @@ module Yummi
       col, nocol = [color, :nothing].map { |key| Color.escape(key) }
       col ? "#{col}#{str}#{nocol}" : str
     end
-
   end
 
   module Aligner
@@ -134,6 +133,38 @@ module Yummi
       lambda do |index, data|
         params[:with] if index.even?
       end
+    end
+
+    def self.by_eval &block
+      EvalColorizer::new &block
+    end
+
+    class EvalColorizer
+
+      def initialize &block
+        @block = block
+        @parameters = block.parameters
+        @colors = []
+        @eval_blocks = []
+      end
+
+      def use color, &eval_block
+        @colors << color
+        @eval_blocks << eval_block
+      end
+
+      def call index, data
+        args = []
+        @parameters.each do |parameter|
+          args << data[parameter[1]]
+        end
+        value = @block.call *args
+        @eval_blocks.each_index do |i|
+          return @colors[i] if @eval_blocks[i].call(value)
+        end
+        nil
+      end
+
     end
 
   end
