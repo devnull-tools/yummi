@@ -83,12 +83,16 @@ module Yummi
       @row_colorizer << (colorizer or block)
     end
 
+    def using_row
+      @using_row = true
+      self
+    end
+
     def colorize index, params = {}, &block
       index = parse_index(index)
-      @colorizers[index] = (params[:using] or block)
-      @colorizers[index] ||= proc do |value|
-        params[:with]
-      end
+      obj = (params[:using] or block or proc { |v| params[:with] })
+      @colorizers[index] = {:use_row => @using_row, :component => obj}
+      @using_row = false
     end
 
     def format index, params = {}, &block
@@ -150,8 +154,12 @@ module Yummi
           next if @header and @header[0].size < col_index + 1
           column = row[col_index]
           colorizer = @colorizers[col_index]
-          _colors << (colorizer ? colorizer.call(column) : @colors[:value])
-
+          if colorizer
+            arg = colorizer[:use_row] ? IndexedData::new(@aliases, row) : column
+            _colors << colorizer[:component].call(arg)
+          else
+            _colors << @colors[:value]
+          end
           formatter = @formatters[col_index]
           _data << (formatter ? formatter.call(column) : column)
         end
