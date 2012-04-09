@@ -29,7 +29,7 @@ logger.formatter = Yummi::Formatter::LogFormatter.new
 
 logger.debug "File: #{__FILE__}"
 logger.info "Example started"
-logger.warn "Remember to read the examples for better use of Yummi!"
+logger.warn "Warning message"
 logger.error "An error has occurred"
 logger.fatal "A fatal exception has occurred"
 logger.unknown "Unknown severity message"
