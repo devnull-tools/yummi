@@ -42,6 +42,7 @@ module Yummi
     #
     # The colors must be supported by Yummi::Color::parse or defined in Yummi::Color::COLORS
     attr_accessor :colors
+
     # Creates a new table with the default attributes:
     #
     # * Title color: intense_yellow
@@ -70,6 +71,7 @@ module Yummi
 
       @default_align = :right
     end
+
     # Indicates that the table should not use colors.
     def no_colors
       @colors = {
@@ -79,11 +81,15 @@ module Yummi
       }
       @no_colors = true
     end
+
     #
     # === Description
     #
     # Sets the table header. If no aliases are defined, they will be defined as the texts
     # in lowercase with line breaks and spaces replaced by underscores.
+    #
+    # Defining headers also limits the printed column to only columns that has a header
+    # (even if it is empty).
     #
     # === Args
     #
@@ -111,6 +117,7 @@ module Yummi
       end
       @aliases = header.map { |n| n.downcase.gsub(' ', '_').gsub("\n", '_').to_sym } if @aliases.empty?
     end
+
     #
     # === Description
     #
@@ -121,26 +128,69 @@ module Yummi
     # +index+::
     #   The column index or its alias
     #
+    # === Example
+    #
+    #   table.align :description, :left
+    #   table.align :value, :right
+    #
     def align index, type
       index = parse_index(index)
       @align[index] = type
     end
 
+    #
+    # === Description
+    #
+    # Adds a colorizer for the entire row.
+    # The colorizer must respond to +call+ with the index and the row as the arguments and
+    # return a color or +nil+ if default color should be used. A block can be used too.
+    #
+    # You can add as much colorizers as you want. The first color returnet will be used.
+    #
+    # === Example
+    #
+    #   table.row_colorizer { |i, row| :red if row[:value] < 0 }
+    #
     def row_colorizer colorizer = nil, &block
       @row_colorizer ||= Yummi::LinkedBlocks::new
       @row_colorizer << (colorizer or block)
     end
 
+    #
+    # === Description
+    #
+    # Indicates that the column colorizer (#colorize) should receive the entire row as the
+    # argument instead of just the column value.
+    #
+    # === Return
+    #
+    # +self+
+    #
+    # === Example
+    #
+    #   table.using_row.colorize(:value) { |row| :red if row[:value] < row[:average] }
+    #
+    #
     def using_row
       @using_row = true
       self
     end
 
-    def using_cell
-      @using_row = true
-      self
-    end
-
+    #
+    # === Description
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
     def colorize index, params = {}, &block
       index = parse_index(index)
       obj = (params[:using] or block or (proc { |v| params[:with] }))
