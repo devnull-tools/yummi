@@ -25,9 +25,11 @@ require_relative '../lib/yummi'
 
 logger = Logger::new STDOUT
 logger.level = Logger::DEBUG
-logger.formatter = Yummi::Formatter::LogFormatter.new
+logger.formatter = Yummi::Formatter::LogFormatter.new do |severity, time, program_name, message|
+  message << $/
+end
 
-logger.debug "File: #{__FILE__}"
+logger.debug __FILE__
 logger.info "Example started"
 logger.warn "Warning message"
 logger.error "An error has occurred"
