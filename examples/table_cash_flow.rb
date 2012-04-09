@@ -30,9 +30,6 @@ opt = OptionParser::new
 @table.header = ['Description', 'Value', 'Total', 'Eletronic', "Authentication\nCode"]
 # sets the title
 @table.title = 'Cash Flow'
-# aligns the first column to the left
-@table.align :description, :left
-# colorize all values from the Description column to purple
 # formats booleans using Yes or No
 @table.format :eletronic, :using => Yummi::Formatter.yes_or_no
 # shows values without minus signal and rounded
@@ -53,6 +50,7 @@ opt.on '--color TYPE', 'Specify the color type (zebra,full,none)' do |type|
       @table.row_colorizer Yummi::IndexedDataColorizer.odd :with => :brown
       @table.row_colorizer Yummi::IndexedDataColorizer.even :with => :purple
     when 'full'
+      # colorize all values from the Description column to purple
       @table.colorize :description, :with => :purple
       # colorize booleans based on their values
       @table.colorize :eletronic do |b|

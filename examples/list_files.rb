@@ -33,8 +33,6 @@ opt = OptionParser::new
 @table.aliases << :directory
 # sets the title
 @table.title = 'Files in home folder'
-# aligns the first column to the left
-@table.align :name, :left
 # formats size for easily reading
 @table.format :size, :using => Yummi::Formatter.bytes
 

@@ -21,11 +21,34 @@
 # THE SOFTWARE.
 
 module Yummi
-
+  # A Table that supports colorizing title, header, values and also formatting the values.
   class Table
-
-    attr_accessor :data, :header, :title, :default_align, :aliases, :colspan, :colors
-
+    # The table data. It holds a two dimensional array.
+    attr_accessor :data
+    # The table title
+    attr_accessor :title
+    # Default align. Yummi::Aligner should respond to it.
+    attr_accessor :default_align
+    # Aliases that can be used by formatters and colorizers instead of numeric indexes.
+    # The aliases are directed mapped to their respective index in this array
+    attr_accessor :aliases
+    # The table colspan
+    attr_accessor :colspan
+    # The table colors. This Map should have colors for the following elements:
+    #
+    # * Title: using :title key
+    # * Header: using :header key
+    # * Values: using :value key
+    #
+    # The colors must be supported by Yummi::Color::parse or defined in Yummi::Color::COLORS
+    attr_accessor :colors
+    # Creates a new table with the default attributes:
+    #
+    # * Title color: intense_yellow
+    # * Header color: intense_blue
+    # * Values color: none
+    # * Colspan: 2
+    # * Default Align: right and first element to left
     def initialize
       @data = []
       @header = []
@@ -40,14 +63,14 @@ module Yummi
 
       @aliases = []
 
-      @align = []
+      @align = [:left]
       @formatters = []
       @colorizers = []
       @row_colorizer = nil
 
       @default_align = :right
     end
-
+    # Indicates that the table should not use colors.
     def no_colors
       @colors = {
         :title => nil,
@@ -56,7 +79,23 @@ module Yummi
       }
       @no_colors = true
     end
-
+    #
+    # === Description
+    #
+    # Sets the table header. If no aliases are defined, they will be defined as the texts
+    # in lowercase with line breaks and spaces replaced by underscores.
+    #
+    # === Args
+    #
+    # +header+::
+    #   Array containing the texts for displaying the header. Line breaks are supported
+    #
+    # === Examples
+    #
+    #   table.header = ['Name', 'Email', 'Work Phone', "Home\nPhone"]
+    #
+    # This will create the following aliases: :name, :email, :work_phone and :home_phone
+    #
     def header= header
       max = 0
       header.each_index do |i|
@@ -72,7 +111,16 @@ module Yummi
       end
       @aliases = header.map { |n| n.downcase.gsub(' ', '_').gsub("\n", '_').to_sym } if @aliases.empty?
     end
-
+    #
+    # === Description
+    #
+    # Sets the align for a column in the table. Yummi::Aligner should respond to it.
+    #
+    # === Args
+    #
+    # +index+::
+    #   The column index or its alias
+    #
     def align index, type
       index = parse_index(index)
       @align[index] = type

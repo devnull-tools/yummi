@@ -30,8 +30,6 @@ opt = OptionParser::new
 @table.header = ['Server Name', 'Max Memory', 'Free Memory', "Max\nThreads", "In Use\nThreads"]
 # sets the title
 @table.title = 'Server Runtime Info'
-# aligns the first column to the left
-@table.align :server_name, :left
 # formats memory info for easily reading
 @table.format :max_memory, :using => Yummi::Formatter.bytes
 @table.format :free_memory, :using => Yummi::Formatter.bytes
