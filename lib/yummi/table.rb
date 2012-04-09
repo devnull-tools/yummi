@@ -183,7 +183,40 @@ module Yummi
     #
     # Sets a component to colorize a column.
     #
-    # The component must respond to +call+ with the column (or row if used with #using_row)
+    # The component must respond to +call+ with the column value (or row if used with
+    # #using_row) as the arguments and return a color or +nil+ if default color should be
+    # used. A block can also be used.
+    #
+    # You can add as much colorizers as you want. The first color returned will be used.
+    #
+    # === Args
+    #
+    # +index+::
+    #   The column index or its alias
+    # +params+::
+    #   A hash with params in case a block is not given:
+    #     - :using defines the component to use
+    #     - :with defines the color to use (to use the same color for all columns)
+    #
+    # === Example
+    #
+    #   table.colorize :description, :with => :purple
+    #   table.colorize(:value) { |value| :red if value < 0 }
+    #
+    def colorize index, params = {}, &block
+      index = parse_index(index)
+      @colorizers[index] ||= []
+      obj = (params[:using] or block or (proc { |v| params[:with] }))
+      @colorizers[index] << {:use_row => @using_row, :component => obj}
+      @using_row = false
+    end
+
+    #
+    # === Description
+    #
+    # Sets a component to format a column.
+    #
+    # The component must respond to +call+ with the column value
     # as the arguments and return a color or +nil+ if default color should be used.
     # A block can also be used.
     #
@@ -194,15 +227,12 @@ module Yummi
     # +params+::
     #   A hash with params in case a block is not given:
     #     - :using defines the component to use
-    #     - :with defines the color to use (to use the same color for all column)
+    #     - :with defines the format to use (to use the same format for all columns)
     #
-    def colorize index, params = {}, &block
-      index = parse_index(index)
-      obj = (params[:using] or block or (proc { |v| params[:with] }))
-      @colorizers[index] = {:use_row => @using_row, :component => obj}
-      @using_row = false
-    end
-
+    # === Example
+    #
+    #   table.format :value, :with => '%.2f'
+    #
     def format index, params = {}, &block
       index = parse_index(index)
       @formatters[index] = (params[:using] or block)
@@ -211,10 +241,16 @@ module Yummi
       end
     end
 
+    #
+    # Prints the #to_s into the given object.
+    #
     def print to = $stdout
       to.print to_s
     end
 
+    #
+    # Return a colorized and formatted table.
+    #
     def to_s
       color_map, output = build_output
       string = ""
@@ -229,7 +265,7 @@ module Yummi
           value = Aligner.send align, column.to_s, width
           value = Color.colorize value, color unless @no_colors
           string << value
-          string << (" " * @colspan)
+          string << (' ' * @colspan)
         end
         string.strip! << $/
       end
@@ -261,10 +297,16 @@ module Yummi
         row.each_index do |col_index|
           next if @header and @header[0].size < col_index + 1
           column = row[col_index]
-          colorizer = @colorizers[col_index]
-          if colorizer
-            arg = colorizer[:use_row] ? IndexedData::new(@aliases, row) : column
-            _colors << colorizer[:component].call(arg)
+          colorizers = @colorizers[col_index]
+          if colorizers
+            colorizers.each do |colorizer|
+              arg = colorizer[:use_row] ? IndexedData::new(@aliases, row) : column
+              c = colorizer[:component].call(arg)
+              if c
+                _colors << c
+                break
+              end
+            end
           else
             _colors << @colors[:value]
           end

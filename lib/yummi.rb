@@ -139,6 +139,12 @@ module Yummi
 
   module Colorizer
 
+    def self.join *colorizers
+      join = Yummi::LinkedBlocks::new
+      colorizers.each { |c| join << c }
+      join
+    end
+
     def self.by_eval &block
       EvalColorizer::new &block
     end
