@@ -135,6 +135,10 @@ module Yummi
       end
     end
 
+  end
+
+  module Colorizer
+
     def self.by_eval &block
       EvalColorizer::new &block
     end
@@ -153,12 +157,12 @@ module Yummi
         @eval_blocks << eval_block
       end
 
-      def call index, data
-        args = []
+      def call *args
+        block_args = []
         @parameters.each do |parameter|
-          args << data[parameter[1]]
+          block_args << args.last[parameter[1]] # by convention, the last arg is data
         end
-        value = @block.call *args
+        value = @block.call *block_args
         @eval_blocks.each_index do |i|
           return @colors[i] if @eval_blocks[i].call(value)
         end

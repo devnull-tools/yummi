@@ -88,9 +88,14 @@ module Yummi
       self
     end
 
+    def using_cell
+      @using_row = true
+      self
+    end
+
     def colorize index, params = {}, &block
       index = parse_index(index)
-      obj = (params[:using] or block or proc { |v| params[:with] })
+      obj = (params[:using] or block or (proc { |v| params[:with] }))
       @colorizers[index] = {:use_row => @using_row, :component => obj}
       @using_row = false
     end
