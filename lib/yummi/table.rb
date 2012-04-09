@@ -27,7 +27,7 @@ module Yummi
     attr_accessor :data
     # The table title
     attr_accessor :title
-    # Default align. Yummi::Aligner should respond to it.
+    # Default align. #Yummi#Aligner should respond to it.
     attr_accessor :default_align
     # Aliases that can be used by formatters and colorizers instead of numeric indexes.
     # The aliases are directed mapped to their respective index in this array
@@ -40,7 +40,7 @@ module Yummi
     # * Header: using :header key
     # * Values: using :value key
     #
-    # The colors must be supported by Yummi::Color::parse or defined in Yummi::Color::COLORS
+    # The colors must be supported by #Yummi#Color#parse or defined in #Yummi#Color#COLORS
     attr_accessor :colors
 
     # Creates a new table with the default attributes:
@@ -121,12 +121,14 @@ module Yummi
     #
     # === Description
     #
-    # Sets the align for a column in the table. Yummi::Aligner should respond to it.
+    # Sets the align for a column in the table. #Yummi#Aligner should respond to it.
     #
     # === Args
     #
     # +index+::
     #   The column index or its alias
+    # +type+::
+    #   The alignment type
     #
     # === Example
     #
@@ -141,11 +143,11 @@ module Yummi
     #
     # === Description
     #
-    # Adds a colorizer for the entire row.
-    # The colorizer must respond to +call+ with the index and the row as the arguments and
-    # return a color or +nil+ if default color should be used. A block can be used too.
+    # Adds a component to colorize the entire row (overrides column color).
+    # The component must respond to +call+ with the index and the row as the arguments and
+    # return a color or +nil+ if default color should be used. A block can also be used.
     #
-    # You can add as much colorizers as you want. The first color returnet will be used.
+    # You can add as much colorizers as you want. The first color returned will be used.
     #
     # === Example
     #
@@ -179,17 +181,20 @@ module Yummi
     #
     # === Description
     #
+    # Sets a component to colorize a column.
     #
+    # The component must respond to +call+ with the column (or row if used with #using_row)
+    # as the arguments and return a color or +nil+ if default color should be used.
+    # A block can also be used.
     #
+    # === Args
     #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
+    # +index+::
+    #   The column index or its alias
+    # +params+::
+    #   A hash with params in case a block is not given:
+    #     - :using defines the component to use
+    #     - :with defines the color to use (to use the same color for all column)
     #
     def colorize index, params = {}, &block
       index = parse_index(index)
