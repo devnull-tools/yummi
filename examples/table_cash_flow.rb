@@ -35,14 +35,14 @@ opt = OptionParser::new
 # shows values without minus signal and rounded
 @table.format :value, :using => lambda { |value| "%.2f" % value.abs }
 # shows totals rounded
-@table.format :total, :with => "%.2f"
+@table.format :total, :using => Yummi::Formatter.round(2)
 # table data
-@table.data = [['Initial', 0, 0, false, ""],
-               ['Deposit', 100, 100, true, "QAWSEDRFTGH535"],
-               ['Withdraw', -50, 50, true, "34ERDTF6GYU"],
-               ['Withdraw', -100, -50, true, "2344EDRFT5"],
-               ['Deposit', 50, 0, false],
-               ['Deposit', 600, 600, false]]
+@table.data = [['Initial', 0, 0, false],
+               ['Deposit', 100.58, 100.58, true, "QAWSEDRFTGH535"],
+               ['Withdraw', -50.23, 50.35, true, "34ERDTF6GYU"],
+               ['Withdraw', -100, -49.65, true, "2344EDRFT5"],
+               ['Deposit', 50, 0.35, false],
+               ['Deposit', 600, 600.35, false]]
 
 opt.on '--color TYPE', 'Specify the color type (zebra,full,none)' do |type|
   case type
@@ -52,6 +52,8 @@ opt.on '--color TYPE', 'Specify the color type (zebra,full,none)' do |type|
     when 'full'
       # colorize all values from the Description column to purple
       @table.colorize :description, :with => :purple
+      # Authentication Code will be highlighted
+      @table.colorize :authentication_code, :with => :highlight_gray
       # colorize booleans based on their values
       @table.colorize :eletronic do |b|
         b ? :blue : :cyan

@@ -58,14 +58,14 @@ module Yummi
       :blink_cyan => '5;36',
       :blink_gray => '5;37',
 
-      :highlight_black => '5;30',
-      :highlight_red => '5;31',
-      :highlight_green => '5;32',
-      :highlight_brown => '5;33',
-      :highlight_blue => '5;34',
-      :highlight_purple => '5;35',
-      :highlight_cyan => '5;36',
-      :highlight_gray => '5;37',
+      :highlight_black => '7;30',
+      :highlight_red => '7;31',
+      :highlight_green => '7;32',
+      :highlight_brown => '7;33',
+      :highlight_blue => '7;34',
+      :highlight_purple => '7;35',
+      :highlight_cyan => '7;36',
+      :highlight_gray => '7;37',
 
       :intense_gray => '1;30',
       :intense_red => '1;31',
@@ -184,6 +184,12 @@ module Yummi
     def self.yes_or_no
       lambda do |value|
         value ? "Yes" : "No"
+      end
+    end
+
+    def self.round precision
+      lambda do |value|
+        "%.#{precision}f" % value
       end
     end
 
