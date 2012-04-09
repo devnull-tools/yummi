@@ -26,19 +26,45 @@ module Yummi
 
   module Formatter
 
+    #
+    # A colorful log formatter
+    #
     class LogFormatter < Logger::Formatter
 
+      #
+      # Colors for each severity:
+      #
+      # * :debug
+      # * :info
+      # * :warn
+      # * :error
+      # * :fatal
+      # * :any
+      #
       attr_accessor :colors
 
-      def initialize
+      #
+      # Creates a new formatter with the colors (assuming Linux default terminal colors):
+      #
+      # * +DEBUG+: no color
+      # * +INFO+: green
+      # * +WARN+: brown
+      # * +ERROR+: red
+      # * +FATAL+: red (intense)
+      # * +ANY+: gray (intense)
+      #
+      # If a block is passed, it will be used to format the message
+      #
+      def initialize &block
         @colors = {
           :debug => nil,
           :info => :green,
-          :warn => :yellow,
+          :warn => :brown,
           :error => :red,
           :fatal => :intense_red,
           :any => :intense_gray
         }
+        @format_block = block
       end
 
       alias_method :super_call, :call
@@ -48,7 +74,9 @@ module Yummi
         Yummi::Color.colorize output(severity, time, program_name, message), color
       end
 
+      # Formats the message, override this method instead of #call
       def output severity, time, program_name, message
+        return @format_block.call severity, time, program_name, message if @format_block
         super_call severity, time, program_name, message
       end
 
