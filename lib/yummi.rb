@@ -153,7 +153,6 @@ module Yummi
 
       def initialize &block
         @block = block
-        @parameters = block.parameters
         @colors = []
         @eval_blocks = []
       end
@@ -164,11 +163,7 @@ module Yummi
       end
 
       def call *args
-        block_args = []
-        @parameters.each do |parameter|
-          block_args << args.last[parameter[1]] # by convention, the last arg is data
-        end
-        value = @block.call *block_args
+        value = Yummi.call_block args.last, &@block # by convention, the last arg is data
         @eval_blocks.each_index do |i|
           return @colors[i] if @eval_blocks[i].call(value)
         end
@@ -248,6 +243,14 @@ module Yummi
       result
     end
 
+  end
+
+  def self.call_block params, &block
+    args = []
+    block.parameters.each do |parameter|
+      args << params[parameter[1]]
+    end
+    block.call *args
   end
 
 end
