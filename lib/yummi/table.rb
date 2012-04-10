@@ -83,8 +83,6 @@ module Yummi
     end
 
     #
-    # === Description
-    #
     # Sets the table header. If no aliases are defined, they will be defined as the texts
     # in lowercase with line breaks and spaces replaced by underscores.
     #
@@ -119,8 +117,6 @@ module Yummi
     end
 
     #
-    # === Description
-    #
     # Sets the align for a column in the table. #Yummi#Aligner should respond to it.
     #
     # === Args
@@ -141,8 +137,6 @@ module Yummi
     end
 
     #
-    # === Description
-    #
     # Adds a component to colorize the entire row (overrides column color).
     # The component must respond to +call+ with the index and the row as the arguments and
     # return a color or +nil+ if default color should be used. A block can also be used.
@@ -158,8 +152,6 @@ module Yummi
       @row_colorizer << (colorizer or block)
     end
 
-    #
-    # === Description
     #
     # Indicates that the column colorizer (#colorize) should receive the entire row as the
     # argument instead of just the column value.
@@ -178,8 +170,6 @@ module Yummi
       self
     end
 
-    #
-    # === Description
     #
     # Sets a component to colorize a column.
     #
@@ -211,8 +201,6 @@ module Yummi
       @using_row = false
     end
 
-    #
-    # === Description
     #
     # Sets a component to format a column.
     #
