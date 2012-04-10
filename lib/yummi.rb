@@ -123,16 +123,20 @@ module Yummi
 
   module IndexedDataColorizer
 
-    def self.odd params
+    def self.odd color
       lambda do |index, data|
-        params[:with] if index.odd?
+        color if index.odd?
       end
     end
 
-    def self.even params
+    def self.even color
       lambda do |index, data|
-        params[:with] if index.even?
+        color if index.even?
       end
+    end
+
+    def self.zebra first_color, second_color
+      Yummi::Colorizer.join odd(first_color), even(second_color)
     end
 
   end
