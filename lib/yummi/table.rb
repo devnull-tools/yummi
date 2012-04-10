@@ -154,20 +154,19 @@ module Yummi
 
     #
     # Indicates that the column colorizer (#colorize) should receive the entire row as the
-    # argument instead of just the column value.
-    #
-    # === Return
-    #
-    # +self+
+    # argument instead of just the column value for all definitions inside of the given
+    # block.
     #
     # === Example
     #
-    #   table.using_row.colorize(:value) { |row| :red if row[:value] < row[:average] }
-    #
+    #   table.using_row do
+    #     table.colorize(:value) { |row| :red if row[:value] < row[:average] }
+    #   end
     #
     def using_row
       @using_row = true
-      self
+      yield
+      @using_row = false
     end
 
     #
@@ -198,7 +197,6 @@ module Yummi
       @colorizers[index] ||= []
       obj = (params[:using] or block or (proc { |v| params[:with] }))
       @colorizers[index] << {:use_row => @using_row, :component => obj}
-      @using_row = false
     end
 
     #
@@ -243,16 +241,22 @@ module Yummi
       header_color_map, header_output = build_header_output
       data_color_map, data_output = build_data_output
 
-      color_map = header_color_map + data_color_map
-      output = header_output + data_output
-
       string = ""
       string << Color.colorize(@title, @colors[:title]) << $/ if @title
-      output.each_index do |i|
-        row = output[i]
+      string << content(header_color_map + data_color_map,
+                        header_output + data_output)
+    end
+
+    #
+    # Gets the content string for the given color map and content
+    #
+    def content color_map, data
+      string = ""
+      data.each_index do |i|
+        row = data[i]
         row.each_index do |j|
           column = row[j]
-          width = max_width output, j
+          width = max_width data, j
           align = (@align[j] or @default_align)
           color = color_map[i][j]
           value = Aligner.send align, column.to_s, width

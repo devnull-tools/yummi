@@ -57,8 +57,10 @@ opt.on '--color TYPE', 'Specify the color type (zebra,row,cell,none)' do |type|
       @table.row_colorizer memory_colorizer
       @table.row_colorizer thread_colorizer
     when 'cell'
-      @table.using_row.colorize :free_memory, :using => memory_colorizer
-      @table.using_row.colorize :in_use_threads, :using => thread_colorizer
+      @table.using_row do
+        @table.colorize :free_memory, :using => memory_colorizer
+        @table.colorize :in_use_threads, :using => thread_colorizer
+      end
     when 'none'
       @table.no_colors
     else
