@@ -109,6 +109,18 @@ module Yummi
     end
   end
 
+  module BlockHandler
+
+    def self.call_block params, &block
+      args = []
+      block.parameters.each do |parameter|
+        args << params[parameter[1]]
+      end
+      block.call *args
+    end
+
+  end
+
   module Aligner
 
     def self.right text, width
@@ -121,30 +133,10 @@ module Yummi
 
   end
 
-  module IndexedDataColorizer
-
-    def self.odd color
-      lambda do |index, data|
-        color if index.odd?
-      end
-    end
-
-    def self.even color
-      lambda do |index, data|
-        color if index.even?
-      end
-    end
-
-    def self.zebra first_color, second_color
-      Yummi::Colorizer.join odd(first_color), even(second_color)
-    end
-
-  end
-
   module Colorizer
 
     def self.join *colorizers
-      join = Yummi::LinkedBlocks::new
+      join = Yummi::GroupedComponent::new
       colorizers.each { |c| join << c }
       join
     end
@@ -153,7 +145,12 @@ module Yummi
       EvalColorizer::new &block
     end
 
+    def self.by_index
+      IndexedDataColorizer
+    end
+
     class EvalColorizer
+      include Yummi::BlockHandler
 
       def initialize &block
         @block = block
@@ -167,11 +164,31 @@ module Yummi
       end
 
       def call *args
-        value = Yummi.call_block args.last, &@block # by convention, the last arg is data
+        value = call_block args.last, &@block # by convention, the last arg is data
         @eval_blocks.each_index do |i|
           return @colors[i] if @eval_blocks[i].call(value)
         end
         nil
+      end
+
+    end
+
+    module IndexedDataColorizer
+
+      def self.odd color
+        lambda do |index, data|
+          color if index.odd?
+        end
+      end
+
+      def self.even color
+        lambda do |index, data|
+          color if index.even?
+        end
+      end
+
+      def self.zebra first_color, second_color
+        Yummi::Colorizer.join odd(first_color), even(second_color)
       end
 
     end
@@ -227,34 +244,27 @@ module Yummi
 
   end
 
-  class LinkedBlocks
+  class GroupedComponent
 
     def initialize params = {}
-      @blocks = []
+      @components = []
       @call_all = params[:call_all]
+      @message = (params[:message] or :call)
     end
 
-    def << block
-      @blocks << block
+    def << component
+      @components << component
     end
 
     def call *args
       result = nil
-      @blocks.each do |block|
+      @components.each do |component|
         break if result and not @call_all
-        result = block.call *args
+        result = component.send @message, *args
       end
       result
     end
 
-  end
-
-  def self.call_block params, &block
-    args = []
-    block.parameters.each do |parameter|
-      args << params[parameter[1]]
-    end
-    block.call *args
   end
 
 end

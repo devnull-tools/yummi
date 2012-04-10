@@ -148,7 +148,7 @@ module Yummi
     #   table.row_colorizer { |i, row| :red if row[:value] < 0 }
     #
     def row_colorizer colorizer = nil, &block
-      @row_colorizer ||= Yummi::LinkedBlocks::new
+      @row_colorizer ||= Yummi::GroupedComponent::new
       @row_colorizer << (colorizer or block)
     end
 

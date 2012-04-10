@@ -47,7 +47,7 @@ opt = OptionParser::new
 opt.on '--color TYPE', 'Specify the color type (zebra,full,none)' do |type|
   case type
     when 'zebra'
-      @table.row_colorizer Yummi::IndexedDataColorizer.zebra :brown, :purple
+      @table.row_colorizer Yummi::Colorizer.by_index.zebra :brown, :purple
     when 'full'
       # colorize all values from the Description column to purple
       @table.colorize :description, :with => :purple
