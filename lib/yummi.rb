@@ -141,6 +141,10 @@ module Yummi
       join
     end
 
+    def self.by_data_eval &block
+      DataEvalColorizer::new &block
+    end
+
     def self.by_eval &block
       EvalColorizer::new &block
     end
@@ -149,7 +153,7 @@ module Yummi
       IndexedDataColorizer
     end
 
-    class EvalColorizer
+    class DataEvalColorizer
       include Yummi::BlockHandler
 
       def initialize &block
@@ -165,6 +169,29 @@ module Yummi
 
       def call *args
         value = call_block args.last, &@block # by convention, the last arg is data
+        @eval_blocks.each_index do |i|
+          return @colors[i] if @eval_blocks[i].call(value)
+        end
+        nil
+      end
+
+    end
+
+    class EvalColorizer
+
+      def initialize &block
+        @block = block
+        @colors = []
+        @eval_blocks = []
+      end
+
+      def use color, &eval_block
+        @colors << color
+        @eval_blocks << eval_block
+      end
+
+      def call *args
+        value = @block.call *args
         @eval_blocks.each_index do |i|
           return @colors[i] if @eval_blocks[i].call(value)
         end
@@ -197,6 +224,24 @@ module Yummi
 
   module Formatter
 
+    module Unit
+      UNITS = {
+        :byte => {:range => %w{B KB MB GB TB}, :step => 1024}
+      }
+
+      def self.format unit, value, params = {}
+        unit = UNITS[unit] if unit.is_a? Symbol
+        params[:precision] ||= 1
+        result = value
+        units = unit[:range]
+        units.each_index do |i|
+          minimun = (unit[:step] ** i)
+          result = "%.#{params[:precision]}f #{units[i]}" % (value.to_f / minimun) if value >= minimun
+        end
+        result
+      end
+    end
+
     def self.yes_or_no
       lambda do |value|
         value ? "Yes" : "No"
@@ -209,20 +254,10 @@ module Yummi
       end
     end
 
-    def self.unit params
+    def self.unit unit, params = {}
       lambda do |value|
-        result = value
-        units = params[:range]
-        units.each_index do |i|
-          minimun = (params[:step] ** i)
-          result = "%.#{params[:precision]}f #{units[i]}" % (value.to_f / minimun) if value >= minimun
-        end
-        result
+        Unit.format unit, value, params
       end
-    end
-
-    def self.bytes precision = 1
-      unit :range => %w{B KB MB GB TB}, :step => 1024, :precision => precision
     end
 
   end
