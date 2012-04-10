@@ -252,7 +252,12 @@ module Yummi
     # Return a colorized and formatted table.
     #
     def to_s
-      color_map, output = build_output
+      header_color_map, header_output = build_header_output
+      data_color_map, data_output = build_data_output
+
+      color_map = header_color_map + data_color_map
+      output = header_output + data_output
+
       string = ""
       string << Color.colorize(@title, @colors[:title]) << $/ if @title
       output.each_index do |i|
@@ -272,9 +277,12 @@ module Yummi
       string
     end
 
-    private
-
-    def build_output
+    #
+    # Builds the header output for this table.
+    #
+    # Returns the color map and the header.
+    #
+    def build_header_output
       color_map = []
       output = []
 
@@ -288,6 +296,17 @@ module Yummi
         color_map << _colors
         output << _data
       end
+      [color_map, output]
+    end
+
+    #
+    # Builds the data output for this table.
+    #
+    # Returns the color map and the formatted data.
+    #
+    def build_data_output
+      color_map = []
+      output = []
 
       @data.each_index do |row_index|
         row = @data[row_index]
@@ -324,6 +343,8 @@ module Yummi
 
       [color_map, output]
     end
+
+    private
 
     def parse_index(value)
       return @aliases.index(value) unless value.is_a? Fixnum
