@@ -34,7 +34,7 @@ opt = OptionParser::new
 # sets the title
 @table.title = 'Files in home folder'
 # formats size for easily reading
-@table.format :size, :using => Yummi::Formatter.bytes
+@table.format :size, :using => Yummi::Formatter.unit(:byte)
 
 opt.on '--color TYPE', 'Specify the color type (zebra,file,none)' do |type|
   case type

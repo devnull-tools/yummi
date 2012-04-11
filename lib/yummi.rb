@@ -109,15 +109,31 @@ module Yummi
     end
   end
 
+  #
+  # A module to handle blocks by dynamically resolving parameters
+  #
+  # see #DataEvalColorizer
+  #
   module BlockHandler
 
-    def self.call_block params, &block
+    #
+    # Calls the block resolving the parameters by getting the parameter name from the
+    # given context.
+    #
+    # === Example
+    #
+    #   context = :max => 10, :curr => 5, ratio => 0.15
+    #   percentage = BlockHandler.call_block(context) { |max,curr| curr.to_f / max }
+    #
+    def block_call context, &block
       args = []
       block.parameters.each do |parameter|
-        args << params[parameter[1]]
+        args << context[parameter[1]]
       end
       block.call *args
     end
+
+    module_function :block_call
 
   end
 
@@ -153,22 +169,45 @@ module Yummi
       IndexedDataColorizer
     end
 
+    #
+    # A colorizer that evals a main blck and returns a color based on other blocks.
+    #
+    # === Example
+    #
+    #   # assuming that the table has :max and :current aliases
+    #   colorizer = DataEvalColorizer::new { |max, current| current / max }
+    #   # the result of the expression above will be passed to this block
+    #   colorizer.use(:red) { |value| value >= 0.9 }
+    #
+    #   table.using_row.colorize :current, :using => colorizer
+    #
     class DataEvalColorizer
       include Yummi::BlockHandler
 
+      #
+      # Creates a new colorizer using the given block as the main block.
+      #
+      # The block must use parameters that are aliases to the target table.
+      #
       def initialize &block
         @block = block
         @colors = []
         @eval_blocks = []
       end
 
-      def use color, &eval_block
+      #
+      # Uses the given color if the given block returns something when evaluated with the
+      # result of main block.
+      #
+      # An objtect that responds to :call may also be used.
+      #
+      def use color, component = nil, &eval_block
         @colors << color
-        @eval_blocks << eval_block
+        @eval_blocks << (component or eval_block)
       end
 
       def call *args
-        value = call_block args.last, &@block # by convention, the last arg is data
+        value = block_call args.last, &@block # by convention, the last arg is data
         @eval_blocks.each_index do |i|
           return @colors[i] if @eval_blocks[i].call(value)
         end
