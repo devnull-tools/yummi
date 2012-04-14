@@ -281,7 +281,7 @@ module Yummi
   # A module with useful formatters
   module Formatter
 
-    # A module for formatting units in a way that makes the values easy to read
+    # A module for formatting units in a way that makes the value easy to read
     module Unit
       # Holds the information about the units that are supported in #format
       UNITS = {
@@ -289,8 +289,17 @@ module Yummi
       }
 
       #
+      # Formats the value using the given unit.
       #
+      # === Args
       #
+      # +unit+::
+      #   A unit defined in #UNITS or a definition
+      # +value+::
+      #   The value to format
+      # +params+::
+      #   Additional parameters:
+      #   * precision: the number of fractional digits to display (defaults to 1)
       #
       def self.format unit, value, params = {}
         unit = UNITS[unit] if unit.is_a? Symbol
@@ -305,18 +314,21 @@ module Yummi
       end
     end
 
+    # Formats boolean values using 'Yes' or 'No'
     def self.yes_or_no
       lambda do |value|
         value ? "Yes" : "No"
       end
     end
 
+    # Formats a float value by rounding to the given decinal digits
     def self.round precision
       lambda do |value|
         "%.#{precision}f" % value
       end
     end
 
+    # see #Unit#format
     def self.unit unit, params = {}
       lambda do |value|
         Unit.format unit, value, params
