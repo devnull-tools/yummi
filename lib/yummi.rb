@@ -137,58 +137,64 @@ module Yummi
 
   end
 
+  # A module to align texts based on a reference width
   module Aligner
 
+    # Aligns the text to the right
     def self.right text, width
       text.rjust(width)
     end
 
+    # Aligns the text to the left
     def self.left text, width
       text.ljust(width)
     end
 
   end
 
+  # A module with useful colorizers
   module Colorizer
 
+    # Joins the given colorizers to work as one
     def self.join *colorizers
       join = Yummi::GroupedComponent::new
       colorizers.each { |c| join << c }
       join
     end
 
+    # Returns a new instance of #DataEvalColorizer
     def self.by_data_eval &block
       DataEvalColorizer::new &block
     end
 
+    # Returns a new instance of #EvalColorizer
     def self.by_eval &block
       EvalColorizer::new &block
     end
 
+    # Returns the #IndexedDataColorizer module
     def self.by_index
       IndexedDataColorizer
     end
 
     #
-    # A colorizer that evals a main blck and returns a color based on other blocks.
+    # A colorizer that evaluates a main block and returns a color based on other blocks.
+    #
+    # The main block must be compatible with the colorizing type (receiving a column
+    # value in case of a table column colorizer or the row index and row value in case
+    # of a table row colorizer).
     #
     # === Example
     #
     #   # assuming that the table has :max and :current aliases
-    #   colorizer = DataEvalColorizer::new { |max, current| current / max }
+    #   colorizer = DataEvalColorizer::new { |index, data| data[:current] / data[:max] }
     #   # the result of the expression above will be passed to this block
     #   colorizer.use(:red) { |value| value >= 0.9 }
     #
     #   table.using_row.colorize :current, :using => colorizer
     #
-    class DataEvalColorizer
-      include Yummi::BlockHandler
+    class EvalColorizer
 
-      #
-      # Creates a new colorizer using the given block as the main block.
-      #
-      # The block must use parameters that are aliases to the target table.
-      #
       def initialize &block
         @block = block
         @colors = []
@@ -206,8 +212,13 @@ module Yummi
         @eval_blocks << (component or eval_block)
       end
 
+      # Resolves the value using the main block and given arguments
+      def resolve_value *args
+        @block.call *args
+      end
+
       def call *args
-        value = block_call args.last, &@block # by convention, the last arg is data
+        value = resolve_value *args
         @eval_blocks.each_index do |i|
           return @colors[i] if @eval_blocks[i].call(value)
         end
@@ -216,43 +227,49 @@ module Yummi
 
     end
 
-    class EvalColorizer
+    #
+    # A colorizer that evaluates a main block and returns a color based on other blocks.
+    #
+    # The main block can receive any parameters and the names must be aliases the current
+    # evaluated data.
+    #
+    # === Example
+    #
+    #   # assuming that the table has :max and :current aliases
+    #   colorizer = DataEvalColorizer::new { |max, current| current / max }
+    #   # the result of the expression above will be passed to this block
+    #   colorizer.use(:red) { |value| value >= 0.9 }
+    #
+    #   table.using_row.colorize :current, :using => colorizer
+    #
+    class DataEvalColorizer < EvalColorizer
+      include Yummi::BlockHandler
 
-      def initialize &block
-        @block = block
-        @colors = []
-        @eval_blocks = []
-      end
-
-      def use color, &eval_block
-        @colors << color
-        @eval_blocks << eval_block
-      end
-
-      def call *args
-        value = @block.call *args
-        @eval_blocks.each_index do |i|
-          return @colors[i] if @eval_blocks[i].call(value)
-        end
-        nil
+      def resolve_value *args
+        block_call args.last, &@block # by convention, the last arg is data
       end
 
     end
 
+    # A module with colorizers that uses indexes
     module IndexedDataColorizer
 
+      # Returns a colorizer that uses the given color in odd indexes
       def self.odd color
         lambda do |index, data|
           color if index.odd?
         end
       end
 
+      # Returns a colorizer that uses the given color in even indexes
       def self.even color
         lambda do |index, data|
           color if index.even?
         end
       end
 
+      # Returns a colorizer that uses the first color for odd indexes and the second for
+      # even indexes.
       def self.zebra first_color, second_color
         Yummi::Colorizer.join odd(first_color), even(second_color)
       end
@@ -261,13 +278,20 @@ module Yummi
 
   end
 
+  # A module with useful formatters
   module Formatter
 
+    # A module for formatting units in a way that makes the values easy to read
     module Unit
+      # Holds the information about the units that are supported in #format
       UNITS = {
         :byte => {:range => %w{B KB MB GB TB}, :step => 1024}
       }
 
+      #
+      #
+      #
+      #
       def self.format unit, value, params = {}
         unit = UNITS[unit] if unit.is_a? Symbol
         params[:precision] ||= 1
