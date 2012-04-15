@@ -337,6 +337,7 @@ module Yummi
 
   end
 
+  # A class to expose indexed data by numeric indexes and aliases.
   class IndexedData
 
     def initialize aliases, data
@@ -354,18 +355,34 @@ module Yummi
 
   end
 
+  # A class to group components and blocks
   class GroupedComponent
 
+    #
+    # Creates a new GroupedComponent
+    #
+    # === Args
+    #
+    # +params+::
+    #   Hash parameters:
+    #     - call_all: indicates if all components must be called. For use if the return
+    #     should be ignored
+    #     - message: the message to send. Defaults to :call
+    #
     def initialize params = {}
       @components = []
       @call_all = params[:call_all]
       @message = (params[:message] or :call)
     end
 
-    def << component
-      @components << component
+    # Adds a new component
+    def << component = nil, &block
+      @components << (component or block)
     end
 
+    #
+    # Calls the added components by sending the configured message and the given args.
+    #
     def call *args
       result = nil
       @components.each do |component|
