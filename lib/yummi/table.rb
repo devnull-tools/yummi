@@ -103,6 +103,7 @@ module Yummi
     # This will create the following aliases: :name, :email, :work_phone and :home_phone
     #
     def header= header
+      header = [header] unless header.respond_to? :each
       max = 0
       header.each_index do |i|
         max = [max, header[i].split("\n").size].max
