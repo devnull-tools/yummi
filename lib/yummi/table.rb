@@ -250,7 +250,7 @@ module Yummi
       if @layout == :vertical
         # don't use array transpose because the data may differ in each line size
         color_map = rotate color_map
-        table_data = table_data.transpose
+        table_data = rotate table_data
       end
       string << content(color_map, table_data)
     end
