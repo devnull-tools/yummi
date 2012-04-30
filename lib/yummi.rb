@@ -87,7 +87,7 @@ module Yummi
       :highlight => 7
     }
     # Parses the key
-    def self.parse(key)
+    def self.parse key
       keys = key.to_s.split '_'
       type = keys[0].to_sym
       color = keys[1].to_i
@@ -95,7 +95,7 @@ module Yummi
     end
 
     # Escape the given text with the given color code
-    def self.escape(key)
+    def self.escape key
       return key unless key
       color = COLORS[key]
       color ||= parse(key)
@@ -103,10 +103,15 @@ module Yummi
     end
 
     # Colorize the given text with the given color
-    def self.colorize(str, color)
+    def self.colorize string, color
       col, nocol = [color, :nothing].map { |key| Color.escape(key) }
-      col ? "#{col}#{str}#{nocol}" : str
+      col ? "#{col}#{string}#{nocol}" : string
     end
+  end
+
+  # see #Color#colorize
+  def self.colorize string, color
+    Color.colorize string, color
   end
 
   #
