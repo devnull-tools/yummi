@@ -27,7 +27,7 @@ opt = OptionParser::new
 
 @table = Yummi::Table::new
 # setting the header sets the aliases automatically
-@table.header = ['Server Name', 'Max Memory', 'Free Memory', "Max\nThreads", "In Use\nThreads"]
+@table.header = ['Server Name', 'Max Memory', 'Free Memory', "Max Threads", "In Use Threads"]
 # sets the title
 @table.title = 'Server Runtime Info'
 # formats memory info for easily reading
@@ -63,6 +63,16 @@ opt.on '--color TYPE', 'Specify the color type (zebra,row,cell,none)' do |type|
     when 'none'
       @table.no_colors
     else
+  end
+end
+opt.on '--layout LAYOUT', 'Specify the layout (horizontal or vertical)' do |layout|
+  case layout
+    when 'horizontal'
+      @table.layout = :horizontal
+    when 'vertical'
+      @table.layout = :vertical
+    else
+      abort "Not recognized layout: #{layout}"
   end
 end
 opt.on '--help', 'Prints this message' do

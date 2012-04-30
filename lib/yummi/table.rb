@@ -42,6 +42,8 @@ module Yummi
     #
     # The colors must be supported by #Yummi#Color#parse or defined in #Yummi#Color#COLORS
     attr_accessor :colors
+    # The table layout (horizontal or vertical)
+    attr_accessor :layout
 
     # Creates a new table with the default attributes:
     #
@@ -61,7 +63,7 @@ module Yummi
       }
 
       @colspan = 2
-
+      @layout = :horizontal
       @aliases = []
 
       @align = [:left]
@@ -243,8 +245,14 @@ module Yummi
 
       string = ""
       string << Color.colorize(@title, @colors[:title]) << $/ if @title
-      string << content(header_color_map + data_color_map,
-                        header_output + data_output)
+      color_map = header_color_map + data_color_map
+      table_data = header_output + data_output
+      if @layout == :vertical
+        # don't use array transpose because the data may differ in each line size
+        color_map = rotate color_map
+        table_data = table_data.transpose
+      end
+      string << content(color_map, table_data)
     end
 
     #
@@ -349,6 +357,17 @@ module Yummi
         max = [row[column].to_s.length, max].max
       end
       max
+    end
+
+    def rotate data
+      new_data = []
+      data.each_index do |i|
+        data[i].each_index do |j|
+          new_data[j] ||= []
+          new_data[j][i] = data[i][j]
+        end
+      end
+      new_data
     end
 
   end
