@@ -266,9 +266,9 @@ module Yummi
         row.each_index do |j|
           column = row[j]
           width = max_width data, j
-          align = (@align[j] or @default_align)
+          alignment = (@align[j] or @default_align)
           color = color_map[i][j]
-          value = Aligner.send align, column.to_s, width
+          value = Aligner.align alignment, column.to_s, width
           value = Color.colorize value, color unless @no_colors
           string << value
           string << (' ' * @colspan)

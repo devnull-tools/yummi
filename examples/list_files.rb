@@ -39,7 +39,7 @@ opt = OptionParser::new
 opt.on '--color TYPE', 'Specify the color type (zebra,file,none)' do |type|
   case type
     when 'zebra'
-      @table.row_colorizer Yummi::IndexedDataColorizer.zebra :intense_gray, :intense_white
+      @table.row_colorizer Yummi::Colorizer.stripe :intense_gray, :intense_white
     when 'file'
       @table.row_colorizer do |i, data|
         data[:directory] ? :intense_gray : :intense_white

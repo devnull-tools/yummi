@@ -51,7 +51,7 @@ thread_colorizer.use(:intense_cyan) { |value| value >= 0.9 }
 opt.on '--color TYPE', 'Specify the color type (zebra,row,cell,none)' do |type|
   case type
     when 'zebra'
-      @table.row_colorizer Yummi::Colorizer.by_index.zebra :brown, :purple
+      @table.row_colorizer Yummi::Colorizer.stripe :brown, :purple
     when 'row'
       @table.row_colorizer memory_colorizer
       @table.row_colorizer thread_colorizer

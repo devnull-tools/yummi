@@ -29,8 +29,6 @@ module Yummi
   module Color
     # Colors from default linux terminal scheme
     COLORS = {
-      :nothing => '0;0',
-
       :black => '0;30',
       :red => '0;31',
       :green => '0;32',
@@ -97,16 +95,22 @@ module Yummi
     # Escape the given text with the given color code
     def self.escape key
       return key unless key
-      color = COLORS[key]
+      color = (COLORS[key] or key)
       color ||= parse(key)
       "\033[#{color}m"
     end
 
     # Colorize the given text with the given color
     def self.colorize string, color
-      col, nocol = [color, :nothing].map { |key| Color.escape(key) }
-      col ? "#{col}#{string}#{nocol}" : string
+      color, end_color = [color, '0;0'].map { |key| Color.escape(key) }
+      color ? "#{color}#{string}#{end_color}" : string
     end
+
+    # Extracts the text from a colorized string
+    def self.raw string
+      string.gsub(/\033\[\d;\d{2}m/, '').gsub(/\033\[0;0m/, '')
+    end
+
   end
 
   # see #Color#colorize
@@ -145,6 +149,22 @@ module Yummi
   # A module to align texts based on a reference width
   module Aligner
 
+    #
+    # Aligns the text
+    #
+    # === Args
+    #
+    # +to+::
+    #   Defines the type of the alignment (must be a method defined in this module)
+    # +text+::
+    #   The text to align
+    # +width+::
+    #   The width of alignment, this will define how much the text will be moved.
+    #
+    def self.align to, text, width
+      send to, text, width
+    end
+
     # Aligns the text to the right
     def self.right text, width
       text.rjust(width)
@@ -177,9 +197,25 @@ module Yummi
       EvalColorizer::new &block
     end
 
-    # Returns the #IndexedDataColorizer module
-    def self.by_index
-      IndexedDataColorizer
+    # Returns a new instance of #StripeColorizer
+    def self.stripe *colors
+      StripeColorizer::new *colors
+    end
+
+    # A colorizer that cycles through colors to create a striped effect
+    class StripeColorizer
+
+      # Creates a new colorizer using the given colors
+      def initialize *colors
+        @colors = colors
+        @count = -1
+      end
+
+      def call *args
+        @count += 1
+        @colors[@count % @colors.size]
+      end
+
     end
 
     #
@@ -252,31 +288,6 @@ module Yummi
 
       def resolve_value *args
         block_call args.last, &@block # by convention, the last arg is data
-      end
-
-    end
-
-    # A module with colorizers that uses indexes
-    module IndexedDataColorizer
-
-      # Returns a colorizer that uses the given color in odd indexes
-      def self.odd color
-        lambda do |index, data|
-          color if index.odd?
-        end
-      end
-
-      # Returns a colorizer that uses the given color in even indexes
-      def self.even color
-        lambda do |index, data|
-          color if index.even?
-        end
-      end
-
-      # Returns a colorizer that uses the first color for odd indexes and the second for
-      # even indexes.
-      def self.zebra first_color, second_color
-        Yummi::Colorizer.join odd(first_color), even(second_color)
       end
 
     end
