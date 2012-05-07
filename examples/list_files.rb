@@ -32,7 +32,7 @@ opt = OptionParser::new
 @table.header = ['Name', 'Size']
 @table.aliases << :directory
 # sets the title
-@table.title = 'Files in home folder'
+@table.title = 'File List'
 # formats size for easily reading
 @table.format :size, :using => Yummi::Formatter.unit(:byte)
 

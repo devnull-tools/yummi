@@ -65,14 +65,13 @@ opt.on '--color TYPE', 'Specify the color type (zebra,row,cell,none)' do |type|
     else
   end
 end
-opt.on '--layout LAYOUT', 'Specify the layout (horizontal or vertical)' do |layout|
+opt.on '--layout LAYOUT', 'Defines the table layout (horizontal or vertical)' do |layout|
   case layout
-    when 'horizontal'
+    when 'horizonta'
       @table.layout = :horizontal
     when 'vertical'
       @table.layout = :vertical
     else
-      abort "Not recognized layout: #{layout}"
   end
 end
 opt.on '--help', 'Prints this message' do

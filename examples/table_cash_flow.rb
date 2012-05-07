@@ -73,6 +73,15 @@ opt.on '--color TYPE', 'Specify the color type (zebra,full,none)' do |type|
     else
   end
 end
+opt.on '--layout LAYOUT', 'Defines the table layout (horizontal or vertical)' do |layout|
+  case layout
+    when 'horizonta'
+      @table.layout = :horizontal
+    when 'vertical'
+      @table.layout = :vertical
+    else
+  end
+end
 opt.on '--help', 'Prints this message' do
   puts opt
   exit 0
