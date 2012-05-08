@@ -28,6 +28,8 @@ module Yummi
     attr_accessor :color
     # The box content
     attr_accessor :content
+    # The box maximum width
+    attr_accessor :max_width
 
     def initialize params = {}
       params = {
@@ -36,6 +38,7 @@ module Yummi
       }.merge! params
       @color = params[:color]
       @content = params[:content].to_s
+      @max_width = nil
     end
 
     # Adds a content to this box
@@ -45,13 +48,56 @@ module Yummi
 
     alias_method :<<, :add
 
+    #
     # Adds a line text to this box
+    #
+    # === Args
+    #
+    # +line_text+::
+    #   The text to add.
+    # +params+::
+    #   A hash of parameters. Currently supported are:
+    #     color: the text color (see #Yummi#COLORS)
+    #     width: the text maximum width. Set this to break the lines automatically.
+    #
     def line line_text, params = {}
-      line_text.each_line do |line|
-        line = line.chomp
-        add Yummi.colorize line, params[:color]
-        add $/
+      params = {
+        :width => @max_width
+      }.merge! params
+      if params[:width]
+        width = params[:width]
+        words = line_text.gsub($/, ' ').split(' ')
+        buff = ''
+        words.each do |word|
+          if buff.size + word.size > width
+            add Yummi.colorize buff, params[:color]
+            add $/
+            buff = ''
+          end
+          buff << ' ' << word
+          buff.strip!
+        end
+        unless buff.empty?
+          add Yummi.colorize buff, params[:color]
+          add $/
+        end
+      else
+        line_text.each_line do |line|
+          line = line.chomp
+          add Yummi.colorize line, params[:color]
+          add $/
+        end
       end
+    end
+
+    def paragraph text, params = {}
+      line text, params
+      line_break
+    end
+
+    # Adds a line break to the text.
+    def line_break
+      add $/
     end
 
     #
@@ -64,6 +110,7 @@ module Yummi
     def to_s
       width = 0
       sizes = []
+      content.strip!
       content.each_line do |line|
         size = (Yummi::Color::raw line.chomp).size
         sizes << size
