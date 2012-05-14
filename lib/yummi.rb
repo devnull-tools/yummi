@@ -184,6 +184,22 @@ module Yummi
       (' ' * left_size) << text << (' ' * right_size)
     end
 
+    def self.justify text, width
+      extra_spaces = width - text.size
+      return text if extra_spaces == 0
+      words = text.split ' '
+      return text if extra_spaces / (words.size - 1) > 2
+      until extra_spaces == 0
+        words.each_index do |i|
+          break if i - 1 == words.size # do not add spaces in the last word
+          words[i] << ' '
+          extra_spaces -= 1
+          break if extra_spaces == 0
+        end
+      end
+      words.join ' '
+    end
+
   end
 
   # A module with useful colorizers
