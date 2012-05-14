@@ -176,6 +176,14 @@ module Yummi
       text.ljust(width)
     end
 
+    # Aligns the text to the center
+    def self.center text, width
+      size = width - text.size
+      left_size = size / 2
+      right_size = size - left_size
+      (' ' * left_size) << text << (' ' * right_size)
+    end
+
   end
 
   # A module with useful colorizers
