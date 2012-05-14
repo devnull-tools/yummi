@@ -184,6 +184,7 @@ module Yummi
       (' ' * left_size) << text << (' ' * right_size)
     end
 
+    # Aligns the text to both sides
     def self.justify text, width
       extra_spaces = width - text.size
       return text if extra_spaces == 0

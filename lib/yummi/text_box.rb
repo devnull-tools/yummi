@@ -30,6 +30,8 @@ module Yummi
     attr_accessor :content
     # The box maximum width
     attr_accessor :max_width
+    # The default alignment to use
+    attr_accessor :default_align
 
     def initialize params = {}
       params = {
@@ -38,15 +40,7 @@ module Yummi
       }.merge! params
       @color = params[:color]
       @content = params[:content].to_s
-      @max_width = nil
     end
-
-    # Adds a content to this box
-    def add obj
-      content << obj.to_s
-    end
-
-    alias_method :<<, :add
 
     #
     # Adds a line text to this box
@@ -60,44 +54,38 @@ module Yummi
     #     color: the text color (see #Yummi#COLORS)
     #     width: the text maximum width. Set this to break the lines automatically.
     #
-    def line line_text, params = {}
+    def add text, params = {}
       params = {
-        :width => @max_width
+        :width => @max_width + 1,
+        :align => @default_align
       }.merge! params
       if params[:width]
         width = params[:width]
-        words = line_text.gsub($/, ' ').split(' ')
+        words = text.gsub($/, ' ').split(' ')
         buff = ''
         words.each do |word|
           if buff.size + word.size > width
-            add Yummi.colorize buff, params[:color]
-            add $/
+            _add_ buff, params
             buff = ''
           end
-          buff << ' ' << word
-          buff.strip!
+          buff << ' ' unless buff.empty?
+          buff << word
         end
         unless buff.empty?
-          add Yummi.colorize buff, params[:color]
-          add $/
+          _add_ buff, params
         end
       else
-        line_text.each_line do |line|
-          line = line.chomp
-          add Yummi.colorize line, params[:color]
-          add $/
+        text.each_line do |line|
+          _add_ line, params
         end
       end
     end
 
-    def paragraph text, params = {}
-      line text, params
-      line_break
-    end
+    alias_method :<<, :add
 
     # Adds a line break to the text.
     def line_break
-      add $/
+      @content << $/
     end
 
     #
@@ -110,7 +98,6 @@ module Yummi
     def to_s
       width = 0
       sizes = []
-      content.strip!
       content.each_line do |line|
         size = (Yummi::Color::raw line.chomp).size
         sizes << size
@@ -128,6 +115,16 @@ module Yummi
       end
       buff << border
       buff
+    end
+
+    private
+
+    def _add_ text, params
+      if params[:align] and params[:width]
+        text = Yummi::Aligner.align params[:align], text, params[:width]
+      end
+      @content << Yummi.colorize(text, params[:color])
+      line_break
     end
 
   end
