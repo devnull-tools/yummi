@@ -64,6 +64,7 @@ module Yummi
         words = text.gsub($/, ' ').split(' ')
         buff = ''
         words.each do |word|
+          # go to next line if the current word blows up the width limit
           if buff.size + word.size >= width
             _add_ buff, params
             buff = ''
@@ -99,7 +100,7 @@ module Yummi
       width = 0
       sizes = []
       content.each do |line|
-        size = (Yummi::Color::raw line).size
+        size = (Yummi::Color::raw line.chomp).size
         sizes << size
         width = [width, size].max
       end
@@ -110,7 +111,7 @@ module Yummi
       i = 0
       content.each do |line|
         diff = width - sizes[i]
-        buff << pipe << line << (' ' * diff) << pipe << $/
+        buff << pipe << line.chomp << (' ' * diff) << pipe << $/
         i += 1
       end
       buff << border
