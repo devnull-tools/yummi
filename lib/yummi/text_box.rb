@@ -39,7 +39,7 @@ module Yummi
         :content => ''
       }.merge! params
       @color = params[:color]
-      @content = params[:content].to_s
+      @content = []
     end
 
     #
@@ -56,7 +56,7 @@ module Yummi
     #
     def add text, params = {}
       params = {
-        :width => @max_width + 1,
+        :width => @max_width,
         :align => @default_align
       }.merge! params
       if params[:width]
@@ -64,7 +64,7 @@ module Yummi
         words = text.gsub($/, ' ').split(' ')
         buff = ''
         words.each do |word|
-          if buff.size + word.size > width
+          if buff.size + word.size >= width
             _add_ buff, params
             buff = ''
           end
@@ -98,8 +98,8 @@ module Yummi
     def to_s
       width = 0
       sizes = []
-      content.each_line do |line|
-        size = (Yummi::Color::raw line.chomp).size
+      content.each do |line|
+        size = (Yummi::Color::raw line).size
         sizes << size
         width = [width, size].max
       end
@@ -108,9 +108,9 @@ module Yummi
       buff = ''
       buff << border
       i = 0
-      content.each_line do |line|
+      content.each do |line|
         diff = width - sizes[i]
-        buff << pipe << line.chomp << (' ' * diff) << pipe << $/
+        buff << pipe << line << (' ' * diff) << pipe << $/
         i += 1
       end
       buff << border
@@ -124,7 +124,6 @@ module Yummi
         text = Yummi::Aligner.align params[:align], text, params[:width]
       end
       @content << Yummi.colorize(text, params[:color])
-      line_break
     end
 
   end

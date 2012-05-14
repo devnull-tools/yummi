@@ -187,7 +187,7 @@ module Yummi
     # Aligns the text to both sides
     def self.justify text, width
       extra_spaces = width - text.size
-      return text if extra_spaces == 0
+      return text if extra_spaces < 0
       words = text.split ' '
       return text if extra_spaces / (words.size - 1) > 2
       until extra_spaces == 0
