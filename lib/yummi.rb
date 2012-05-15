@@ -178,6 +178,7 @@ module Yummi
 
     # Aligns the text to the center
     def self.center text, width
+      return text if text.size >= width
       size = width - text.size
       left_size = size / 2
       right_size = size - left_size
