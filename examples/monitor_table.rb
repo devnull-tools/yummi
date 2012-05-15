@@ -74,6 +74,9 @@ opt.on '--layout LAYOUT', 'Defines the table layout (horizontal or vertical)' do
     else
   end
 end
+opt.on '--box', 'Prints the table inside a box' do
+  @box = Yummi::TextBox::new
+end
 opt.on '--help', 'Prints this message' do
   puts opt
   exit 0
@@ -93,4 +96,9 @@ opt.parse ARGV
   ['Server 6', 1_000_000, 5_000, 200, 180],
 ]
 
-@table.print
+if @box
+  @box << @table
+  @box.print
+else
+  @table.print
+end

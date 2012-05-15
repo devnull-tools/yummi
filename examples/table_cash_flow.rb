@@ -75,12 +75,15 @@ opt.on '--color TYPE', 'Specify the color type (zebra,full,none)' do |type|
 end
 opt.on '--layout LAYOUT', 'Defines the table layout (horizontal or vertical)' do |layout|
   case layout
-    when 'horizonta'
+    when 'horizontal'
       @table.layout = :horizontal
     when 'vertical'
       @table.layout = :vertical
     else
   end
+end
+opt.on '--box', 'Prints the table inside a box' do
+  @box = Yummi::TextBox::new
 end
 opt.on '--help', 'Prints this message' do
   puts opt
@@ -89,4 +92,9 @@ end
 
 opt.parse ARGV
 
-@table.print
+if @box
+  @box << @table
+  @box.print
+else
+  @table.print
+end
