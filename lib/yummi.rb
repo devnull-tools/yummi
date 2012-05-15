@@ -189,6 +189,7 @@ module Yummi
       extra_spaces = width - text.size
       return text unless extra_spaces > 0
       words = text.split ' '
+      return text if words.size == 1
       return text if extra_spaces / (words.size - 1) > 2
       until extra_spaces == 0
         words.each_index do |i|
