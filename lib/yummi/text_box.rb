@@ -28,18 +28,20 @@ module Yummi
     attr_accessor :color
     # The box content
     attr_accessor :content
-    # The box maximum width
-    attr_accessor :max_width
+    # The box width (leave it null to manually manage the width)
+    attr_accessor :width
     # The default alignment to use
     attr_accessor :default_align
+    # The default separator parameters to use. Use the :pattern: key to set the pattern
+    # and the keys supported in #self#separator
+    attr_accessor :default_separator
 
-    def initialize params = {}
-      params = {
-        :color => :white,
-        :content => ''
-      }.merge! params
-      @color = params[:color]
+    def initialize
+      @color = :white
       @content = []
+      @default_separator = {
+        :pattern => '-'
+      }
     end
 
     #
@@ -53,10 +55,12 @@ module Yummi
     #   A hash of parameters. Currently supported are:
     #     color: the text color (see #Yummi#COLORS)
     #     width: the text maximum width. Set this to break the lines automatically.
+    #            If the #width is set, this will override the box width for this lines.
+    #     align: the text alignment (see #Yummi#Aligner)
     #
     def add text, params = {}
       params = {
-        :width => @max_width,
+        :width => @width,
         :align => @default_align
       }.merge! params
       if params[:width]
@@ -65,7 +69,7 @@ module Yummi
         buff = ''
         words.each do |word|
           # go to next line if the current word blows up the width limit
-          if buff.size + word.size >= width
+          if buff.size + word.size >= width and not buff.empty?
             _add_ buff, params
             buff = ''
           end
@@ -82,16 +86,47 @@ module Yummi
       end
     end
 
-    alias_method :<<, :add
+    # Adds the given object as it
+    def << object
+      text = object.to_s
+      text.each_line do |line|
+        add line
+      end
+    end
+
+    #
+    # Adds a line separator.
+    #
+    # === Args
+    #
+    # +pattern+::
+    #   The pattern to build the line
+    # +params+::
+    #   A hash of parameters. Currently supported are:
+    #     color: the separator color (see #Yummi#COLORS)
+    #     width: the separator width (#self#width will be used if unset)
+    #     align: the separator alignment (see #Yummi#Aligner)
+    #
+    def separator pattern = @default_separator[:pattern], params = {}
+      unless pattern.is_a? String
+        params = pattern
+        pattern = @default_separator[:pattern]
+      end
+      params = @default_separator.merge params
+      width = (params[:width] or @width)
+      if @width and width < @width
+        params[:width] = @width
+      end
+      line = pattern * width
+      add line[0...width], params
+    end
 
     # Adds a line break to the text.
     def line_break
       @content << $/
     end
 
-    #
     # Prints the #to_s into the given object.
-    #
     def print to = $stdout
       to.print to_s
     end
