@@ -353,7 +353,7 @@ module Yummi
       include Yummi::BlockHandler, Yummi::Colorizer
 
       def resolve_value *args
-        block_call args.last, &@block # by convention, the last arg is data
+        block_call args.first, &@block # by convention, the first arg is data
       end
 
     end
