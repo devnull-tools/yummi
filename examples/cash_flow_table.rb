@@ -31,11 +31,11 @@ opt = OptionParser::new
 # sets the title
 @table.title = 'Cash Flow'
 # formats booleans using Yes or No
-@table.format :eletronic, :using => Yummi::Formatter.yes_or_no
+@table.format :eletronic, :using => Yummi::Formatters.yes_or_no
 # shows values without minus signal and rounded
 @table.format :value, :using => lambda { |value| "%.2f" % value.abs }
 # shows totals rounded
-@table.format :total, :using => Yummi::Formatter.round(2)
+@table.format :total, :using => Yummi::Formatters.round(2)
 # table data
 @table.data = [['Initial', 0, 0, false],
                ['Deposit', 100.58, 100.58, true, "QAWSEDRFTGH535"],

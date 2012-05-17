@@ -21,9 +21,6 @@
 # THE SOFTWARE.
 
 require_relative "yummi/version"
-require_relative "yummi/table"
-require_relative "yummi/text_box"
-require_relative "yummi/logger"
 
 module Yummi
   # Base for colorizing
@@ -360,60 +357,75 @@ module Yummi
 
   end
 
-  # A module with useful formatters
-  module Formatter
+  # A module used to create an alias method in a formatter block
+  module FormatterBlock
 
-    # A module for formatting units in a way that makes the value easy to read
-    module Unit
-      # Holds the information about the units that are supported in #format
-      UNITS = {
-        :byte => {:range => %w{B KB MB GB TB}, :step => 1024}
-      }
-
-      #
-      # Formats the value using the given unit.
-      #
-      # === Args
-      #
-      # +unit+::
-      #   A unit defined in #UNITS or a definition
-      # +value+::
-      #   The value to format
-      # +params+::
-      #   Additional parameters:
-      #   * precision: the number of fractional digits to display (defaults to 1)
-      #
-      def self.format unit, value, params = {}
-        unit = UNITS[unit] if unit.is_a? Symbol
-        params[:precision] ||= 1
-        result = value
-        units = unit[:range]
-        units.each_index do |i|
-          minimun = (unit[:step] ** i)
-          result = "%.#{params[:precision]}f #{units[i]}" % (value.to_f / minimun) if value >= minimun
-        end
-        result
-      end
+    # Calls the :call: method
+    def format value
+      call value
     end
 
-    # Formats boolean values using 'Yes' or 'No'
+  end
+
+  # Extends the given block with #FormatterBlock
+  def self.to_format &block
+    block.extend FormatterBlock
+  end
+
+  # A module with useful formatters
+  module Formatters
+
+    # A formatter for boolean values that uses 'Yes' or 'No'
     def self.yes_or_no
-      lambda do |value|
+      Yummi::to_format do |value|
         value ? "Yes" : "No"
       end
     end
 
-    # Formats a float value by rounding to the given decinal digits
+    # A formatter to float values that uses the precision to round the value
     def self.round precision
-      lambda do |value|
+      Yummi::to_format do |value|
         "%.#{precision}f" % value
       end
     end
 
-    # see #Unit#format
-    def self.unit unit, params = {}
-      lambda do |value|
-        Unit.format unit, value, params
+    # Defines the modes to format a byte value
+    BYTE_MODES = {
+      :iec => {
+        :range => %w{B KiB MiB GiB TiB PiB EiB ZiB YiB},
+        :step => 1024
+      },
+      :si => {
+        :range => %w{B KB MB GB TB PB EB ZB YB},
+        :step => 1000
+      }
+    }
+
+    #
+    # Formats a byte value to ensure easily reading
+    #
+    # === Hash Args
+    #
+    # +precision+::
+    #   How many decimal digits should be displayed. (Defaults to 1)
+    # +mode+::
+    #   Which mode should be used to display unit symbols. (Defaults to :iec)
+    #
+    # See #BYTE_MODES
+    #
+    def self.byte params = {}
+      Yummi::to_format do |value|
+        value = value.to_i if value.is_a? String
+        mode = (params[:mode] or :iec)
+        range = BYTE_MODES[mode][:range]
+        step = BYTE_MODES[mode][:step]
+        params[:precision] ||= 1
+        result = value
+        range.each_index do |i|
+          minimun = (step ** i)
+          result = "%.#{params[:precision]}f #{range[i]}" % (value.to_f / minimun) if value >= minimun
+        end
+        result
       end
     end
 
@@ -479,3 +491,7 @@ module Yummi
 end
 
 require_relative 'yummi/no_colors' if RUBY_PLATFORM['mingw'] #Windows
+
+require_relative 'yummi/table'
+require_relative 'yummi/text_box'
+require_relative 'yummi/logger'

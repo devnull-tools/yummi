@@ -34,7 +34,7 @@ opt = OptionParser::new
 # sets the title
 @table.title = 'File List'
 # formats size for easily reading
-@table.format :size, :using => Yummi::Formatter.unit(:byte)
+@table.format :size, :using => Yummi::Formatters.byte
 
 opt.on '--color TYPE', 'Specify the color type (zebra,file,none)' do |type|
   case type

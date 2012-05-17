@@ -31,8 +31,8 @@ opt = OptionParser::new
 # sets the title
 @table.title = 'Server Runtime Info'
 # formats memory info for easily reading
-@table.format :max_memory, :using => Yummi::Formatter.unit(:byte)
-@table.format :free_memory, :using => Yummi::Formatter.unit(:byte)
+@table.format :max_memory, :using => Yummi::Formatters.byte
+@table.format :free_memory, :using => Yummi::Formatters.byte
 
 # colorizer for memory
 memory_colorizer = Yummi::Colorizers.by_data_eval do |free_memory, max_memory|

@@ -25,8 +25,8 @@ require_relative '../lib/yummi'
 
 logger = Logger::new STDOUT
 logger.level = Logger::DEBUG
-logger.formatter = Yummi::Formatter::LogFormatter.new do |severity, time, program_name, message|
-  message << $/
+logger.formatter = Yummi::Formatter::LogFormatter.new do |severity, message|
+  "[#{Yummi::Aligner.left severity, 5}] #{message}"
 end
 
 logger.debug __FILE__

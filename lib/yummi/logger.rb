@@ -30,7 +30,7 @@ module Yummi
     # A colorful log formatter
     #
     class LogFormatter < Logger::Formatter
-
+      include Yummi::BlockHandler
       #
       # Colors for each severity:
       #
@@ -76,8 +76,17 @@ module Yummi
 
       # Formats the message, override this method instead of #call
       def output severity, time, program_name, message
-        return @format_block.call severity, time, program_name, message if @format_block
-        super_call severity, time, program_name, message
+        if @format_block
+          context = {
+            :severity => severity,
+            :time => time,
+            :program_name => program_name,
+            :message => message
+          }
+          block_call(context, &@format_block) << $/
+        else
+          super_call severity, time, program_name, message
+        end
       end
 
     end
