@@ -205,8 +205,23 @@ module Yummi
 
   end
 
+  #
+  # A module that defines a colorizer capable component.
+  #
+  # Include this module in any component that returns a color in response for :call:.
+  #
   module Colorizer
 
+    #
+    # Colorizes a string by passing the arguments to the :call: method to get the proper
+    # color.
+    #
+    # === Args
+    #
+    # An array of arguments that will be passed to :call: method to get the color. By
+    # convention, the first argument must be the object to colorize (to_s is called on it
+    # for getting the text to colorize).
+    #
     def colorize *args
       color = call *args
       Yummi.colorize args.first.to_s, color
@@ -214,6 +229,14 @@ module Yummi
 
   end
 
+  #
+  # Adds the #Colorizer module to the given block, so you can use it to colorize texts.
+  #
+  # === Example
+  #
+  #   colorizer = Yummi.to_colorize { |value| value % 2 == 0 ? :green : :blue }
+  #   10.times { |n| puts colorizer.colorize n }
+  #
   def self.to_colorize &block
     block.extend Colorizer
   end
