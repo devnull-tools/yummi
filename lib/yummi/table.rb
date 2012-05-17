@@ -335,7 +335,7 @@ module Yummi
         end
         if @row_colorizer
           row_data = IndexedData::new @aliases, row
-          row_color = @row_colorizer.call row_index, row_data
+          row_color = @row_colorizer.call row_data, row_index
           _colors.collect! { row_color } if row_color
         end
         color_map << _colors

@@ -205,14 +205,27 @@ module Yummi
 
   end
 
-  # A module with useful colorizers
   module Colorizer
+
+    def colorize *args
+      color = call *args
+      Yummi.colorize args.first.to_s, color
+    end
+
+  end
+
+  def self.to_colorize &block
+    block.extend Colorizer
+  end
+
+  # A module with useful colorizers
+  module Colorizers
 
     # Joins the given colorizers to work as one
     def self.join *colorizers
       join = Yummi::GroupedComponent::new
       colorizers.each { |c| join << c }
-      join
+      join.extend Colorizer
     end
 
     # Returns a new instance of #DataEvalColorizer
@@ -232,6 +245,7 @@ module Yummi
 
     # A colorizer that cycles through colors to create a striped effect
     class StripeColorizer
+      include Yummi::Colorizer
 
       # Creates a new colorizer using the given colors
       def initialize *colors
@@ -263,6 +277,7 @@ module Yummi
     #   table.using_row.colorize :current, :using => colorizer
     #
     class EvalColorizer
+      include Yummi::Colorizer
 
       def initialize &block
         @block = block
@@ -312,7 +327,7 @@ module Yummi
     #   table.using_row.colorize :current, :using => colorizer
     #
     class DataEvalColorizer < EvalColorizer
-      include Yummi::BlockHandler
+      include Yummi::BlockHandler, Yummi::Colorizer
 
       def resolve_value *args
         block_call args.last, &@block # by convention, the last arg is data
