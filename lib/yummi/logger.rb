@@ -53,7 +53,8 @@ module Yummi
       # * +FATAL+: red (intense)
       # * +ANY+: gray (intense)
       #
-      # If a block is passed, it will be used to format the message
+      # If a block is passed, it will be used to format the message. The block can use
+      # the following variables: severity, time, program_name and message.
       #
       def initialize &block
         @colors = {
