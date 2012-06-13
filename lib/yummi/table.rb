@@ -313,6 +313,7 @@ module Yummi
         row = @data[row_index]
         _colors = []
         _data = []
+        row = row.to_a if row.is_a? Range
         row.each_index do |col_index|
           next if not @header.empty? and @header[0].size < col_index + 1
           column = row[col_index]
