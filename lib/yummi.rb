@@ -93,7 +93,7 @@ module Yummi
     # Escape the given text with the given color code
     def self.escape key
       return key unless key
-      color = (COLORS[key] or key)
+      color = (COLORS[key.to_sym] or key)
       color ||= parse(key)
       "\033[#{color}m"
     end
