@@ -26,11 +26,15 @@ require_relative '../lib/yummi'
 require 'optparse'
 
 opt = OptionParser::new
-opt.on '-c COLOR', '--color COLOR', 'Colorize using the given color' do |color|
+opt.on '-c COLOR', '--color=COLOR', 'Colorize using the given color' do |color|
   @color = color
 end
-opt.on '-t TEXT', '--text TEXT', 'Colorize the given text' do |text|
+opt.on '-t TEXT', '--text=TEXT', 'Colorize the given text' do |text|
   @text = text
+end
+opt.on '-h', '--help', 'Display this help message' do
+  puts opt
+  exit 0
 end
 opt.parse! ARGV
 
