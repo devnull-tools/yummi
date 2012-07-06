@@ -41,6 +41,10 @@ opt.parse! ARGV
 if @color
   if @text
     puts Yummi::colorize @text, @color
+  else
+    ARGF.each_line do |line|
+      puts Yummi::colorize line.chomp, @color
+    end
   end
 else
   abort 'Please give a color.'
