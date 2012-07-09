@@ -44,13 +44,33 @@ module Yummi
     # Colors from default linux terminal scheme
     COLORS = {}
 
+    #
     # Clears all color mappings and add this ones
+    #
+    # see #add_color_map
+    #
     def self.load_color_map mappings
       COLORS.clear
       add_color_map mappings
     end
 
-    # Adds the given color mappings, overriding the already defined
+    #
+    # Adds the given color mappings, overriding the already defined.
+    #
+    # Colors are printed using a "[#{type_key_code}:3#{color_key_code}m" prefix.
+    #
+    # === Args
+    #
+    # The mappings is a Hash of Hashes, each parent hash must define a type key and the
+    # child hash must contain the following keys:
+    #
+    # +key_code+::
+    #   The key code to map this type. If the type name is :default, the mapping will not
+    #   use the name "default" (:normal_red will become only :red)
+    # +schema+::
+    #   An array with the color names. Each name will be mapped and their positions
+    #  (1 based) too. (:intense_red and :intense_2, for example)
+    #
     def self.add_color_map mappings
       mappings.each do |type, config|
         schema = config[:schema]
