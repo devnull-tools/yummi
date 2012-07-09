@@ -38,12 +38,12 @@ opt = OptionParser::new
 @table.format :total, :using => Yummi::Formatters.round(2)
 @table.format_null :with => 'none'
 # table data
-@table.data = [['Initial', 0, 0, false],
+@table.data = [['Initial', 0, 0, false, nil],
                ['Deposit', 100.58, 100.58, true, "QAWSEDRFTGH535"],
                ['Withdraw', -50.23, 50.35, true, "34ERDTF6GYU"],
                ['Withdraw', -100, -49.65, true, "2344EDRFT5"],
-               ['Deposit', 50, 0.35, false],
-               ['Deposit', 600, 600.35, false]]
+               ['Deposit', 50, 0.35, false, nil],
+               ['Deposit', 600, 600.35, false, nil]]
 
 opt.on '--color TYPE', 'Specify the color type (zebra,full,none)' do |type|
   case type
