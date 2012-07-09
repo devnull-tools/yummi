@@ -132,7 +132,7 @@ module Yummi
     #   context = :max => 10, :curr => 5, ratio => 0.15
     #   percentage = BlockHandler.call_block(context) { |max,curr| curr.to_f / max }
     #
-    def block_call context, &block
+    def block_call (context, &block)
       args = []
       block.parameters.each do |parameter|
         args << context[parameter[1]]
@@ -219,7 +219,7 @@ module Yummi
     # convention, the first argument must be the object to colorize (to_s is called on it
     # for getting the text to colorize).
     #
-    def colorize *args
+    def colorize (*args)
       color = call *args
       Yummi.colorize args.first.to_s, color
     end
@@ -268,7 +268,7 @@ module Yummi
       include Yummi::Colorizer
 
       # Creates a new colorizer using the given colors
-      def initialize *colors
+      def initialize (*colors)
         @colors = colors
         @count = -1
       end
@@ -299,7 +299,7 @@ module Yummi
     class EvalColorizer
       include Yummi::Colorizer
 
-      def initialize &block
+      def initialize (&block)
         @block = block
         @colors = []
         @eval_blocks = []
@@ -311,17 +311,17 @@ module Yummi
       #
       # An objtect that responds to :call may also be used.
       #
-      def use color, component = nil, &eval_block
+      def use (color, component = nil, &eval_block)
         @colors << color
         @eval_blocks << (component or eval_block)
       end
 
       # Resolves the value using the main block and given arguments
-      def resolve_value *args
+      def resolve_value (*args)
         @block.call *args
       end
 
-      def call *args
+      def call (*args)
         value = resolve_value *args
         @eval_blocks.each_index do |i|
           return @colors[i] if @eval_blocks[i].call(value)
@@ -349,7 +349,7 @@ module Yummi
     class DataEvalColorizer < EvalColorizer
       include Yummi::BlockHandler, Yummi::Colorizer
 
-      def resolve_value *args
+      def resolve_value (*args)
         block_call args.first, &@block # by convention, the first arg is data
       end
 
@@ -361,7 +361,7 @@ module Yummi
   module FormatterBlock
 
     # Calls the :call: method
-    def format value
+    def format (value)
       call value
     end
 
@@ -434,12 +434,12 @@ module Yummi
   # A class to expose indexed data by numeric indexes and aliases.
   class IndexedData
 
-    def initialize aliases, data
+    def initialize (aliases, data)
       @aliases = aliases
       @data = data
     end
 
-    def [] value
+    def [](value)
       if value.is_a? Fixnum
         @data[value]
       else
@@ -463,21 +463,21 @@ module Yummi
     #     should be ignored
     #     - message: the message to send. Defaults to :call
     #
-    def initialize params = {}
+    def initialize (params = {})
       @components = []
       @call_all = params[:call_all]
       @message = (params[:message] or :call)
     end
 
     # Adds a new component
-    def << component = nil, &block
+    def << (component = nil, &block)
       @components << (component or block)
     end
 
     #
     # Calls the added components by sending the configured message and the given args.
     #
-    def call *args
+    def call (*args)
       result = nil
       @components.each do |component|
         break if result and not @call_all

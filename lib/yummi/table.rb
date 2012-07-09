@@ -72,6 +72,9 @@ module Yummi
       @row_colorizer = nil
 
       @default_align = :right
+
+      @predicated_formatters = nil
+      @predicated_colorizers = nil
     end
 
     # Indicates that the table should not use colors.
@@ -102,7 +105,7 @@ module Yummi
     #
     # This will create the following aliases: :name, :email, :work_phone and :home_phone
     #
-    def header= header
+    def header= (header)
       header = [header] unless header.respond_to? :each
       max = 0
       header.each_index do |i|
@@ -134,7 +137,7 @@ module Yummi
     #   table.align :description, :left
     #   table.align :value, :right
     #
-    def align index, type
+    def align (index, type)
       index = parse_index(index)
       @align[index] = type
     end
@@ -150,7 +153,7 @@ module Yummi
     #
     #   table.row_colorizer { |i, row| :red if row[:value] < 0 }
     #
-    def row_colorizer colorizer = nil, &block
+    def row_colorizer (colorizer = nil, &block)
       @row_colorizer ||= Yummi::GroupedComponent::new
       @row_colorizer << (colorizer or block)
     end
@@ -195,11 +198,28 @@ module Yummi
     #   table.colorize :description, :with => :purple
     #   table.colorize(:value) { |value| :red if value < 0 }
     #
-    def colorize index, params = {}, &block
+    def colorize (index, params = {}, &block)
       index = parse_index(index)
       @colorizers[index] ||= []
       obj = (params[:using] or block or (proc { |v| params[:with] }))
       @colorizers[index] << {:use_row => @using_row, :component => obj}
+    end
+
+    #
+    # Defines a colorizer to null values.
+    #
+    # === Args
+    #
+    # +params+::
+    #   A hash with params in case a block is not given:
+    #     - :using defines the component to use
+    #     - :with defines the format to use
+    #
+    def colorize_null (params = {}, &block)
+      @null_colorizer = (params[:using] or block)
+      @null_colorizer ||= proc do |value|
+        params[:with]
+      end
     end
 
     #
@@ -222,7 +242,7 @@ module Yummi
     #
     #   table.format :value, :with => '%.2f'
     #
-    def format index, params = {}, &block
+    def format (index, params = {}, &block)
       index = parse_index(index)
       @formatters[index] = (params[:using] or block)
       @formatters[index] ||= proc do |value|
@@ -231,9 +251,26 @@ module Yummi
     end
 
     #
+    # Defines a formatter to null values.
+    #
+    # === Args
+    #
+    # +params+::
+    #   A hash with params in case a block is not given:
+    #     - :using defines the component to use
+    #     - :with defines the format to use
+    #
+    def format_null (params = {}, &block)
+      @null_formatter = (params[:using] or block)
+      @null_formatter ||= proc do |value|
+        params[:with] % value
+      end
+    end
+
+    #
     # Prints the #to_s into the given object.
     #
-    def print to = $stdout
+    def print (to = $stdout)
       to.print to_s
     end
 
@@ -259,7 +296,7 @@ module Yummi
     #
     # Gets the content string for the given color map and content
     #
-    def content color_map, data
+    def content (color_map, data)
       string = ""
       data.each_index do |i|
         row = data[i]
@@ -318,7 +355,9 @@ module Yummi
           next if not @header.empty? and @header[0].size < col_index + 1
           column = row[col_index]
           colorizers = @colorizers[col_index]
-          if colorizers
+          if @null_colorizer and column.nil?
+            _colors << @null_colorizer.call(column)
+          elsif colorizers
             colorizers.each do |colorizer|
               arg = colorizer[:use_row] ? IndexedData::new(@aliases, row) : column
               c = colorizer[:component].call(arg)
@@ -331,6 +370,7 @@ module Yummi
             _colors << @colors[:value]
           end
           formatter = @formatters[col_index]
+          formatter = @null_formatter if column.nil? and @null_formatter
           _data << (formatter ? formatter.call(column) : column)
         end
         if @row_colorizer
@@ -352,7 +392,7 @@ module Yummi
       value
     end
 
-    def max_width data, column
+    def max_width (data, column)
       max = 0
       data.each do |row|
         max = [row[column].to_s.length, max].max

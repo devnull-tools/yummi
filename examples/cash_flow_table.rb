@@ -36,6 +36,7 @@ opt = OptionParser::new
 @table.format :value, :using => lambda { |value| "%.2f" % value.abs }
 # shows totals rounded
 @table.format :total, :using => Yummi::Formatters.round(2)
+@table.format_null :with => 'none'
 # table data
 @table.data = [['Initial', 0, 0, false],
                ['Deposit', 100.58, 100.58, true, "QAWSEDRFTGH535"],
@@ -68,6 +69,7 @@ opt.on '--color TYPE', 'Specify the color type (zebra,full,none)' do |type|
       @table.row_colorizer do |data| # or |data, index| if you need the index
         :white if data[:value] > data[:total]
       end
+      @table.colorize_null :with => :red
     when 'none'
       @table.no_colors
     else
