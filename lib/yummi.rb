@@ -27,6 +27,7 @@ module Yummi
   module Color
     # Colors from default linux terminal scheme
     COLORS = {
+      :end_color => '0;0',
       :black => '0;30',
       :red => '0;31',
       :green => '0;32',
@@ -93,14 +94,14 @@ module Yummi
     # Escape the given text with the given color code
     def self.escape key
       return key unless key
-      color = (COLORS[key.to_sym] or key)
+      color = COLORS[key.to_sym]
       color ||= parse(key)
       "\033[#{color}m"
     end
 
     # Colorize the given text with the given color
     def self.colorize string, color
-      color, end_color = [color, '0;0'].map { |key| Color.escape(key) }
+      color, end_color = [color, :end_color].map { |key| Color.escape(key) }
       color ? "#{color}#{string}#{end_color}" : string
     end
 
