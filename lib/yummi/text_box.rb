@@ -53,7 +53,7 @@ module Yummi
     #   The text to add.
     # +params+::
     #   A hash of parameters. Currently supported are:
-    #     color: the text color (see #Yummi#COLORS)
+    #     color: the text color (see #Yummi#DEFAULT_TERMINAL_COLORS)
     #     width: the text maximum width. Set this to break the lines automatically.
     #            If the #width is set, this will override the box width for this lines.
     #     align: the text alignment (see #Yummi#Aligner)
@@ -103,7 +103,7 @@ module Yummi
     #   The pattern to build the line
     # +params+::
     #   A hash of parameters. Currently supported are:
-    #     color: the separator color (see #Yummi#COLORS)
+    #     color: the separator color (see #Yummi#DEFAULT_TERMINAL_COLORS)
     #     width: the separator width (#self#width will be used if unset)
     #     align: the separator alignment (see #Yummi#Aligner)
     #

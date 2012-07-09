@@ -26,7 +26,7 @@ module Yummi
   # Base for colorizing
   module Color
     # Colors from default linux terminal scheme
-    COLORS = {
+    DEFAULT_TERMINAL_COLORS = {
       :end_color => '0;0',
       :black => '0;30',
       :red => '0;31',
@@ -37,14 +37,23 @@ module Yummi
       :cyan => '0;36',
       :gray => '0;37',
 
-      :black_underscored => '4;30',
-      :red_underscored => '4;31',
-      :green_underscored => '4;32',
-      :brown_underscored => '4;33',
-      :blue_underscored => '4;34',
-      :purple_underscored => '4;35',
-      :cyan_underscored => '4;36',
-      :gray_underscored => '4;37',
+      :underscored_black => '4;30',
+      :underscored_red => '4;31',
+      :underscored_green => '4;32',
+      :underscored_brown => '4;33',
+      :underscored_blue => '4;34',
+      :underscored_purple => '4;35',
+      :underscored_cyan => '4;36',
+      :underscored_gray => '4;37',
+
+      :underscore_black => '4;30',
+      :underscore_red => '4;31',
+      :underscore_green => '4;32',
+      :underscore_brown => '4;33',
+      :underscore_blue => '4;34',
+      :underscore_purple => '4;35',
+      :underscore_cyan => '4;36',
+      :underscore_gray => '4;37',
 
       :blink_black => '5;30',
       :blink_red => '5;31',
@@ -64,24 +73,46 @@ module Yummi
       :highlight_cyan => '7;36',
       :highlight_gray => '7;37',
 
+      :highlighted_black => '7;30',
+      :highlighted_red => '7;31',
+      :highlighted_green => '7;32',
+      :highlighted_brown => '7;33',
+      :highlighted_blue => '7;34',
+      :highlighted_purple => '7;35',
+      :highlighted_cyan => '7;36',
+      :highlighted_gray => '7;37',
+
       :intense_gray => '1;30',
       :intense_red => '1;31',
       :intense_green => '1;32',
       :intense_yellow => '1;33',
-      :yellow => '1;33',
       :intense_blue => '1;34',
       :intense_purple => '1;35',
       :intense_cyan => '1;36',
       :intense_white => '1;37',
+      :strong_gray => '1;30',
+      :strong_red => '1;31',
+      :strong_green => '1;32',
+      :strong_yellow => '1;33',
+      :strong_blue => '1;34',
+      :strong_purple => '1;35',
+      :strong_cyan => '1;36',
+      :strong_white => '1;37',
+
+      :yellow => '1;33',
       :white => '1;37'
     }
     # Types of color
     TYPES = {
       :normal => 0,
       :intense => 1,
+      :strong => 1,
+      :underscore => 4,
       :underscored => 4,
       :blink => 5,
-      :highlight => 7
+      :blinking => 5,
+      :highlight => 7,
+      :highlighted => 7
     }
     # Parses the key
     def self.parse key
@@ -94,7 +125,7 @@ module Yummi
     # Escape the given text with the given color code
     def self.escape key
       return key unless key
-      color = COLORS[key.to_sym]
+      color = DEFAULT_TERMINAL_COLORS[key.to_sym]
       color ||= parse(key)
       "\033[#{color}m"
     end
