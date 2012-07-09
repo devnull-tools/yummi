@@ -25,94 +25,56 @@ require_relative "yummi/version"
 module Yummi
   # Base for colorizing
   module Color
-    # Types of color
-    TYPES = {
-      :normal => 0,
-      :intense => 1,
-      :strong => 1,
-      :underscore => 4,
-      :underscored => 4,
-      :blink => 5,
-      :blinking => 5,
-      :highlight => 7,
-      :highlighted => 7
-    }
-    NORMAL_COLORS = {
-      :black => '0',
-      :red => '1',
-      :green => '2',
-      :brown => '3',
-      :blue => '4',
-      :purple => '5',
-      :cyan => '6',
-      :gray => '7',
-      :default => '7'
-    }
-    ALTERNATE_COLORS = {
-      :gray => '0',
-      :red => '1',
-      :green => '2',
-      :yellow => '3',
-      :blue => '4',
-      :purple => '5',
-      :cyan => '6',
-      :white => '7',
-      :default => '0'
-    }
-    COLOR_SCHEMA = {
-      :normal => NORMAL_COLORS,
-      :underscore => NORMAL_COLORS,
-      :underscored => NORMAL_COLORS,
-      :blink => NORMAL_COLORS,
-      :highlight => NORMAL_COLORS,
-      :highlighted => NORMAL_COLORS,
-      :intense => ALTERNATE_COLORS,
-      :strong => ALTERNATE_COLORS
-    }
+
+    # The Color Schema Definition
+    module Schema
+      # Normal Linux Terminal Colors, used by default in normal, underscore, blink and
+      # highlight color types
+      NORMAL_COLORS = {
+        :colors => [:black, :red, :green, :brown, :blue, :purple, :cyan, :gray],
+        :default => :gray
+      }
+      # Intense Linux Terminal Colors, used by default in intense and strong color types
+      ALTERNATE_COLORS = {
+        :colors => [:gray, :red, :green, :yellow, :blue, :purple, :cyan, :white],
+        :default => :gray
+      }
+    end
+
     # Colors from default linux terminal scheme
-    DEFAULT_TERMINAL_COLORS = {
-      :end_color => '0;0',
-      :black => '0;30',
-      :red => '0;31',
-      :green => '0;32',
-      :brown => '0;33',
-      :blue => '0;34',
-      :purple => '0;35',
-      :cyan => '0;36',
-      :gray => '0;37',
+    COLORS = {}
 
-      :yellow => '1;33',
-      :white => '1;37',
-
-      :normal => "#{TYPES[:normal]};3#{COLOR_SCHEMA[:normal][:default]}",
-      :underscore => "#{TYPES[:underscore]};3#{COLOR_SCHEMA[:underscore][:default]}",
-      :underscored => "#{TYPES[:underscored]};3#{COLOR_SCHEMA[:underscored][:default]}",
-      :blink => "#{TYPES[:blink]};3#{COLOR_SCHEMA[:blink][:default]}",
-      :highlight => "#{TYPES[:highlight]};3#{COLOR_SCHEMA[:highlight][:default]}",
-      :highlighted => "#{TYPES[:highlighted]};3#{COLOR_SCHEMA[:highlighted][:default]}",
-      :intense => "#{TYPES[:intense]};3#{COLOR_SCHEMA[:intense][:default]}",
-      :strong => "#{TYPES[:strong]};3#{COLOR_SCHEMA[:strong][:default]}"
-    }
-    # Parses the key
-    def self.parse key
-      keys = key.to_s.split '_'
-      type = keys[0].to_sym
-      color = COLOR_SCHEMA[type][keys[1].to_sym]
-      color ||= keys[1].to_i - 1
-      "#{TYPES[type]};3#{color}"
+    def self.load_color_map mappings
+      COLORS.clear
+      mappings.each do |type, config|
+        schema = config[:schema]
+        schema[:colors].each_with_index do |color, key_code|
+          # maps the default color for a type
+          COLORS[type] = "#{config[:key_code]};3#{key_code}" if color == schema[:default]
+          # do not use prefix if schema is default
+          prefix = (type == :default ? '' : "#{type}_")
+          # maps the color using color name
+          key = "#{prefix}#{color}"
+          COLORS[key.to_sym] = "#{config[:key_code]};3#{key_code}"
+          # maps the color using color key code
+          key = "#{prefix}#{key_code + 1}"
+          COLORS[key.to_sym] = "#{config[:key_code]};3#{key_code}"
+          # maps the color using color name if default schema does not defines it
+          # example: yellow and white are present only in strong/intense schema
+          COLORS[color.to_sym] = "#{config[:key_code]};3#{key_code}" unless COLORS[color]
+        end
+      end
     end
 
     # Escape the given text with the given color code
     def self.escape key
-      return key unless key
-      color = DEFAULT_TERMINAL_COLORS[key.to_sym]
-      color ||= parse(key)
-      "\033[#{color}m"
+      return key unless key and COLORS[key.to_sym]
+      "\033[#{COLORS[key.to_sym]}m"
     end
 
     # Colorize the given text with the given color
     def self.colorize string, color
-      color, end_color = [color, :end_color].map { |key| Color.escape(key) }
+      color, end_color = [color, "\033[0;0m"].map { |key| Color.escape(key) }
       color ? "#{color}#{string}#{end_color}" : string
     end
 
@@ -504,6 +466,7 @@ end
 
 require_relative 'yummi/no_colors' if RUBY_PLATFORM['mingw'] #Windows
 
+require_relative 'yummi/color_mapping'
 require_relative 'yummi/table'
 require_relative 'yummi/text_box'
 require_relative 'yummi/logger'

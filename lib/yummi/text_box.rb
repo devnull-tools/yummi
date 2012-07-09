@@ -53,12 +53,12 @@ module Yummi
     #   The text to add.
     # +params+::
     #   A hash of parameters. Currently supported are:
-    #     color: the text color (see #Yummi#DEFAULT_TERMINAL_COLORS)
+    #     color: the text color (see #Yummi#COLORS)
     #     width: the text maximum width. Set this to break the lines automatically.
     #            If the #width is set, this will override the box width for this lines.
     #     align: the text alignment (see #Yummi#Aligner)
     #
-    def add text, params = {}
+    def add (text, params = {})
       params = {
         :width => @width,
         :align => @default_align
@@ -87,7 +87,7 @@ module Yummi
     end
 
     # Adds the given object as it
-    def << object
+    def << (object)
       text = object.to_s
       text.each_line do |line|
         add line
@@ -103,11 +103,11 @@ module Yummi
     #   The pattern to build the line
     # +params+::
     #   A hash of parameters. Currently supported are:
-    #     color: the separator color (see #Yummi#DEFAULT_TERMINAL_COLORS)
+    #     color: the separator color (see #Yummi#COLORS)
     #     width: the separator width (#self#width will be used if unset)
     #     align: the separator alignment (see #Yummi#Aligner)
     #
-    def separator pattern = @default_separator[:pattern], params = {}
+    def separator (pattern = @default_separator[:pattern], params = {})
       unless pattern.is_a? String
         params = pattern
         pattern = @default_separator[:pattern]
@@ -127,7 +127,7 @@ module Yummi
     end
 
     # Prints the #to_s into the given object.
-    def print to = $stdout
+    def print (to = $stdout)
       to.print to_s
     end
 
@@ -155,7 +155,7 @@ module Yummi
 
     private
 
-    def _add_ text, params
+    def _add_ (text, params)
       if params[:align] and params[:width]
         text = Yummi::Aligner.align params[:align], text, params[:width]
       end
