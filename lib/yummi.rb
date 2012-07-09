@@ -44,8 +44,14 @@ module Yummi
     # Colors from default linux terminal scheme
     COLORS = {}
 
+    # Clears all color mappings and add this ones
     def self.load_color_map mappings
       COLORS.clear
+      add_color_map mappings
+    end
+
+    # Adds the given color mappings, overriding the already defined
+    def self.add_color_map mappings
       mappings.each do |type, config|
         schema = config[:schema]
         schema[:colors].each_with_index do |color, key_code|
