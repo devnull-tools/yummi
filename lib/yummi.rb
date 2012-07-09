@@ -25,83 +25,6 @@ require_relative "yummi/version"
 module Yummi
   # Base for colorizing
   module Color
-    # Colors from default linux terminal scheme
-    DEFAULT_TERMINAL_COLORS = {
-      :end_color => '0;0',
-      :black => '0;30',
-      :red => '0;31',
-      :green => '0;32',
-      :brown => '0;33',
-      :blue => '0;34',
-      :purple => '0;35',
-      :cyan => '0;36',
-      :gray => '0;37',
-
-      :underscored_black => '4;30',
-      :underscored_red => '4;31',
-      :underscored_green => '4;32',
-      :underscored_brown => '4;33',
-      :underscored_blue => '4;34',
-      :underscored_purple => '4;35',
-      :underscored_cyan => '4;36',
-      :underscored_gray => '4;37',
-
-      :underscore_black => '4;30',
-      :underscore_red => '4;31',
-      :underscore_green => '4;32',
-      :underscore_brown => '4;33',
-      :underscore_blue => '4;34',
-      :underscore_purple => '4;35',
-      :underscore_cyan => '4;36',
-      :underscore_gray => '4;37',
-
-      :blink_black => '5;30',
-      :blink_red => '5;31',
-      :blink_green => '5;32',
-      :blink_brown => '5;33',
-      :blink_blue => '5;34',
-      :blink_purple => '5;35',
-      :blink_cyan => '5;36',
-      :blink_gray => '5;37',
-
-      :highlight_black => '7;30',
-      :highlight_red => '7;31',
-      :highlight_green => '7;32',
-      :highlight_brown => '7;33',
-      :highlight_blue => '7;34',
-      :highlight_purple => '7;35',
-      :highlight_cyan => '7;36',
-      :highlight_gray => '7;37',
-
-      :highlighted_black => '7;30',
-      :highlighted_red => '7;31',
-      :highlighted_green => '7;32',
-      :highlighted_brown => '7;33',
-      :highlighted_blue => '7;34',
-      :highlighted_purple => '7;35',
-      :highlighted_cyan => '7;36',
-      :highlighted_gray => '7;37',
-
-      :intense_gray => '1;30',
-      :intense_red => '1;31',
-      :intense_green => '1;32',
-      :intense_yellow => '1;33',
-      :intense_blue => '1;34',
-      :intense_purple => '1;35',
-      :intense_cyan => '1;36',
-      :intense_white => '1;37',
-      :strong_gray => '1;30',
-      :strong_red => '1;31',
-      :strong_green => '1;32',
-      :strong_yellow => '1;33',
-      :strong_blue => '1;34',
-      :strong_purple => '1;35',
-      :strong_cyan => '1;36',
-      :strong_white => '1;37',
-
-      :yellow => '1;33',
-      :white => '1;37'
-    }
     # Types of color
     TYPES = {
       :normal => 0,
@@ -114,12 +37,69 @@ module Yummi
       :highlight => 7,
       :highlighted => 7
     }
+    NORMAL_COLORS = {
+      :black => '0',
+      :red => '1',
+      :green => '2',
+      :brown => '3',
+      :blue => '4',
+      :purple => '5',
+      :cyan => '6',
+      :gray => '7',
+      :default => '7'
+    }
+    ALTERNATE_COLORS = {
+      :gray => '0',
+      :red => '1',
+      :green => '2',
+      :yellow => '3',
+      :blue => '4',
+      :purple => '5',
+      :cyan => '6',
+      :white => '7',
+      :default => '0'
+    }
+    COLOR_SCHEMA = {
+      :normal => NORMAL_COLORS,
+      :underscore => NORMAL_COLORS,
+      :underscored => NORMAL_COLORS,
+      :blink => NORMAL_COLORS,
+      :highlight => NORMAL_COLORS,
+      :highlighted => NORMAL_COLORS,
+      :intense => ALTERNATE_COLORS,
+      :strong => ALTERNATE_COLORS
+    }
+    # Colors from default linux terminal scheme
+    DEFAULT_TERMINAL_COLORS = {
+      :end_color => '0;0',
+      :black => '0;30',
+      :red => '0;31',
+      :green => '0;32',
+      :brown => '0;33',
+      :blue => '0;34',
+      :purple => '0;35',
+      :cyan => '0;36',
+      :gray => '0;37',
+
+      :yellow => '1;33',
+      :white => '1;37',
+
+      :normal => "#{TYPES[:normal]};3#{COLOR_SCHEMA[:normal][:default]}",
+      :underscore => "#{TYPES[:underscore]};3#{COLOR_SCHEMA[:underscore][:default]}",
+      :underscored => "#{TYPES[:underscored]};3#{COLOR_SCHEMA[:underscored][:default]}",
+      :blink => "#{TYPES[:blink]};3#{COLOR_SCHEMA[:blink][:default]}",
+      :highlight => "#{TYPES[:highlight]};3#{COLOR_SCHEMA[:highlight][:default]}",
+      :highlighted => "#{TYPES[:highlighted]};3#{COLOR_SCHEMA[:highlighted][:default]}",
+      :intense => "#{TYPES[:intense]};3#{COLOR_SCHEMA[:intense][:default]}",
+      :strong => "#{TYPES[:strong]};3#{COLOR_SCHEMA[:strong][:default]}"
+    }
     # Parses the key
     def self.parse key
       keys = key.to_s.split '_'
       type = keys[0].to_sym
-      color = keys[1].to_i
-      "#{TYPES[type]};3#{color - 1}"
+      color = COLOR_SCHEMA[type][keys[1].to_sym]
+      color ||= keys[1].to_i - 1
+      "#{TYPES[type]};3#{color}"
     end
 
     # Escape the given text with the given color code
