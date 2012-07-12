@@ -289,25 +289,23 @@ module Yummi
     # Return a colorized and formatted table.
     #
     def to_s
-      header_color_map, header_output = build_header_output
-      data_color_map, data_output = build_data_output
+      header_output = build_header_output
+      data_output = build_data_output
 
       string = ""
       string << Color.colorize(@title, @colors[:title]) << $/ if @title
-      color_map = header_color_map + data_color_map
       table_data = header_output + data_output
       if @layout == :vertical
         # don't use array transpose because the data may differ in each line size
-        color_map = rotate color_map
         table_data = rotate table_data
       end
-      string << content(color_map, table_data)
+      string << content(table_data)
     end
 
     #
     # Gets the content string for the given color map and content
     #
-    def content (color_map, data)
+    def content (data)
       string = ""
       data.each_index do |i|
         row = data[i]
@@ -315,9 +313,8 @@ module Yummi
           column = row[j]
           width = max_width data, j
           alignment = (@align[j] or @default_align)
-          color = color_map[i][j]
-          value = Aligner.align alignment, column.to_s, width
-          value = Color.colorize value, color unless @no_colors
+          value = Aligner.align alignment, column[:value].to_s, width
+          value = Color.colorize value, column[:color] unless @no_colors
           string << value
           string << (' ' * @colspan)
         end
@@ -332,20 +329,16 @@ module Yummi
     # Returns the color map and the header.
     #
     def build_header_output
-      color_map = []
       output = []
 
       @header.each do |line|
-        _colors = []
         _data = []
         line.each do |h|
-          _colors << @colors[:header]
-          _data << h
+          _data << {:value => h, :color => @colors[:header]}
         end
-        color_map << _colors
         output << _data
       end
-      [color_map, output]
+      output
     end
 
     #
@@ -354,46 +347,47 @@ module Yummi
     # Returns the color map and the formatted data.
     #
     def build_data_output
-      color_map = []
       output = []
 
       @data.each_index do |row_index|
         row = @data[row_index]
-        _colors = []
-        _data = []
+        _row_data = []
         row = row.to_a if row.is_a? Range
         row.each_index do |col_index|
           next if not @header.empty? and @header[0].size < col_index + 1
+          color = nil
+          value = nil
           column = row[col_index]
           colorizers = @colorizers[col_index]
           if @null_colorizer and column.nil?
-            _colors << @null_colorizer.call(column)
+            color = @null_colorizer.call(column)
           elsif colorizers
             colorizers.each do |colorizer|
               arg = colorizer[:use_row] ? IndexedData::new(@aliases, row) : column
               c = colorizer[:component].call(arg)
               if c
-                _colors << c
+                color = c
                 break
               end
             end
           else
-            _colors << @colors[:value]
+            color = @colors[:value]
           end
           formatter = @formatters[col_index]
           formatter = @null_formatter if column.nil? and @null_formatter
-          _data << (formatter ? formatter.call(column) : column)
+          value = (formatter ? formatter.call(column) : column)
+
+          _row_data << {:value => value, :color => color}
         end
         if @row_colorizer
           row_data = IndexedData::new @aliases, row
           row_color = @row_colorizer.call row_data, row_index
-          _colors.collect! { row_color } if row_color
+          _row_data.collect! { |data| data[:color] = row_color; data } if row_color
         end
-        color_map << _colors
-        output << _data
-      end
 
-      [color_map, output]
+        output << _row_data
+      end
+      output
     end
 
     private
@@ -403,15 +397,17 @@ module Yummi
       value
     end
 
-    def max_width (data, column)
+    def max_width(data, column)
       max = 0
       data.each do |row|
-        max = [row[column].to_s.length, max].max
+        var = row[column]
+        var ||= {}
+        max = [var[:value].to_s.length, max].max
       end
       max
     end
 
-    def rotate data
+    def rotate(data)
       new_data = []
       data.each_index do |i|
         data[i].each_index do |j|
