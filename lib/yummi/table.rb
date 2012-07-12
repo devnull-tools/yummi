@@ -43,7 +43,7 @@ module Yummi
     # The colors must be supported by #Yummi#Color#parse or defined in #Yummi#Color#COLORS
     attr_accessor :colors
     # The table layout (horizontal or vertical)
-    attr_accessor :layout
+    attr_reader :layout
 
     # Creates a new table with the default attributes:
     #
@@ -64,14 +64,13 @@ module Yummi
 
       @colspan = 2
       @layout = :horizontal
+      @default_align = :right
       @aliases = []
 
       @align = [:left]
       @formatters = []
       @colorizers = []
       @row_colorizer = nil
-
-      @default_align = :right
 
       @predicated_formatters = nil
       @predicated_colorizers = nil
@@ -85,6 +84,18 @@ module Yummi
         :value => nil
       }
       @no_colors = true
+    end
+
+    def layout=(layout)
+      @layout = layout
+      case layout
+        when :horizontal
+          @default_align = :right
+        when :vertical
+          @default_align = :left
+        else
+          raise 'Unsupported layout'
+      end
     end
 
     #
