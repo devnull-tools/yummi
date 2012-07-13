@@ -118,18 +118,7 @@ module Yummi
     #
     def header= (header)
       header = [header] unless header.respond_to? :each
-      max = 0
-      header.each_index do |i|
-        max = [max, header[i].split("\n").size].max
-      end
-      @header = []
-      max.times { @header << [] }
-      header.each_index do |i|
-        names = header[i].split("\n")
-        names.each_index do |j|
-          @header[j][i] = names[j]
-        end
-      end
+      @header = normalize(header)
       @aliases = header.map { |n| n.downcase.gsub(' ', '_').gsub("\n", '_').to_sym } if @aliases.empty?
     end
 
@@ -311,6 +300,7 @@ module Yummi
         row = data[i]
         row.each_index do |j|
           column = row[j]
+          column ||= {:value => nil, :color => nil}
           width = max_width data, j
           alignment = (@align[j] or @default_align)
           value = Aligner.align alignment, column[:value].to_s, width
@@ -385,12 +375,44 @@ module Yummi
           _row_data.collect! { |data| data[:color] = row_color; data } if row_color
         end
 
-        output << _row_data
+        _row_data = normalize(_row_data,
+                              :extract => proc do |data|
+                                data[:value].to_s
+                              end,
+                              :new => proc do |value, data|
+                                {:value => value, :color => data[:color]}
+                              end
+        )
+        _row_data.each do |_row|
+          output << _row
+        end
       end
       output
     end
 
     private
+
+    def normalize(row, params = {})
+      params[:extract] ||= proc do |value|
+        value.to_s
+      end
+      params[:new] ||= proc do |extracted, value|
+        extracted
+      end
+      max = 0
+      row.each_index do |i|
+        max = [max, params[:extract].call(row[i]).split("\n").size].max
+      end
+      result = []
+      max.times { result << [] }
+      row.each_index do |i|
+        names = params[:extract].call(row[i]).split("\n")
+        names.each_index do |j|
+          result[j][i] = params[:new].call(names[j], row[i])
+        end
+      end
+      result
+    end
 
     def parse_index(value)
       return @aliases.index(value) unless value.is_a? Fixnum
