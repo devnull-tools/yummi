@@ -95,18 +95,18 @@ module Yummi
     # Escape the given text with the given color code
     def self.escape key
       return key unless key and COLORS[key.to_sym]
-      "\033[#{COLORS[key.to_sym]}m"
+      "\e[#{COLORS[key.to_sym]}m"
     end
 
     # Colorize the given text with the given color
     def self.colorize string, color
-      color, end_color = [color, "\033[0;0m"].map { |key| Color.escape(key) }
+      color, end_color = [color, "\e[0;0m"].map { |key| Color.escape(key) }
       color ? "#{color}#{string}#{end_color}" : string
     end
 
     # Extracts the text from a colorized string
     def self.raw string
-      string.gsub(/\033\[\d;\d{2}m/, '').gsub(/\033\[0;0m/, '')
+      string.gsub(/\e\[\d;\d{2}m/, '').gsub(/\e\[0;0m/, '')
     end
 
   end
