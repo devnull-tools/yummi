@@ -176,6 +176,23 @@ module Yummi
     end
 
     #
+    # Adds the given data as a row. If the argument is a hash, its keys will be used
+    # to match header alias for building the row data.
+    #
+    def << (row)
+      if row.is_a? Hash
+        array = []
+        aliases.each do |header_alias|
+          array << row[header_alias]
+        end
+        row = array
+      end
+      @data << row
+    end
+
+    alias_method :add, :<<
+
+    #
     # Sets a component to colorize a column.
     #
     # The component must respond to +call+ with the column value (or row if used with

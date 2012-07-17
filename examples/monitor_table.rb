@@ -92,9 +92,19 @@ opt.parse ARGV
   ['Server 4', 1_000_000, 200_000, 200, 50],
   ['Server 5', 1_000_000, 5_000, 200, 50],
   ['Server 6', 1_000_000, 750_000, 200, 50],
-  ['Server 6', 1_000_000, 200_000, 200, 170],
-  ['Server 6', 1_000_000, 5_000, 200, 180],
 ]
+
+@table.add :server_name => 'Server 7',
+          :max_memory => 1_000_000,
+          :free_memory => 200_000,
+          :max_threads => 200,
+          :in_use_threads => 170
+
+@table.add :server_name => 'Server 8',
+          :max_memory => 1_000_000,
+          :free_memory => 5_000,
+          :max_threads => 200,
+          :in_use_threads => 180
 
 if @box
   @box << @table
