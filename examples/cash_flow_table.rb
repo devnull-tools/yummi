@@ -62,9 +62,9 @@ opt.on '--color TYPE', 'Specify the color type (zebra,full,none)' do |type|
       red_to_negative = lambda { |value| :red if value < 0 }
       green_to_positive = lambda { |value| :green if value > 0 }
       brown_to_zero = lambda { |value| :brown if value == 0 }
-      colorizer = Yummi::Colorizers.join(red_to_negative, green_to_positive, brown_to_zero)
-      @table.colorize :value, :using => colorizer
-      @table.colorize :total, :using => colorizer
+      @table.colorize [:value, :total], :using => Yummi::Colorizers.join(
+        red_to_negative, green_to_positive, brown_to_zero
+      )
       # colorize rows that Value is greater than Total
       @table.row_colorizer do |data| # or |data, index| if you need the index
         :white if data[:value] > data[:total]
