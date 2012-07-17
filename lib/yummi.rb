@@ -220,8 +220,19 @@ module Yummi
     # for getting the text to colorize).
     #
     def colorize (*args)
-      color = call *args
-      Yummi.colorize args.first.to_s, color
+      Yummi.colorize args.first.to_s, color_for(args)
+    end
+
+    #
+    # Returns the color for the given value
+    #
+    # === Args
+    #
+    # An array of arguments that will be passed to :call: method to get the color. By
+    # convention, the first argument must be the object to colorize (to_s is called on it
+    # for getting the text to colorize).#
+    def color_for (*args)
+      call *args
     end
 
   end
