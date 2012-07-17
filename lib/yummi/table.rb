@@ -128,18 +128,20 @@ module Yummi
     # === Args
     #
     # +index+::
-    #   The column index or its alias
+    #   The column indexes or its aliases
     # +type+::
     #   The alignment type
     #
     # === Example
     #
     #   table.align :description, :left
-    #   table.align :value, :right
+    #   table.align [:value, :total], :right
     #
-    def align (index, type)
-      index = parse_index(index)
-      @align[index] = type
+    def align (indexes, type)
+      [*indexes].each do |index|
+        index = parse_index(index)
+        @align[index] = type
+      end
     end
 
     #
@@ -203,8 +205,8 @@ module Yummi
     #
     # === Args
     #
-    # +index+::
-    #   The column index or its alias
+    # +indexes+::
+    #   The column indexes or its aliases
     # +params+::
     #   A hash with params in case a block is not given:
     #     - :using defines the component to use
@@ -213,13 +215,15 @@ module Yummi
     # === Example
     #
     #   table.colorize :description, :with => :purple
-    #   table.colorize(:value) { |value| :red if value < 0 }
+    #   table.colorize([:value, :total]) { |value| :red if value < 0 }
     #
-    def colorize (index, params = {}, &block)
-      index = parse_index(index)
-      @colorizers[index] ||= []
-      obj = (params[:using] or block or (proc { |v| params[:with] }))
-      @colorizers[index] << {:use_row => @using_row, :component => obj}
+    def colorize (indexes, params = {}, &block)
+      [*indexes].each do |index|
+        index = parse_index(index)
+        @colorizers[index] ||= []
+        obj = (params[:using] or block or (proc { |v| params[:with] }))
+        @colorizers[index] << {:use_row => @using_row, :component => obj}
+      end
     end
 
     #
@@ -248,8 +252,8 @@ module Yummi
     #
     # === Args
     #
-    # +index+::
-    #   The column index or its alias
+    # +indexes+::
+    #   The column indexes or its aliases
     # +params+::
     #   A hash with params in case a block is not given:
     #     - :using defines the component to use
@@ -258,12 +262,15 @@ module Yummi
     # === Example
     #
     #   table.format :value, :with => '%.2f'
+    #   table.format [:value, :total], :with => '%.2f'
     #
-    def format (index, params = {}, &block)
-      index = parse_index(index)
-      @formatters[index] = (params[:using] or block)
-      @formatters[index] ||= proc do |value|
-        params[:with] % value
+    def format (indexes, params = {}, &block)
+      [*indexes].each do |index|
+        index = parse_index(index)
+        @formatters[index] = (params[:using] or block)
+        @formatters[index] ||= proc do |value|
+          params[:with] % value
+        end
       end
     end
 
