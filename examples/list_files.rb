@@ -29,7 +29,7 @@ opt = OptionParser::new
 
 @table = Yummi::Table::new
 # setting the header sets the aliases automatically
-@table.header = ['Name', 'Size']
+@table.header = %w(Name Size)
 @table.aliases << :directory
 # sets the title
 @table.title = 'File List'
