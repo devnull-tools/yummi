@@ -27,6 +27,8 @@ module Yummi
     attr_accessor :data
     # The table title
     attr_accessor :title
+    # The table description
+    attr_accessor :description
     # Default align. #Yummi#Aligner should respond to it.
     attr_accessor :default_align
     # Aliases that can be used by formatters and colorizers instead of numeric indexes.
@@ -56,8 +58,10 @@ module Yummi
       @data = []
       @header = []
       @title = nil
+      @description = nil
       @colors = {
         :title => :intense_yellow,
+        :description => :intense_gray,
         :header => :intense_blue,
         :value => nil
       }
@@ -307,6 +311,7 @@ module Yummi
 
       string = ""
       string << Color.colorize(@title, @colors[:title]) << $/ if @title
+      string << Color.colorize(@description, @colors[:description]) << $/ if @description
       table_data = header_output + data_output
       if @layout == :vertical
         # don't use array transpose because the data may differ in each line size
