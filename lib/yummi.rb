@@ -507,3 +507,8 @@ require_relative 'yummi/color_mapping'
 require_relative 'yummi/table'
 require_relative 'yummi/text_box'
 require_relative 'yummi/logger'
+
+# if the output is being piped, turn off the colors
+unless $stdout.isatty
+  require 'yummi/no_colors'
+end
