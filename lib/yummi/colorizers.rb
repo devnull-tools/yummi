@@ -121,7 +121,7 @@ module Yummi
         prefix = (params[:prefix] or params['prefix'])
         suffix = (params[:suffix] or params['suffix'])
         @mappings = Hash[*(mappings.collect do |k, v|
-          [/#{prefix}#{k.to_s}/, v]
+          [/#{prefix}#{k.to_s}#{suffix}/, v]
         end).flatten]
 
         @last_color = nil

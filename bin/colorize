@@ -55,8 +55,12 @@ if @color or @colorizer
   if @text
     print_out @text
   else
-    ARGF.each_line do |line|
-      print_out line.chomp
+    begin
+      ARGF.each_line do |line|
+        print_out line.chomp
+      end
+    rescue Interrupt
+      #Do nothing
     end
   end
 else
