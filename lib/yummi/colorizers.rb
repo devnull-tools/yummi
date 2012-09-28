@@ -143,8 +143,8 @@ module Yummi
         patterns = (params[:patterns] or params['patterns'])
         prefix = (params[:prefix] or params['prefix'])
         suffix = (params[:suffix] or params['suffix'])
-        @patterns = Hash[*(patterns.collect do |k, v|
-          [/#{prefix}#{k.to_s}#{suffix}/, v]
+        @patterns = Hash[*(patterns.collect do |pattern, color|
+          [/#{prefix}#{pattern.to_s}#{suffix}/, color]
         end).flatten]
 
         @last_color = nil
