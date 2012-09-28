@@ -23,12 +23,14 @@
 require_relative '../lib/yummi'
 
 params = {
-  :mappings => {
-    /\[ERROR\]/ => :red,
-    /\[FATAL\]/ => :intense_red,
-    /\[WARN\]/  => :yellow,
-    /\[INFO\]/  => :green,
-    /\[DEBUG\]/ => nil
+  :prefix => /\[/,
+  :suffix => /\]/,
+  :patterns => {
+    'ERROR' => :red,
+    'FATAL' => :intense_red,
+    'WARN'  => :yellow,
+    'INFO'  => :green,
+    'DEBUG' => :gray
   }
 }
 

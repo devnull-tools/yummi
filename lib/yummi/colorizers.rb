@@ -95,13 +95,36 @@ module Yummi
       StripeColorizer::new(*colors)
     end
 
+    # Returns a new instance of #LineColorizer
     def self.line mappings
       LineColorizer::new mappings
     end
 
+    #
+    # A colorizer for lines that follows a pattern. This colorizer is usefull
+    # for log files.
+    #
     class LineColorizer
       include Yummi::Colorizer
 
+      #
+      # Creates a new instance using the parameters.
+      #
+      # === Args
+      #
+      # A hash containing the following keys:
+      #
+      #   * prefix: a pattern prefix
+      #   * suffix: a pattern suffix
+      #   * patterns: a pattern => color hash
+      #
+      # If a string is passed, a file containing a YAML configuration
+      # will be loaded. If the string doesn't represent a file, the
+      # following patterns will be used to find it:
+      # 
+      #   * $HOME/.yummi/PATTERN.yaml
+      #   * $YUMMI_GEM/yummy/mappings/PATTERN.yaml
+      #
       def initialize params
         unless params.is_a? Hash
           file = File.expand_path params.to_s
@@ -117,10 +140,10 @@ module Yummi
             end
           end
         end
-        mappings = (params[:mappings] or params['mappings'])
+        patterns = (params[:patterns] or params['patterns'])
         prefix = (params[:prefix] or params['prefix'])
         suffix = (params[:suffix] or params['suffix'])
-        @mappings = Hash[*(mappings.collect do |k, v|
+        @patterns = Hash[*(patterns.collect do |k, v|
           [/#{prefix}#{k.to_s}#{suffix}/, v]
         end).flatten]
 
@@ -129,7 +152,7 @@ module Yummi
 
       def call *args
         line = args.first.to_s
-        @mappings.each do |regex, color|
+        @patterns.each do |regex, color|
           if regex.match(line)
             @last_color = color
             return color

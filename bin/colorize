@@ -31,8 +31,8 @@ opt = OptionParser::new
 opt.on '-c COLOR', '--color=COLOR', 'Colorize using the given color' do |color|
   @color = color
 end
-opt.on '-l STYLE', '--style=STYLE', 'Sets a style to colorize each line' do |style|
-  @colorizer = Yummi::Colorizers.line style
+opt.on '-p PATTERN', '--pattern=PATTERN', 'Sets a pattern to colorize each line' do |pattern|
+  @colorizer = Yummi::Colorizers.line pattern
 end
 opt.on '-t TEXT', '--text=TEXT', 'Colorize the given text' do |text|
   @text = text
@@ -64,5 +64,5 @@ if @color or @colorizer
     end
   end
 else
-  abort 'Please give a color or choose a style.'
+  abort 'Please give a color or choose a pattern.'
 end
