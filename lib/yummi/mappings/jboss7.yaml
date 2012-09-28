@@ -1,0 +1,8 @@
+prefix: '\d{2}:\d{2}:\d{2},\d{3}\s'
+mappings:
+  TRACE : cyan
+  DEBUG : blue
+  INFO  : gray
+  WARN  : yellow
+  ERROR : red
+  FATAL : intense_red

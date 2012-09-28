@@ -1,0 +1,12 @@
+prefix: '####<\w{3}\s\d{2},\s\d{4}\s\d{2}:\d{2}:\d{2}\s\w{2}\s\w{3}>\s<'
+suffix: '>'
+mappings:
+  Trace     : purple
+  Debug     : blue
+  Info      : gray
+  Notice    : cyan
+  Warning   : yellow
+  Error     : red
+  Critical  : intense_red
+  Alert     : highlight_red
+  Emergency : blink_red
