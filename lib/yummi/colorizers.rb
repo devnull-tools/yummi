@@ -123,6 +123,7 @@ module Yummi
         @mappings = Hash[*(mappings.collect do |k, v|
           [/#{prefix}#{k.to_s}/, v]
         end).flatten]
+
         @last_color = nil
       end
 

@@ -1,8 +1,8 @@
 prefix: '\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3}\s'
 mappings:
-  '\[ERROR\]' : red
-  '\[FATAL\]' : intense_red
-  '\[INFO\]'  : green
-  '\[WARN\]'  : yellow
-  '\[DEBUG\]' : gray
-  '\[TRACE\]' : gray
+  ERROR : red
+  FATAL : intense_red
+  INFO  : green
+  WARN  : yellow
+  DEBUG : gray
+  TRACE : gray
