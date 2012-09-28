@@ -31,7 +31,7 @@ module Yummi
       # Normal Linux Terminal Colors, used by default in normal, underscore, blink and
       # highlight color types
       NORMAL_COLORS = {
-        :colors => [:black, :red, :green, :brown, :blue, :purple, :cyan, :gray],
+        :colors => [:black, :red, :green, :yellow, :blue, :purple, :cyan, :gray],
         :default => :gray
       }
       # Intense Linux Terminal Colors, used by default in intense and strong color types
@@ -137,7 +137,7 @@ module Yummi
       block.parameters.each do |parameter|
         args << context[parameter[1]]
       end
-      block.call *args
+      block.call(*args)
     end
 
     module_function :block_call
@@ -198,172 +198,6 @@ module Yummi
         end
       end
       words.join ' '
-    end
-
-  end
-
-  #
-  # A module that defines a colorizer capable component.
-  #
-  # Include this module in any component that returns a color in response for :call:.
-  #
-  module Colorizer
-
-    #
-    # Colorizes a string by passing the arguments to the :call: method to get the proper
-    # color.
-    #
-    # === Args
-    #
-    # An array of arguments that will be passed to :call: method to get the color. By
-    # convention, the first argument must be the object to colorize (to_s is called on it
-    # for getting the text to colorize).
-    #
-    def colorize (*args)
-      Yummi.colorize args.first.to_s, color_for(args)
-    end
-
-    #
-    # Returns the color for the given value
-    #
-    # === Args
-    #
-    # An array of arguments that will be passed to :call: method to get the color. By
-    # convention, the first argument must be the object to colorize (to_s is called on it
-    # for getting the text to colorize).#
-    def color_for (*args)
-      call *args
-    end
-
-  end
-
-  #
-  # Adds the #Colorizer module to the given block, so you can use it to colorize texts.
-  #
-  # === Example
-  #
-  #   colorizer = Yummi.to_colorize { |value| value % 2 == 0 ? :green : :blue }
-  #   10.times { |n| puts colorizer.colorize n }
-  #
-  def self.to_colorize &block
-    block.extend Colorizer
-  end
-
-  # A module with useful colorizers
-  module Colorizers
-
-    # Joins the given colorizers to work as one
-    def self.join *colorizers
-      join = Yummi::GroupedComponent::new
-      colorizers.each { |c| join << c }
-      join.extend Colorizer
-    end
-
-    # Returns a new instance of #DataEvalColorizer
-    def self.by_data_eval &block
-      DataEvalColorizer::new &block
-    end
-
-    # Returns a new instance of #EvalColorizer
-    def self.by_eval &block
-      EvalColorizer::new &block
-    end
-
-    # Returns a new instance of #StripeColorizer
-    def self.stripe *colors
-      StripeColorizer::new *colors
-    end
-
-    # A colorizer that cycles through colors to create a striped effect
-    class StripeColorizer
-      include Yummi::Colorizer
-
-      # Creates a new colorizer using the given colors
-      def initialize (*colors)
-        @colors = colors
-        @count = -1
-      end
-
-      def call *args
-        @count += 1
-        @colors[@count % @colors.size]
-      end
-
-    end
-
-    #
-    # A colorizer that evaluates a main block and returns a color based on other blocks.
-    #
-    # The main block must be compatible with the colorizing type (receiving a column
-    # value in case of a table column colorizer or the row index and row value in case
-    # of a table row colorizer).
-    #
-    # === Example
-    #
-    #   # assuming that the table has :max and :current aliases
-    #   colorizer = DataEvalColorizer::new { |index, data| data[:current] / data[:max] }
-    #   # the result of the expression above will be passed to this block
-    #   colorizer.use(:red) { |value| value >= 0.9 }
-    #
-    #   table.using_row.colorize :current, :using => colorizer
-    #
-    class EvalColorizer
-      include Yummi::Colorizer
-
-      def initialize (&block)
-        @block = block
-        @colors = []
-        @eval_blocks = []
-      end
-
-      #
-      # Uses the given color if the given block returns something when evaluated with the
-      # result of main block.
-      #
-      # An objtect that responds to :call may also be used.
-      #
-      def use (color, component = nil, &eval_block)
-        @colors << color
-        @eval_blocks << (component or eval_block)
-      end
-
-      # Resolves the value using the main block and given arguments
-      def resolve_value (*args)
-        @block.call *args
-      end
-
-      def call (*args)
-        value = resolve_value *args
-        @eval_blocks.each_index do |i|
-          return @colors[i] if @eval_blocks[i].call(value)
-        end
-        nil
-      end
-
-    end
-
-    #
-    # A colorizer that evaluates a main block and returns a color based on other blocks.
-    #
-    # The main block can receive any parameters and the names must be aliases the current
-    # evaluated data.
-    #
-    # === Example
-    #
-    #   # assuming that the table has :max and :current aliases
-    #   colorizer = DataEvalColorizer::new { |max, current| current / max }
-    #   # the result of the expression above will be passed to this block
-    #   colorizer.use(:red) { |value| value >= 0.9 }
-    #
-    #   table.using_row.colorize :current, :using => colorizer
-    #
-    class DataEvalColorizer < EvalColorizer
-      include Yummi::BlockHandler, Yummi::Colorizer
-
-      def resolve_value (*args)
-        block_call args.first, &@block # by convention, the first arg is data
-      end
-
     end
 
   end
@@ -503,6 +337,7 @@ end
 
 require_relative 'yummi/no_colors' if RUBY_PLATFORM['mingw'] #Windows
 
+require_relative "yummi/colorizers"
 require_relative 'yummi/color_mapping'
 require_relative 'yummi/table'
 require_relative 'yummi/text_box'

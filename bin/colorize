@@ -25,9 +25,14 @@
 require_relative '../lib/yummi'
 require 'optparse'
 
+@params = []
+
 opt = OptionParser::new
 opt.on '-c COLOR', '--color=COLOR', 'Colorize using the given color' do |color|
   @color = color
+end
+opt.on '-l STYLE', '--style=STYLE', 'Sets a style to colorize each line' do |style|
+  @colorizer = Yummi::Colorizers.line style.to_sym
 end
 opt.on '-t TEXT', '--text=TEXT', 'Colorize the given text' do |text|
   @text = text
@@ -38,14 +43,22 @@ opt.on '-h', '--help', 'Display this help message' do
 end
 opt.parse! ARGV
 
-if @color
+def print_out text
+  if @color
+    puts Yummi::colorize text, @color
+  elsif @colorizer
+    puts @colorizer.colorize text
+  end
+end
+
+if @color or @style
   if @text
-    puts Yummi::colorize @text, @color
+    print_out @text
   else
     ARGF.each_line do |line|
-      puts Yummi::colorize line.chomp, @color
+      print_out line.chomp
     end
   end
 else
-  abort 'Please give a color.'
+  abort 'Please give a color or choose a style.'
 end

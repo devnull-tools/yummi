@@ -57,7 +57,7 @@ def full_colors
   # colorize the values based on comparison
   red_to_negative = lambda { |value| :red if value < 0 }
   green_to_positive = lambda { |value| :green if value > 0 }
-  brown_to_zero = lambda { |value| :brown if value == 0 }
+  brown_to_zero = lambda { |value| :yellow if value == 0 }
   @table.colorize [:value, :total], :using => Yummi::Colorizers.join(
     red_to_negative, green_to_positive, brown_to_zero
   )
@@ -69,7 +69,7 @@ def full_colors
 end
 
 def zebra_colors
-  @table.row_colorizer Yummi::Colorizers.stripe :brown, :purple
+  @table.row_colorizer Yummi::Colorizers.stripe :yellow, :purple
 end
 
 def no_colors

@@ -20,6 +20,34 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-module Yummi
-  VERSION = "0.4.3"
+require_relative '../lib/yummi'
+
+params = {
+  :mappings => {
+    /\[ERROR\]/ => :red,
+    /\[FATAL\]/ => :intense_red,
+    /\[WARN\]/  => :yellow,
+    /\[INFO\]/  => :green,
+    /\[DEBUG\]/ => nil
+  }
+}
+
+log = <<LOG
+[INFO] Starting
+[WARN] Example output
+[DEGUB] Connecting to server
+[ERROR] Error while connecting
+caused by: ConnectionException
+            at Connection.connect
+              at Startup
+[INFO] Could not connect to server
+[FATAL] A fatal error
+[WARN] Application shutdown
+[DEBUG] Shutdown command executed
+LOG
+
+colorizer = Yummi::Colorizers.line(params)
+
+log.each_line do |line|
+  puts colorizer.colorize(line.chomp)
 end
