@@ -32,7 +32,7 @@ opt.on '-c COLOR', '--color=COLOR', 'Colorize using the given color' do |color|
   @color = color
 end
 opt.on '-l STYLE', '--style=STYLE', 'Sets a style to colorize each line' do |style|
-  @colorizer = Yummi::Colorizers.line style.to_sym
+  @colorizer = Yummi::Colorizers.line style
 end
 opt.on '-t TEXT', '--text=TEXT', 'Colorize the given text' do |text|
   @text = text
@@ -51,7 +51,7 @@ def print_out text
   end
 end
 
-if @color or @style
+if @color or @colorizer
   if @text
     print_out @text
   else

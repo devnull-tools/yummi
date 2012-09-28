@@ -104,7 +104,7 @@ module Yummi
 
       def initialize params
         unless params.is_a? Hash
-          file = File.expand_path params
+          file = File.expand_path params.to_s
           if File.exist? file
             params = YAML::load_file file
           else
