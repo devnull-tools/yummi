@@ -41,14 +41,14 @@ Line patterns are configured with an yaml file containing:
 
 Example:
 
-  prefix: '\d{2}:\d{2}:\d{2},\d{3}\s'
-  patterns:
-    TRACE : cyan
-    DEBUG : blue
-    INFO  : gray
-    WARN  : yellow
-    ERROR : red
-    FATAL : intense_red
+    prefix: '\d{2}:\d{2}:\d{2},\d{3}\s'
+    patterns:
+      TRACE : cyan
+      DEBUG : blue
+      INFO  : gray
+      WARN  : yellow
+      ERROR : red
+      FATAL : intense_red
 
 Yummi provides a set of mappings that you, check yummi/mappings dir.
 
