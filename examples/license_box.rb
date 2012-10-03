@@ -27,7 +27,7 @@ require_relative '../lib/yummi'
 
 @box.width = 70
 @box.default_align = :justify
-@box.default_separator[:color] = :brown
+@box.default_separator[:color] = :yellow
 
 opt = OptionParser::new
 

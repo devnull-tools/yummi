@@ -202,80 +202,6 @@ module Yummi
 
   end
 
-  # A module used to create an alias method in a formatter block
-  module FormatterBlock
-
-    # Calls the :call: method
-    def format (value)
-      call value
-    end
-
-  end
-
-  # Extends the given block with #FormatterBlock
-  def self.to_format &block
-    block.extend FormatterBlock
-  end
-
-  # A module with useful formatters
-  module Formatters
-
-    # A formatter for boolean values that uses 'Yes' or 'No'
-    def self.yes_or_no
-      Yummi::to_format do |value|
-        value ? "Yes" : "No"
-      end
-    end
-
-    # A formatter to float values that uses the precision to round the value
-    def self.round precision
-      Yummi::to_format do |value|
-        "%.#{precision}f" % value
-      end
-    end
-
-    # Defines the modes to format a byte value
-    BYTE_MODES = {
-      :iec => {
-        :range => %w{B KiB MiB GiB TiB PiB EiB ZiB YiB},
-        :step => 1024
-      },
-      :si => {
-        :range => %w{B KB MB GB TB PB EB ZB YB},
-        :step => 1000
-      }
-    }
-
-    #
-    # Formats a byte value to ensure easily reading
-    #
-    # === Hash Args
-    #
-    # +precision+::
-    #   How many decimal digits should be displayed. (Defaults to 1)
-    # +mode+::
-    #   Which mode should be used to display unit symbols. (Defaults to :iec)
-    #
-    # See #BYTE_MODES
-    #
-    def self.byte params = {}
-      Yummi::to_format do |value|
-        value = value.to_i if value.is_a? String
-        mode = (params[:mode] or :iec)
-        range = BYTE_MODES[mode][:range]
-        step = BYTE_MODES[mode][:step]
-        params[:precision] ||= 1
-        result = value
-        range.each_index do |i|
-          minimun = (step ** i)
-          result = "%.#{params[:precision]}f #{range[i]}" % (value.to_f / minimun) if value >= minimun
-        end
-        result
-      end
-    end
-
-  end
-
   # A class to expose indexed data by numeric indexes and aliases.
   class IndexedData
 
@@ -333,13 +259,34 @@ module Yummi
 
   end
 
+  module Helpers
+
+    def self.symbolize_keys hash
+      hash.replace(hash.inject({}) do |h, (k, v)|
+        v = symbolize_keys(v) if v.is_a? Hash
+        if v.is_a? Array
+          v.each do |e|
+            if e.is_a? Hash
+              symbolize_keys(e)
+            end
+          end
+        end
+        k = k.to_sym if k.respond_to? :to_sym
+        h[k] = v
+        h
+      end)
+    end
+  end
+
 end
 
 require_relative 'yummi/no_colors' if RUBY_PLATFORM['mingw'] #Windows
 
 require_relative "yummi/colorizers"
+require_relative "yummi/formatters"
 require_relative 'yummi/color_mapping'
 require_relative 'yummi/table'
+require_relative 'yummi/table_builder'
 require_relative 'yummi/text_box'
 require_relative 'yummi/logger'
 

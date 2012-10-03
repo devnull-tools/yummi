@@ -1,0 +1,34 @@
+title: Cash Flow
+description: How you spend your money
+header:
+  - Description
+  - Value
+  - Total
+  - Eletronic
+  - "Authentication\nCode"
+format:
+  eletronic: yes_or_no
+  value,total:
+    numeric:
+      positive: "%.2f"
+      zero: "%.2f"
+      negative: "(%.2f)"
+  undefined:
+    with: none
+color:
+  description:
+    with: purple
+  authentication_code:
+    with: highlight_gray
+  eletronic:
+    boolean:
+      if_true: blue
+      if_false: cyan
+  value,total:
+    numeric:
+      positive: green
+      zero: gray
+      negative: red
+  undefined:
+    with: red
+row_color: value_gt_total

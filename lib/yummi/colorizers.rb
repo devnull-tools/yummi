@@ -53,7 +53,7 @@ module Yummi
     # convention, the first argument must be the object to colorize (to_s is called on it
     # for getting the text to colorize).#
     def color_for (*args)
-      call *args
+      call(*args)
     end
 
   end
@@ -98,6 +98,90 @@ module Yummi
     # Returns a new instance of #LineColorizer
     def self.line mappings
       LineColorizer::new mappings
+    end
+
+    #
+    # A colorizer that uses the given color.
+    #
+    def self.with color
+      Yummi::to_colorize do |value|
+        color
+      end
+    end
+
+    #
+    # A colorizer for boolean values.
+    #
+    # Parameters:
+    #   - if_true: color used if the value is true
+    #   - if_false: color used if the value is false
+    #
+    def self.boolean params = {}
+      Yummi::to_colorize do |value|
+        value ? (params[:if_true] or :green) : (params[:if_false] or :brown)
+      end
+    end
+    
+    #
+    # A colorizer that uses a set of minimun values to use a color.
+    #
+    # Parameters:
+    #   - MINIMUN_VALUE: COLOR_TO_USE
+    #
+    def self.threshold params
+      colorizer = lambda do |value|
+        params.sort.reverse_each do |limit, color|
+          return color if value > limit
+        end
+      end
+      Yummi::to_colorize(&colorizer)
+    end
+
+    def self.percentage params
+      PercentageColorizer::new params
+    end
+
+    def self.numeric params
+      Yummi::to_format do |value|
+        if params[:negative] and value < 0
+          params[:negative]
+        elsif params[:positive] and value > 0
+          params[:positive]
+        elsif params[:zero] and value == 0
+          params[:zero]
+        end
+      end
+    end
+
+    class PercentageColorizer
+      include Yummi::Colorizer
+
+      def initialize(params)
+        @max = params[:max]
+        @free = params[:free]
+        @using = params[:using]
+        @color = params[:color] || {
+          :bad => :red,
+          :warn => :brown,
+          :good => :green
+        }
+        @threshold = params[:threshold] || {
+          :warn => 0.30,
+          :bad => 0.15
+        }
+      end
+
+      def call(data)
+        max = data[@max.to_sym].to_f
+        free = @using ? max - data[@using.to_sym].to_f : data[@free.to_sym].to_f
+
+        percentage = free / max
+
+        return @color[:bad] if percentage <= @threshold[:bad]
+        return @color[:warn] if percentage <= @threshold[:warn]
+        @color[:good]
+      end
+
     end
 
     #
@@ -169,7 +253,7 @@ module Yummi
 
       # Creates a new colorizer using the given colors
       def initialize (*colors)
-        @colors = colors
+        @colors = colors.flatten
         @count = -1
       end
 
@@ -218,11 +302,11 @@ module Yummi
 
       # Resolves the value using the main block and given arguments
       def resolve_value (*args)
-        @block.call *args
+        @block.call(*args)
       end
 
       def call (*args)
-        value = resolve_value *args
+        value = resolve_value(*args)
         @eval_blocks.each_index do |i|
           return @colors[i] if @eval_blocks[i].call(value)
         end

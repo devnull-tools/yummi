@@ -144,6 +144,7 @@ module Yummi
     def align (indexes, type)
       [*indexes].each do |index|
         index = parse_index(index)
+        raise Exception::new "Undefined column #{index}" unless index
         @align[index] = type
       end
     end
@@ -224,9 +225,13 @@ module Yummi
     def colorize (indexes, params = {}, &block)
       [*indexes].each do |index|
         index = parse_index(index)
-        @colorizers[index] ||= []
-        obj = (params[:using] or block or (proc { |v| params[:with] }))
-        @colorizers[index] << {:use_row => @using_row, :component => obj}
+        if index
+          @colorizers[index] ||= []
+          obj = (params[:using] or block or (proc { |v| params[:with] }))
+          @colorizers[index] << {:use_row => @using_row, :component => obj}
+        else
+          colorize_null params, &block
+        end
       end
     end
 
@@ -271,9 +276,13 @@ module Yummi
     def format (indexes, params = {}, &block)
       [*indexes].each do |index|
         index = parse_index(index)
-        @formatters[index] = (params[:using] or block)
-        @formatters[index] ||= proc do |value|
-          params[:with] % value
+        if index
+          @formatters[index] = (params[:using] or block)
+          @formatters[index] ||= proc do |value|
+            params[:with] % value
+          end
+        else
+          format_null params, &block
         end
       end
     end
@@ -444,8 +453,8 @@ module Yummi
     end
 
     def parse_index(value)
-      return @aliases.index(value) unless value.is_a? Fixnum
-      value
+      return value if value.is_a? Fixnum
+      (@aliases.index(value) or @aliases.index(value.to_sym))
     end
 
     def max_width(data, column)
