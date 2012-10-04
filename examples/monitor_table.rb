@@ -35,26 +35,20 @@ opt = OptionParser::new
 @table.format :free_memory, :using => Yummi::Formatters.byte
 
 # colorizer for memory
-memory_colorizer = Yummi::Colorizers.by_data_eval do |free_memory, max_memory|
-  free_memory.to_f / max_memory
-end
-memory_colorizer.use(:red) { |value| value > 0.1 and value < 0.3 }
-memory_colorizer.use(:intense_red) { |value| value <= 0.1 }
+memory_colorizer = Yummi::Colorizers.percentage :max => :max_memory, :free => :free_memory
 
 # colorizer for threads
-thread_colorizer = Yummi::Colorizers.by_data_eval do |max_threads, in_use_threads|
-  in_use_threads.to_f / max_threads
-end
-thread_colorizer.use(:brown) { |value| value > 0.7 and value < 0.9 }
-thread_colorizer.use(:intense_cyan) { |value| value >= 0.9 }
+thread_colorizer = Yummi::Colorizers.percentage :max => :max_threads,
+                                                :using => :in_use_threads,
+                                                :threshold => {
+                                                  :warn => 0.9,
+                                                  :bad => 0.7
+                                                }
 
-opt.on '--color TYPE', 'Specify the color type (zebra,row,cell,none)' do |type|
+opt.on '--color TYPE', 'Specify the color type (zebra,cell,none)' do |type|
   case type
     when 'zebra'
-      @table.row_colorizer Yummi::Colorizers.stripe :brown, :purple
-    when 'row'
-      @table.row_colorizer memory_colorizer
-      @table.row_colorizer thread_colorizer
+      @table.row_colorizer Yummi::Colorizers.stripe :yellow, :purple
     when 'cell'
       @table.using_row do
         @table.colorize :free_memory, :using => memory_colorizer

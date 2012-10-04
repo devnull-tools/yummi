@@ -8,7 +8,7 @@ header:
   - Eletronic
   - "Authentication\nCode"
 format:
-  eletronic: yes_or_no
+  eletronic: boolean
   value,total:
     numeric:
       positive: "%.2f"

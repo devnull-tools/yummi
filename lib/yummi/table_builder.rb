@@ -35,7 +35,7 @@ module Yummi
       @repositories[:formatters] = [Yummi::Formatters]    
       @repositories[:colorizers] = [Yummi::Colorizers]    
       @repositories[:row_based_colorizers] = [Yummi::Colorizers]    
-      @repositories[:row_colorizers] = [Yummi::Colorizers]
+      @repositories[:using_row_colorizers] = [Yummi::Colorizers]
     end
 
     def defaults
@@ -45,11 +45,11 @@ module Yummi
       component :format,     :repository => :formatters,
                              :invoke     => :format
 
-      component :row_color,  :repository => :row_colorizers,
+      component :row_color,  :repository => :row_based_colorizers,
                              :invoke     => :row_colorizer,
                              :row_based  => true
 
-      component :colorizer,  :repository => :row_based_colorizers,
+      component :colorizer,  :repository => :using_row_colorizers,
                              :invoke     => :colorize,
                              :using_row  => true
       self
@@ -74,7 +74,7 @@ module Yummi
 
       components.each do |key, component_config|
         block = lambda do |params|
-          if config[:using_row]
+          if component_config[:using_row]
             table.using_row do
               table.send component_config[:invoke], *params
             end

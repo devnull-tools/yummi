@@ -46,6 +46,8 @@ module Yummi
     attr_accessor :colors
     # The table layout (horizontal or vertical)
     attr_reader :layout
+    # The table header
+    attr_reader :header
 
     # Creates a new table with the default attributes:
     #

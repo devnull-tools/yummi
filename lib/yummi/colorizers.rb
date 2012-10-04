@@ -113,12 +113,12 @@ module Yummi
     # A colorizer for boolean values.
     #
     # Parameters:
-    #   - if_true: color used if the value is true
-    #   - if_false: color used if the value is false
+    #   - if_true: color used if the value is true (defaults to green)
+    #   - if_false: color used if the value is false (defaults to yellow)
     #
     def self.boolean params = {}
       Yummi::to_colorize do |value|
-        value ? (params[:if_true] or :green) : (params[:if_false] or :brown)
+        value ? (params[:if_true] or :green) : (params[:if_false] or :yellow)
       end
     end
     
@@ -162,7 +162,7 @@ module Yummi
         @using = params[:using]
         @color = params[:color] || {
           :bad => :red,
-          :warn => :brown,
+          :warn => :yellow,
           :good => :green
         }
         @threshold = params[:threshold] || {

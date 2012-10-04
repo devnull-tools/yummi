@@ -214,7 +214,9 @@ module Yummi
       if value.is_a? Fixnum
         @data[value]
       else
-        @data[@aliases.index(value)]
+        index = @aliases.index(value)
+        raise Exception("Unknow alias #{value}") unless index
+        @data[index]
       end
     end
 
