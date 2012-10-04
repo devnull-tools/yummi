@@ -79,7 +79,7 @@ elsif @table_builder
     YAML::load_file(@data)
   when ".csv"
     require 'csv'
-    CSV::parse(File.read(@data))
+    CSV::parse(File.read(@data), :converters => :all)
   else
     abort "Unsupported extension #{extension}"
   end
