@@ -22,16 +22,7 @@
 
 require 'optparse'
 require_relative '../lib/yummi'
-
-module Yummi
-  module Colorizers
-    def self.value_gt_total
-      Yummi::to_colorize do |data| # or |data, index| if you need the index
-        :white if data[:value] > data[:total]
-      end
-    end
-  end
-end
+require_relative 'cash_flow_table_extensions.rb'
 
 opt = OptionParser::new
 

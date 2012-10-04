@@ -1,5 +1,6 @@
 title: Cash Flow
 description: How you spend your money
+layout: horizontal
 header:
   - Description
   - Value
@@ -12,7 +13,7 @@ format:
     numeric:
       positive: "%.2f"
       zero: "%.2f"
-      negative: "(%.2f)"
+      negative: "%.2f"
   undefined:
     with: none
 color:
@@ -31,4 +32,5 @@ color:
       negative: red
   undefined:
     with: red
-row_color: value_gt_total
+row_color:
+  blessed_income: white

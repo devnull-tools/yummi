@@ -34,35 +34,62 @@ end
 opt.on '-p PATTERN', '--pattern=PATTERN', 'Sets a pattern to colorize each line' do |pattern|
   @colorizer = Yummi::Colorizers.line pattern
 end
-opt.on '-t TEXT', '--text=TEXT', 'Colorize the given text' do |text|
-  @text = text
+opt.on '-m message', '--message=MESSAGE', 'Colorize the given message' do |message|
+  @message = message
+end
+opt.on '-t file', '--table=FILE', 'Defines the file mapping the table to print' do |file|
+  @table_builder = Yummi::TableBuilder::new(file).defaults
+end
+opt.on '-d data', '--data=FILE', 'Defines the file containing the data to print' do |data|
+  @data = File.expand_path(data)
+end
+opt.on '-e FILES', '--eval=FILES', Array, 'Sets a file to eval for extending components' do |files|
+  files.each do |file|
+    load File.expand_path(file)
+  end
 end
 opt.on '-h', '--help', 'Display this help message' do
   puts opt
   exit 0
 end
+
+if ARGV.empty?
+  puts opt
+  exit 0
+end
+
 opt.parse! ARGV
 
-def print_out text
+def print_out message
   if @color
-    puts Yummi::colorize text, @color
+    puts Yummi::colorize message, @color
   elsif @colorizer
-    puts @colorizer.colorize text
+    puts @colorizer.colorize message
   end
 end
 
-if @color or @colorizer
-  if @text
-    print_out @text
+if @message
+  print_out @message
+elsif @table_builder
+  abort "Please give the data to print" unless @data
+  table = @table_builder.build_table
+  extension = File::extname(@data)
+  table.data = case extension
+  when ".yaml"
+    YAML::load_file(@data)
+  when ".csv"
+    require 'csv'
+    CSV::parse(File.read(@data))
   else
-    begin
-      ARGF.each_line do |line|
-        print_out line.chomp
-      end
-    rescue Interrupt
-      #Do nothing
-    end
+    abort "Unsupported extension #{extension}"
   end
+  puts table
 else
-  abort 'Please give a color or choose a pattern.'
+  begin
+    ARGF.each_line do |line|
+      print_out line.chomp
+    end
+  rescue Interrupt
+    #Do nothing
+  end
 end

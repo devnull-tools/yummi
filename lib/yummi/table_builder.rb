@@ -120,15 +120,17 @@ module Yummi
     end
 
     def parse_row_based_component(definitions, config)
-      if definitions.is_a? Hash
-        definitions.each do |component_name, params|
-          yield(create_component({component_name => params}, config))
+      if definitions
+        if definitions.is_a? Hash
+          definitions.each do |component_name, params|
+            yield(create_component({component_name => params}, config))
+          end
+        else
+          puts definitions
+          component = create_component(definitions, config)
+          puts component
+          yield(component)
         end
-      else
-        puts definitions
-        component = create_component(definitions, config)
-        puts component
-        yield(component)
       end
     end
 
