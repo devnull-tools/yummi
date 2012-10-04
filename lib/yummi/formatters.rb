@@ -40,10 +40,17 @@ module Yummi
   # A module with useful formatters
   module Formatters
 
-    # A formatter for boolean values that uses 'Yes' or 'No'
-    def self.yes_or_no
+    #
+    # A formatter for boolean values that uses 'Yes' or 'No' by default
+    #
+    # === Hash Args
+    #
+    # :if_true => String to use when value is true
+    # :if_false => String to use when value is false
+    #
+    def self.yes_or_no params = {:if_true => "Yes", :if_false => "No"}
       Yummi::to_format do |value|
-        value ? "Yes" : "No"
+        (value or value.to_s.downcase == "true") ? params[:if_true] : params[:if_false]
       end
     end
 
@@ -54,12 +61,22 @@ module Yummi
       end
     end
 
+    # A formatter that uses the given format
     def self.with format
       Yummi::to_format do |value|
         format % value
       end
     end
 
+    #
+    # A formatter for numeric values
+    #
+    # === Hash Args
+    #
+    # :negative => format to use when value is negative
+    # :zero => format to use when value is zero
+    # :positive => format to use when value is positive
+    #
     def self.numeric params
       Yummi::to_format do |value|
         if params[:negative] and value < 0
