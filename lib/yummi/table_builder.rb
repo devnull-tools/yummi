@@ -23,33 +23,19 @@
 module Yummi
   class TableBuilder
 
-    attr_accessor :config
+    attr_accessor :config, :repositories
 
     def initialize config = {}
       if config.is_a? String
         config = Yummi::Helpers::symbolize_keys(YAML::load_file(config))
       end
       @config = config
-    end
-
-    def formatters
-      @_formatters_ ||= [Yummi::Formatters]
-      @_formatters_
-    end
-
-    def colorizers
-      @_colorizers ||= [Yummi::Colorizers]
-      @_colorizers
-    end
-
-    def row_based_colorizers
-      @_row_based_colorizers ||= [Yummi::Colorizers]
-      @_row_based_colorizers
-    end
-
-    def row_colorizers
-      @_row_colorizers ||= [Yummi::Colorizers]
-      @_row_colorizers
+      @repositories = {}
+    
+      @repositories[:formatters] = [Yummi::Formatters]    
+      @repositories[:colorizers] = [Yummi::Colorizers]    
+      @repositories[:row_based_colorizers] = [Yummi::Colorizers]    
+      @repositories[:row_colorizers] = [Yummi::Colorizers]
     end
 
     def defaults
@@ -135,7 +121,7 @@ module Yummi
     end
 
     def create_component(component_config, config)
-      repositories = send(config[:repository]).reverse
+      repositories = @repositories[config[:repository]].reverse
       if component_config.is_a? Hash
         component_config = Yummi::Helpers::symbolize_keys(component_config)
         component = Yummi::GroupedComponent::new

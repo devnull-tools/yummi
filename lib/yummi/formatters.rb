@@ -48,7 +48,7 @@ module Yummi
     # :if_true => String to use when value is true
     # :if_false => String to use when value is false
     #
-    def self.yes_or_no params = {:if_true => "Yes", :if_false => "No"}
+    def self.boolean params = {:if_true => "Yes", :if_false => "No"}
       Yummi::to_format do |value|
         (value or value.to_s.downcase == "true") ? params[:if_true] : params[:if_false]
       end
@@ -86,6 +86,18 @@ module Yummi
         elsif params[:zero] and value == 0
           params[:zero] % value
         end
+      end
+    end
+
+    #
+    # A formatter for percentual values.
+    #
+    # Paramters:
+    #   The precision to use (defaults to 3)
+    #
+    def self.percentage precision = 3
+      Yummi::to_format do |value|
+        "%.#{precision}f%%" % (value * 100)
       end
     end
 

@@ -21,6 +21,7 @@
       <entry name="?*.dtd" />
       <entry name="?*.tld" />
       <entry name="?*.ftl" />
+      <entry name="trace.info" />
     </wildcardResourcePatterns>
     <annotationProcessing enabled="false" useClasspath="true" />
   </component>
@@ -41,6 +42,9 @@
     <option name="SKIP_IMPORT_STATEMENTS" value="false" />
   </component>
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
+  <component name="GradleSettings">
+    <option name="gradleHome" value="$USER_HOME$/build/gradle" />
+  </component>
   <component name="GradleUISettings2">
     <setting name="root" />
   </component>
