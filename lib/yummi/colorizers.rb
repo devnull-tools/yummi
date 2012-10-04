@@ -118,7 +118,11 @@ module Yummi
     #
     def self.boolean params = {}
       Yummi::to_colorize do |value|
-        value ? (params[:if_true] or :green) : (params[:if_false] or :yellow)
+        if value.to_s.downcase == "true"
+          (params[:if_true] or :green)
+        else
+          (params[:if_false] or :yellow)
+        end
       end
     end
     

@@ -156,15 +156,12 @@ module Yummi
     # The component must respond to +call+ with the index and the row as the arguments and
     # return a color or +nil+ if default color should be used. A block can also be used.
     #
-    # You can add as much colorizers as you want. The first color returned will be used.
-    #
     # === Example
     #
     #   table.row_colorizer { |i, row| :red if row[:value] < 0 }
     #
     def row_colorizer (colorizer = nil, &block)
-      @row_colorizer ||= Yummi::GroupedComponent::new
-      @row_colorizer << (colorizer or block)
+      @row_colorizer = (colorizer or block)
     end
 
     #
@@ -208,7 +205,6 @@ module Yummi
     # #using_row) as the arguments and return a color or +nil+ if default color should be
     # used. A block can also be used.
     #
-    # You can add as much colorizers as you want. The first color returned will be used.
     #
     # === Args
     #
@@ -228,9 +224,8 @@ module Yummi
       [*indexes].each do |index|
         index = parse_index(index)
         if index
-          @colorizers[index] ||= []
           obj = (params[:using] or block or (proc { |v| params[:with] }))
-          @colorizers[index] << {:use_row => @using_row, :component => obj}
+          @colorizers[index] = {:use_row => @using_row, :component => obj}
         else
           colorize_null params, &block
         end
@@ -388,18 +383,12 @@ module Yummi
           color = nil
           value = nil
           column = row[col_index]
-          colorizers = @colorizers[col_index]
+          colorizer = @colorizers[col_index]
           if @null_colorizer and column.nil?
             color = @null_colorizer.call(column)
-          elsif colorizers
-            colorizers.each do |colorizer|
-              arg = colorizer[:use_row] ? IndexedData::new(@aliases, row) : column
-              c = colorizer[:component].call(arg)
-              if c
-                color = c
-                break
-              end
-            end
+          elsif colorizer
+            arg = colorizer[:use_row] ? IndexedData::new(@aliases, row) : column
+            color = colorizer[:component].call(arg)
           else
             color = @colors[:value]
           end
@@ -421,8 +410,7 @@ module Yummi
                               end,
                               :new => proc do |value, data|
                                 {:value => value, :color => data[:color]}
-                              end
-        )
+                              end)
         _row_data.each do |_row|
           output << _row
         end

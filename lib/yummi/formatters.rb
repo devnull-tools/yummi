@@ -48,13 +48,17 @@ module Yummi
     # :if_true => String to use when value is true
     # :if_false => String to use when value is false
     #
-    def self.boolean params = {:if_true => "Yes", :if_false => "No"}
+    def self.boolean params = {}
       Yummi::to_format do |value|
-        (value or value.to_s.downcase == "true") ? params[:if_true] : params[:if_false]
+        if value.to_s.downcase == "true"
+          (params[:if_true] or "Yes")
+        else 
+          (params[:if_false] or "No")
+        end
       end
     end
 
-    # A formatter to float values that uses the precision to round the value
+    # A formatter to round float values
     def self.round precision
       Yummi::to_format do |value|
         "%.#{precision}f" % value
