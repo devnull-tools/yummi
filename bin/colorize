@@ -43,6 +43,9 @@ end
 opt.on '-d data', '--data=FILE', 'Defines the file containing the data to print' do |data|
   @data = File.expand_path(data)
 end
+opt.on '--data-type', 'Defines the data type to parse the values' do |data_type|
+  @data_type = data_type
+end
 opt.on '-e FILES', '--eval=FILES', Array, 'Sets a file to eval for extending components' do |files|
   files.each do |file|
     load File.expand_path(file)
@@ -73,11 +76,11 @@ if @message
 elsif @table_builder
   abort "Please give the data to print" unless @data
   table = @table_builder.build_table
-  extension = File::extname(@data)
-  table.data = case extension
-  when ".yaml"
+  extension = File::extname(@data)[1..-1]
+  table.data = case (@data_type or extension)
+  when "yaml"
     YAML::load_file(@data)
-  when ".csv"
+  when "csv"
     require 'csv'
     CSV::parse(File.read(@data), :converters => :all)
   else

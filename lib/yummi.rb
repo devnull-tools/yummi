@@ -206,7 +206,7 @@ module Yummi
   class IndexedData
 
     def initialize (aliases, data)
-      @aliases = aliases
+      @aliases = aliases.collect {|a| a.to_s}
       @data = data
     end
 
@@ -214,8 +214,8 @@ module Yummi
       if value.is_a? Fixnum
         @data[value]
       else
-        index = @aliases.index(value)
-        raise Exception("Unknow alias #{value}") unless index
+        index = @aliases.index(value.to_s)
+        raise Exception::new("Unknow alias #{value}: \nAliases: #{@aliases}") unless index
         @data[index]
       end
     end

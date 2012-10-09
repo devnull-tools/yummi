@@ -109,6 +109,22 @@ module Yummi
       end
     end
 
+    def self.when params
+      Yummi::to_colorize do |value|
+        color = params[value]
+        return color if color
+        if value.respond_to? :to_sym
+          color = params[value.to_sym]
+        end
+        unless color
+          params.each do |k, v|
+            return v if k.to_s == value.to_s
+          end
+        end
+        color
+      end
+    end
+
     #
     # A colorizer for boolean values.
     #

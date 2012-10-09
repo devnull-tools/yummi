@@ -29,7 +29,7 @@ patterns to colorize lines (usefull to tail logs).
 
 Examples:
 
-    colorize -c intense_red -t "some text"
+    colorize -c intense_red -m "some text"
     echo "some text" | colorize -c intense_red
     tail -f $JBOSS_HOME/standalone/log/server.log | colorize -p path-to-your-jboss7-mapping.yaml
 

@@ -39,19 +39,19 @@ module Yummi
     end
 
     def defaults
-      component :color,      :repository => :colorizers,
-                             :invoke     => :colorize
+      component [:color, :colorize], :repository => :colorizers,
+                                     :invoke     => :colorize
 
-      component :format,     :repository => :formatters,
-                             :invoke     => :format
+      component :format, :repository => :formatters,
+                         :invoke     => :format
 
-      component :row_color,  :repository => :row_based_colorizers,
-                             :invoke     => :row_colorizer,
-                             :row_based  => true
+      component [:row_color, :colorize_row], :repository => :row_based_colorizers,
+                                             :invoke     => :row_colorizer,
+                                             :row_based  => true
 
-      component :colorizer,  :repository => :using_row_colorizers,
-                             :invoke     => :colorize,
-                             :using_row  => true
+      component [:state, :health], :repository => :using_row_colorizers,
+                                   :invoke     => :colorize,
+                                   :using_row  => true
       self
     end
 
@@ -60,8 +60,10 @@ module Yummi
       @components
     end
 
-    def component key, params
-      components[key] = params
+    def component keys, params
+      [*keys].each do |key|
+        components[key] = params
+      end
     end 
 
     def build_table
