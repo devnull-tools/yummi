@@ -165,16 +165,19 @@ module Yummi
 
     # Aligns the text to the right
     def self.right text, width
+      text = text.to_s unless text.is_a? String
       text.rjust(width)
     end
 
     # Aligns the text to the left
     def self.left text, width
+      text = text.to_s unless text.is_a? String
       text.ljust(width)
     end
 
     # Aligns the text to the center
     def self.center text, width
+      text = text.to_s unless text.is_a? String
       return text if text.size >= width
       size = width - text.size
       left_size = size / 2
@@ -184,6 +187,7 @@ module Yummi
 
     # Aligns the text to both sides
     def self.justify text, width
+      text = text.to_s unless text.is_a? String
       extra_spaces = width - text.size
       return text unless extra_spaces > 0
       words = text.split ' '
