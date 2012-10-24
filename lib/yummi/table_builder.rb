@@ -46,7 +46,7 @@ module Yummi
                          :invoke     => :format
 
       component [:row_color, :colorize_row], :repository => :row_based_colorizers,
-                                             :invoke     => :row_colorizer,
+                                             :invoke     => :colorize_row,
                                              :row_based  => true
 
       component [:state, :health], :repository => :using_row_colorizers,
@@ -74,6 +74,20 @@ module Yummi
       table.header = config[:header] if config[:header]
       table.layout = config[:layout].to_sym if config[:layout]
 
+      build_components table, config
+      contexts = config[:contexts]
+      if contexts
+        contexts.each do |context_config|
+          table.context context_config do
+            build_components table, context_config
+          end
+        end
+      end
+
+      table
+    end
+
+    def build_components(table, config)
       components.each do |key, component_config|
         block = lambda do |params|
           if component_config[:using_row]
@@ -90,8 +104,6 @@ module Yummi
           parse_component config[key], component_config, &block
         end
       end
-
-      table
     end
 
     def parse_component(definitions, config)
@@ -111,13 +123,12 @@ module Yummi
       if definitions
         if definitions.is_a? Hash
           definitions.each do |component_name, params|
-            yield(create_component({component_name => params}, config))
+            component = create_component({component_name => params}, config)
+            yield([{:using => component}])
           end
         else
-          puts definitions
           component = create_component(definitions, config)
-          puts component
-          yield(component)
+          yield([{:using => component}])
         end
       end
     end

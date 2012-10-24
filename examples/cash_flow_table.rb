@@ -35,7 +35,8 @@ tablebuilder = Yummi::TableBuilder::new('cash_flow_table.yaml')
                ['Withdraw', -50.23, 50.35, true, "34ERDTF6GYU"],
                ['Withdraw', -100, -49.65, true, "2344EDRFT5"],
                ['Deposit', 50, 0.35, false, nil],
-               ['Deposit', 600, 600.35, false, nil]]
+               ['Deposit', 600, 600.35, false, nil],
+               ['Total', nil, 600.35, nil, nil]]
 
 opt.on '--layout LAYOUT', 'Defines the table layout (horizontal or vertical)' do |layout|
   @table.layout = layout.to_sym

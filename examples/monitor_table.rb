@@ -31,8 +31,12 @@ opt = OptionParser::new
 # sets the title
 @table.title = 'Server Runtime Info'
 # formats memory info for easily reading
-@table.format :max_memory, :using => Yummi::Formatters.byte
-@table.format :free_memory, :using => Yummi::Formatters.byte
+@table.format [:max_memory, :free_memory], :using => Yummi::Formatters.byte
+
+@table.context do
+  @table.format [:max_memory, :free_memory], :using => Yummi::Formatters.byte
+  @table.colorize_row :with => :white
+end
 
 # colorizer for memory
 memory_colorizer = Yummi::Colorizers.percentage :max => :max_memory, :free => :free_memory
@@ -48,8 +52,9 @@ thread_colorizer = Yummi::Colorizers.percentage :max => :max_threads,
 opt.on '--color TYPE', 'Specify the color type (zebra,cell,none)' do |type|
   case type
     when 'zebra'
-      @table.row_colorizer Yummi::Colorizers.stripe :yellow, :purple
+      @table.colorize_row :using => Yummi::Colorizers.stripe(:yellow, :purple)
     when 'cell'
+      @table.colorize :server_name, :with => :purple
       @table.using_row do
         @table.colorize :free_memory, :using => memory_colorizer
         @table.colorize :in_use_threads, :using => thread_colorizer
@@ -80,25 +85,31 @@ opt.parse ARGV
 
 # sets the table data
 @table.data = [
-  ['Server 1', 1_000_000, 750_000, 200, 170],
-  ['Server 2', 1_000_000, 700_000, 200, 180],
-  ['Server 3', 1_000_000, 50_000, 200, 50],
-  ['Server 4', 1_000_000, 200_000, 200, 50],
-  ['Server 5', 1_000_000, 5_000, 200, 50],
-  ['Server 6', 1_000_000, 750_000, 200, 50],
+  ['Server 1', 1_000_000_000, 750_000_000, 200, 170],
+  ['Server 2', 1_000_000_000, 700_000_000, 200, 180],
+  ['Server 3', 1_000_000_000, 50_000_000, 200, 50],
+  ['Server 4', 1_000_000_000, 200_000_000, 200, 50],
+  ['Server 5', 1_000_000_000, 5_000_000, 200, 50],
+  ['Server 6', 1_000_000_000, 750_000_000, 200, 50],
 ]
 
 @table.add :server_name => 'Server 7',
-          :max_memory => 1_000_000,
-          :free_memory => 200_000,
+          :max_memory => 1_000_000_000,
+          :free_memory => 200_000_000,
           :max_threads => 200,
           :in_use_threads => 170
 
 @table.add :server_name => 'Server 8',
-          :max_memory => 1_000_000,
-          :free_memory => 5_000,
+          :max_memory => 1_000_000_000,
+          :free_memory => 5_000_000,
           :max_threads => 200,
           :in_use_threads => 180
+
+@table.add :server_name => 'Total',
+          :max_memory => @table.column(:max_memory).inject(:+),
+          :free_memory => @table.column(:free_memory).inject(:+),
+          :max_threads => @table.column(:max_threads).inject(:+),
+          :in_use_threads => @table.column(:in_use_threads).inject(:+)
 
 if @box
   @box << @table

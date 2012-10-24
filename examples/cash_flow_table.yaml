@@ -33,4 +33,14 @@ color:
   undefined:
     with: red
 row_color:
-  blessed_income: white
+  blessed_income: yellow
+
+contexts:
+  - format:
+      total:
+        numeric:
+          positive: "%.2f"
+          zero: "%.2f"
+          negative: "%.2f"
+    row_color:
+      with: white
