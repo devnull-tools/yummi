@@ -358,9 +358,9 @@ module Yummi
     private
 
     def extract_component params, &block
-      if params[:using]
+      if params and params[:using]
         params[:using]
-      elsif params[:with]
+      elsif params and params[:with]
         proc { |v| params[:with] }
       else
         block
