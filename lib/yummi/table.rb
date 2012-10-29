@@ -106,17 +106,9 @@ module Yummi
     #   end
     #   table.bottom { table.colorize :total, :with => :white }
     #
-    def bottom params = {}
-      params ||= {}
-      rows = (params[:rows] or 1)
-      index = @contexts.index :default
-      ctx = @contexts.size
-      _define_ ctx
-      @contexts.insert(index + 1, {:id => ctx, :rows => rows})
-
-      @current_context = ctx
-      yield if block_given?
-      @current_context = :default
+    def bottom params = {}, &block
+      index = @contexts.index(:default) + 1
+      _context_ index, params, &block
     end
 
     #
@@ -137,16 +129,8 @@ module Yummi
     #   end
     #   table.top { table.colorize :total, :with => :white }
     #
-    def top params = {}
-      params ||= {}
-      rows = (params[:rows] or 1)
-      ctx = @contexts.size
-      _define_ ctx
-      @contexts.insert(0, {:id => ctx, :rows => rows})
-
-      @current_context = ctx
-      yield if block_given?
-      @current_context = :default
+    def top params = {}, &block
+      _context_ 0, params, &block
     end
 
     # Sets the table print layout.
@@ -399,6 +383,18 @@ module Yummi
         :colorizers => [],
         :row_colorizer => nil,
       }
+    end
+
+    def _context_ index, params, &block
+      params ||= {}
+      rows = (params[:rows] or 1)
+      ctx = @contexts.size
+      _define_ ctx
+      @contexts.insert(index, {:id => ctx, :rows => rows})
+
+      @current_context = ctx
+      block.call if block
+      @current_context = :default
     end
 
     #
