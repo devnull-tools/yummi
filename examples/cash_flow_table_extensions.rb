@@ -1,8 +1,8 @@
 module Yummi
   module Colorizers
     def self.blessed_income color
-      Yummi::to_colorize do |data| # or |data, index| if you need the index
-        color if data[:value] > data[:total]
+      Yummi::to_colorize do |ctx|
+        color if ctx[:value] > ctx[:total]
       end
     end
   end

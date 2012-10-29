@@ -28,20 +28,19 @@ module Yummi
 
     # The Color Schema Definition
     module Schema
-      # Normal Linux Terminal Colors, used by default in normal, underscore, blink and
-      # highlight color types
+      # Normal Linux Terminal Colors, used by default in normal color types
       NORMAL_COLORS = {
         :colors => [:black, :red, :green, :yellow, :blue, :purple, :cyan, :gray],
         :default => :gray
       }
-      # Intense Linux Terminal Colors, used by default in intense and strong color types
+      # Intense Linux Terminal Colors, used by default in bold color types
       ALTERNATE_COLORS = {
         :colors => [:gray, :red, :green, :yellow, :blue, :purple, :cyan, :white],
         :default => :gray
       }
     end
 
-    # Colors from default linux terminal scheme
+    # Color mappings
     COLORS = {}
 
     #
@@ -72,22 +71,24 @@ module Yummi
     #  (1 based) too. (:intense_red and :intense_2, for example)
     #
     def self.add_color_map mappings
-      mappings.each do |type, config|
-        schema = config[:schema]
-        schema[:colors].each_with_index do |color, key_code|
-          # maps the default color for a type
-          COLORS[type] = "#{config[:key_code]};3#{key_code}" if color == schema[:default]
-          # do not use prefix if schema is default
-          prefix = (type == :default ? '' : "#{type}_")
-          # maps the color using color name
-          key = "#{prefix}#{color}"
-          COLORS[key.to_sym] = "#{config[:key_code]};3#{key_code}"
-          # maps the color using color key code
-          key = "#{prefix}#{key_code + 1}"
-          COLORS[key.to_sym] = "#{config[:key_code]};3#{key_code}"
-          # maps the color using color name if default schema does not defines it
-          # example: yellow and white are present only in strong/intense schema
-          COLORS[color.to_sym] = "#{config[:key_code]};3#{key_code}" unless COLORS[color]
+      mappings.each do |types, config|
+        [*types].each do |type|
+          schema = config[:schema]
+          schema[:colors].each_with_index do |color, key_code|
+            # maps the default color for a type
+            COLORS[type] = "#{config[:key_code]}#{key_code}" if color == schema[:default]
+            # do not use prefix if schema is default
+            prefix = (type == :default ? '' : "#{type}_")
+            # maps the color using color name
+            key = "#{prefix}#{color}"
+            COLORS[key.to_sym] = "#{config[:key_code]}#{key_code}"
+            # maps the color using color key code
+            key = "#{prefix}#{key_code + 1}"
+            COLORS[key.to_sym] = "#{config[:key_code]}#{key_code}"
+            # maps the color using color name if default schema does not defines it
+            # example: yellow and white are present only in strong/intense schema
+            COLORS[color.to_sym] = "#{config[:key_code]}#{key_code}" unless COLORS[color]
+          end
         end
       end
     end
@@ -113,35 +114,18 @@ module Yummi
 
   # see #Color#colorize
   def self.colorize string, color
-    Color.colorize string, color
-  end
-
-  #
-  # A module to handle blocks by dynamically resolving parameters
-  #
-  # see #DataEvalColorizer
-  #
-  module BlockHandler
-
-    #
-    # Calls the block resolving the parameters by getting the parameter name from the
-    # given context.
-    #
-    # === Example
-    #
-    #   context = :max => 10, :curr => 5, ratio => 0.15
-    #   percentage = BlockHandler.call_block(context) { |max,curr| curr.to_f / max }
-    #
-    def block_call (context, &block)
-      args = []
-      block.parameters.each do |parameter|
-        args << context[parameter[1]]
+    #check if there is more than one color classifier
+    modes = color.to_s.split(/_/)
+    if modes.size >= 3
+      color = modes.last
+      modes.delete_at(-1)
+      modes.each do |mode|
+        string = Color.colorize(string, "#{mode}_#{color}")
       end
-      block.call(*args)
+      string
+    else
+      Color.colorize string, color
     end
-
-    module_function :block_call
-
   end
 
   # A module to align texts based on a reference width
@@ -204,6 +188,46 @@ module Yummi
       words.join ' '
     end
 
+  end
+
+  #
+  # A module to handle blocks by dynamically resolving parameters
+  #
+  # see #DataEvalColorizer
+  #
+  module BlockHandler
+
+    #
+    # Calls the block resolving the parameters by getting the parameter name from the
+    # given context.
+    #
+    # === Example
+    #
+    #   context = :max => 10, :curr => 5, ratio => 0.15
+    #   percentage = BlockHandler.call_block(context) { |max,curr| curr.to_f / max }
+    #
+    def block_call (context, &block)
+      args = []
+      block.parameters.each do |parameter|
+        args << context[parameter[1]]
+      end
+      block.call(*args)
+    end
+
+    module_function :block_call
+
+  end
+
+  class Context
+    attr_reader :value, :obj
+
+    def initialize (value)
+      @value = value
+    end
+
+    def [] (index)
+      obj[index]
+    end
   end
 
   # A class to expose indexed data by numeric indexes and aliases.

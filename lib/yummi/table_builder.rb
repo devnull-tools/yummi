@@ -34,24 +34,20 @@ module Yummi
     
       @repositories[:formatters] = [Yummi::Formatters]    
       @repositories[:colorizers] = [Yummi::Colorizers]    
-      @repositories[:row_based_colorizers] = [Yummi::Colorizers]    
-      @repositories[:using_row_colorizers] = [Yummi::Colorizers]
+      @repositories[:row_colorizers] = [Yummi::Colorizers]    
     end
 
     def defaults
-      component [:color, :colorize], :repository => :colorizers,
-                                     :invoke     => :colorize
+      component [:color, :colorize, :state, :health], :repository => :colorizers,
+                                                      :invoke     => :colorize
 
       component :format, :repository => :formatters,
                          :invoke     => :format
 
-      component [:row_color, :colorize_row], :repository => :row_based_colorizers,
+      component [:row_color, :colorize_row], :repository => :row_colorizers,
                                              :invoke     => :colorize_row,
                                              :row_based  => true
 
-      component [:state, :health], :repository => :using_row_colorizers,
-                                   :invoke     => :colorize,
-                                   :using_row  => true
       self
     end
 
@@ -75,11 +71,14 @@ module Yummi
       table.layout = config[:layout].to_sym if config[:layout]
 
       build_components table, config
-      contexts = config[:contexts]
-      if contexts
-        contexts.each do |context_config|
-          table.context context_config do
-            build_components table, context_config
+
+      [:bottom, :up].each do |context|
+        contexts = config[context]
+        if contexts
+          contexts.each do |context_config|
+            table.send context, context_config do
+              build_components table, context_config
+            end
           end
         end
       end
@@ -90,13 +89,7 @@ module Yummi
     def build_components(table, config)
       components.each do |key, component_config|
         block = lambda do |params|
-          if component_config[:using_row]
-            table.using_row do
-              table.send component_config[:invoke], *params
-            end
-          else
-            table.send component_config[:invoke], *params
-          end
+          table.send component_config[:invoke], *params
         end
         if component_config[:row_based]
           parse_row_based_component config[key], component_config, &block

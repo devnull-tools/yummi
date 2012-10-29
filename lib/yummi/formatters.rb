@@ -26,7 +26,8 @@ module Yummi
   module FormatterBlock
 
     # Calls the :call: method
-    def format (value)
+    def format (arg)
+      arg = Yummi::Context::new(arg) unless arg.is_a? Context
       call value
     end
 
@@ -49,7 +50,8 @@ module Yummi
     # :if_false => String to use when value is false
     #
     def self.boolean params = {}
-      Yummi::to_format do |value|
+      Yummi::to_format do |ctx|
+        value = ctx.value
         if value.to_s.downcase == "true"
           (params[:if_true] or "Yes")
         else 
@@ -60,14 +62,16 @@ module Yummi
 
     # A formatter to round float values
     def self.round precision
-      Yummi::to_format do |value|
+      Yummi::to_format do |ctx|
+        value = ctx.value
         "%.#{precision}f" % value
       end
     end
 
     # A formatter that uses the given format
     def self.with format
-      Yummi::to_format do |value|
+      Yummi::to_format do |ctx|
+        value = ctx.value
         format % value
       end
     end
@@ -82,7 +86,8 @@ module Yummi
     # :positive => format to use when value is positive
     #
     def self.numeric params
-      Yummi::to_format do |value|
+      Yummi::to_format do |ctx|
+        value = ctx.value
         if params[:negative] and value < 0
           params[:negative] % value.abs
         elsif params[:positive] and value > 0
@@ -100,7 +105,8 @@ module Yummi
     #   The precision to use (defaults to 3)
     #
     def self.percentage precision = 3
-      Yummi::to_format do |value|
+      Yummi::to_format do |ctx|
+        value = ctx.value
         "%.#{precision}f%%" % (value * 100)
       end
     end
@@ -130,7 +136,8 @@ module Yummi
     # See #BYTE_MODES
     #
     def self.byte params = {}
-      Yummi::to_format do |value|
+      Yummi::to_format do |ctx|
+        value = ctx.value
         value = value.to_i if value.is_a? String
         mode = (params[:mode] or :iec)
         range = BYTE_MODES[mode][:range]

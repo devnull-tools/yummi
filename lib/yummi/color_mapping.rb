@@ -22,39 +22,27 @@
 
 Yummi::Color::load_color_map(
   :default => {
-    :key_code => 0,
+    :key_code => '0;3',
     :schema => Yummi::Color::Schema::NORMAL_COLORS
   },
-  :intense => {
-    :key_code => 1,
+  :reverse => {
+    :key_code => '0;4',
+    :schema => Yummi::Color::Schema::NORMAL_COLORS
+  },
+  [:intense, :strong, :bold] => {
+    :key_code => '1;3',
     :schema => Yummi::Color::Schema::ALTERNATE_COLORS
   },
-  :strong => {
-    :key_code => 1,
-    :schema => Yummi::Color::Schema::ALTERNATE_COLORS
-  },
-  :underscore => {
-    :key_code => 4,
+  [:underline, :underscore, :underscored] => {
+    :key_code => '4;3',
     :schema => Yummi::Color::Schema::NORMAL_COLORS
   },
-  :underscored => {
-    :key_code => 4,
+  [:blink, :blinking] => {
+    :key_code => '5;3',
     :schema => Yummi::Color::Schema::NORMAL_COLORS
   },
-  :blink => {
-    :key_code => 5,
-    :schema => Yummi::Color::Schema::NORMAL_COLORS
-  },
-  :blinking => {
-    :key_code => 5,
-    :schema => Yummi::Color::Schema::NORMAL_COLORS
-  },
-  :highlight => {
-    :key_code => 7,
-    :schema => Yummi::Color::Schema::NORMAL_COLORS
-  },
-  :highlighted => {
-    :key_code => 7,
+  [:highlight, :highlighted] => {
+    :key_code => '7;3',
     :schema => Yummi::Color::Schema::NORMAL_COLORS
   }
 )

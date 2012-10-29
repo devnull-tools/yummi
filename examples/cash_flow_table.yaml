@@ -35,7 +35,16 @@ color:
 row_color:
   blessed_income: yellow
 
-contexts:
+top:
+  - format:
+      total:
+        numeric:
+          positive: "%.2f"
+          zero: "%.2f"
+          negative: "%.2f"
+    row_color:
+      with: white
+bottom:
   - format:
       total:
         numeric:

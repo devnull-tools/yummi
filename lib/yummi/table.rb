@@ -23,8 +23,6 @@
 module Yummi
   # A Table that supports colorizing title, header, values and also formatting the values.
   class Table
-    # The table data. It holds a two dimensional array.
-    attr_accessor :data
     # The table title
     attr_accessor :title
     # The table description
@@ -75,7 +73,6 @@ module Yummi
 
       @align = [:left]
       @components = {}
-      #@contexts = []
       @context_rows = []
       _define_ :default
       @current_context = :default
@@ -91,11 +88,10 @@ module Yummi
       @no_colors = true
     end
 
-    def context params = {}
+    def bottom params = {}
       params ||= {}
-      index = @context_rows.size #@contexts.size
+      index = @context_rows.size
       _define_ index
-      #@contexts.insert(index, context)
       @context_rows.insert(index, (params[:rows] or 1))
 
       @current_context = index
@@ -127,7 +123,7 @@ module Yummi
       index = parse_index(index)
       columns = []
       @data.each do |row|
-        columns << row[index]
+        columns << row_to_array(row)[index].value
       end
       columns
     end
@@ -193,39 +189,20 @@ module Yummi
       component[:row_colorizer] = obj
     end
 
-    #
-    # Indicates that the column colorizer (#colorize) should receive the entire row as the
-    # argument instead of just the column value for all definitions inside of the given
-    # block.
-    #
-    # === Example
-    #
-    #   table.using_row do
-    #     table.colorize(:value) { |row| :red if row[:value] < row[:average] }
-    #   end
-    #
-    def using_row
-      @using_row = true
-      yield if block_given?
-      @using_row = false
+    # Sets the table data
+    def data= (data)
+      @data = data
     end
 
     #
     # Adds the given data as a row. If the argument is a hash, its keys will be used
     # to match header alias for building the row data.
     #
-    def << (row)
-      if row.is_a? Hash
-        array = []
-        aliases.each do |header_alias|
-          array << row[header_alias]
-        end
-        row = array
-      end
+    def add (row)
       @data << row
     end
 
-    alias_method :add, :<<
+    alias_method :<<, :add
 
     #
     # Sets a component to colorize a column.
@@ -254,7 +231,7 @@ module Yummi
         index = parse_index(index)
         if index
           obj = extract_component(params, &block)
-          component[:colorizers][index] = {:use_row => @using_row, :component => obj}
+          component[:colorizers][index] = obj
         else
           colorize_null params, &block
         end
@@ -434,9 +411,8 @@ module Yummi
       @data.each_index do |row_index|
         # sets the current context
         @current_context = row_contexts[row_index]
-        row = @data[row_index]
+        row = row_to_array(@data[row_index], row_index)
         _row_data = []
-        row = row.to_a if row.is_a? Range
         row.each_index do |col_index|
           next if not @header.empty? and @header[0].size < col_index + 1
           color = nil
@@ -446,21 +422,19 @@ module Yummi
           if component[:null_colorizer] and column.nil?
             color = component[:null_colorizer].call(column)
           elsif colorizer
-            arg = colorizer[:use_row] ? IndexedData::new(@aliases, row) : column
-            color = colorizer[:component].call(arg)
+            color = colorizer.call(column)
           else
             color = @colors[:value]
           end
           formatter = component[:formatters][col_index]
           formatter = component[:null_formatter] if column.nil? and @null_formatter
-          value = (formatter ? formatter.call(column) : column)
+          value = (formatter ? formatter.call(column) : column.value)
 
           _row_data << {:value => value, :color => color}
         end
         row_colorizer = component[:row_colorizer]
         if row_colorizer
-          row_data = IndexedData::new @aliases, row
-          row_color = row_colorizer.call row_data, row_index
+          row_color = row_colorizer.call row.first
           _row_data.collect! { |data| data[:color] = row_color; data } if row_color
         end
 
@@ -478,6 +452,46 @@ module Yummi
         end
       end
       output
+    end
+
+    def row_to_array (row, row_index = nil)
+      array = []
+      row = row.to_a if row.is_a? Range
+      if row.is_a? Hash
+        @aliases.each_index do |column_index|
+          obj = TableContext::new(
+            :obj => row,
+            :row_index => row_index,
+            :column_index => column_index,
+            :value => row[@aliases[column_index]]
+          )
+          array << obj
+        end
+      elsif row.is_a? Array
+        row.each_index do |column_index|
+          obj = TableContext::new(
+            :obj => IndexedData::new(@aliases, row),
+            :row_index => row_index,
+            :column_index => column_index,
+            :value => row[column_index]
+          )
+          array << obj
+        end
+      else
+        @aliases.each_index do |column_index|
+          obj = TableContext::new(
+            :obj => row,
+            :row_index => row_index,
+            :column_index => column_index,
+            :value => row.send(@aliases[column_index])
+          )
+          def obj.[] (index)
+            obj.send(index)
+          end
+          array << obj
+        end
+      end
+      array
     end
 
     def component
@@ -530,6 +544,19 @@ module Yummi
         end
       end
       new_data
+    end
+
+  end
+
+  class TableContext < Yummi::Context
+
+    attr_reader :row_index, :column_index
+
+    def initialize params
+      @row_index = params[:row_index]
+      @column_index = params[:column_index]
+      @value = params[:value]
+      @obj = params[:obj]
     end
 
   end

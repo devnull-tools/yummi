@@ -36,12 +36,11 @@ module Yummi
     #
     # === Args
     #
-    # An array of arguments that will be passed to :call: method to get the color. By
-    # convention, the first argument must be the object to colorize (to_s is called on it
-    # for getting the text to colorize).
+    # A context or a value.
     #
-    def colorize (*args)
-      Yummi.colorize args.first.to_s, color_for(args)
+    def colorize (arg)
+      arg = Yummi::Context::new(arg) unless arg.is_a? Context
+      Yummi.colorize arg.value.to_s, color_for(arg)
     end
 
     #
@@ -49,11 +48,11 @@ module Yummi
     #
     # === Args
     #
-    # An array of arguments that will be passed to :call: method to get the color. By
-    # convention, the first argument must be the object to colorize (to_s is called on it
-    # for getting the text to colorize).#
-    def color_for (*args)
-      call(*args)
+    # A context or a value.
+    # 
+    def color_for (arg)
+      arg = Yummi::Context::new(arg) unless arg.is_a? Context
+      call(arg)
     end
 
   end
@@ -80,16 +79,6 @@ module Yummi
       join.extend Colorizer
     end
 
-    # Returns a new instance of #DataEvalColorizer
-    def self.by_data_eval &block
-      DataEvalColorizer::new(&block)
-    end
-
-    # Returns a new instance of #EvalColorizer
-    def self.by_eval &block
-      EvalColorizer::new(&block)
-    end
-
     # Returns a new instance of #StripeColorizer
     def self.stripe *colors
       StripeColorizer::new(*colors)
@@ -104,13 +93,14 @@ module Yummi
     # A colorizer that uses the given color.
     #
     def self.with color
-      Yummi::to_colorize do |value|
+      Yummi::to_colorize do |ctx|
         color
       end
     end
 
     def self.when params
-      Yummi::to_colorize do |value|
+      Yummi::to_colorize do |ctx|
+        value = ctx.value
         color = params[value]
         return color if color
         if value.respond_to? :to_sym
@@ -133,7 +123,8 @@ module Yummi
     #   - if_false: color used if the value is false (defaults to yellow)
     #
     def self.boolean params = {}
-      Yummi::to_colorize do |value|
+      Yummi::to_colorize do |ctx|
+        value = ctx.value
         if value.to_s.downcase == "true"
           (params[:if_true] or :green)
         else
@@ -149,7 +140,8 @@ module Yummi
     #   - MINIMUN_VALUE: COLOR_TO_USE
     #
     def self.threshold params
-      colorizer = lambda do |value|
+      colorizer = lambda do |ctx|
+        value = ctx.value
         params.sort.reverse_each do |limit, color|
           return color if value > limit
         end
@@ -162,7 +154,8 @@ module Yummi
     end
 
     def self.numeric params
-      Yummi::to_format do |value|
+      Yummi::to_format do |ctx|
+        value = ctx.value
         if params[:negative] and value < 0
           params[:negative]
         elsif params[:positive] and value > 0
@@ -177,7 +170,7 @@ module Yummi
       include Yummi::Colorizer
 
       def initialize(params)
-        @max = params[:max]
+        @max = params[:max].to_sym
         @free = params[:free]
         @using = params[:using]
         @color = params[:color] || {
@@ -187,12 +180,13 @@ module Yummi
         }
         @threshold = params[:threshold] || {
           :warn => 0.30,
-          :bad => 0.15
+          :bad => 0.15,
+          :good => 1
         }
       end
 
       def call(data)
-        max = data[@max.to_sym].to_f
+        max = data[@max].to_f
         free = @using ? max - data[@using.to_sym].to_f : data[@free.to_sym].to_f
 
         percentage = free / max
@@ -254,8 +248,8 @@ module Yummi
         @last_color = nil
       end
 
-      def call *args
-        line = args.first.to_s
+      def call ctx
+        line = ctx.value.to_s
         @patterns.each do |regex, color|
           if regex.match(line)
             @last_color = color
@@ -280,81 +274,6 @@ module Yummi
       def call *args
         @count += 1
         @colors[@count % @colors.size]
-      end
-
-    end
-
-    #
-    # A colorizer that evaluates a main block and returns a color based on other blocks.
-    #
-    # The main block must be compatible with the colorizing type (receiving a column
-    # value in case of a table column colorizer or the row index and row value in case
-    # of a table row colorizer).
-    #
-    # === Example
-    #
-    #   # assuming that the table has :max and :current aliases
-    #   colorizer = DataEvalColorizer::new { |index, data| data[:current] / data[:max] }
-    #   # the result of the expression above will be passed to this block
-    #   colorizer.use(:red) { |value| value >= 0.9 }
-    #
-    #   table.using_row.colorize :current, :using => colorizer
-    #
-    class EvalColorizer
-      include Yummi::Colorizer
-
-      def initialize (&block)
-        @block = block
-        @colors = []
-        @eval_blocks = []
-      end
-
-      #
-      # Uses the given color if the given block returns something when evaluated with the
-      # result of main block.
-      #
-      # An objtect that responds to :call may also be used.
-      #
-      def use (color, component = nil, &eval_block)
-        @colors << color
-        @eval_blocks << (component or eval_block)
-      end
-
-      # Resolves the value using the main block and given arguments
-      def resolve_value (*args)
-        @block.call(*args)
-      end
-
-      def call (*args)
-        value = resolve_value(*args)
-        @eval_blocks.each_index do |i|
-          return @colors[i] if @eval_blocks[i].call(value)
-        end
-        nil
-      end
-
-    end
-
-    #
-    # A colorizer that evaluates a main block and returns a color based on other blocks.
-    #
-    # The main block can receive any parameters and the names must be aliases the current
-    # evaluated data.
-    #
-    # === Example
-    #
-    #   # assuming that the table has :max and :current aliases
-    #   colorizer = DataEvalColorizer::new { |max, current| current / max }
-    #   # the result of the expression above will be passed to this block
-    #   colorizer.use(:red) { |value| value >= 0.9 }
-    #
-    #   table.using_row.colorize :current, :using => colorizer
-    #
-    class DataEvalColorizer < EvalColorizer
-      include Yummi::BlockHandler, Yummi::Colorizer
-
-      def resolve_value (*args)
-        block_call args.first, &@block # by convention, the first arg is data
       end
 
     end

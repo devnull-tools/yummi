@@ -33,32 +33,41 @@ opt = OptionParser::new
 # formats memory info for easily reading
 @table.format [:max_memory, :free_memory], :using => Yummi::Formatters.byte
 
-@table.context do
+@table.bottom do
   @table.format [:max_memory, :free_memory], :using => Yummi::Formatters.byte
   @table.colorize_row :with => :white
 end
 
 # colorizer for memory
-memory_colorizer = Yummi::Colorizers.percentage :max => :max_memory, :free => :free_memory
+@memory_colorizer = Yummi::Colorizers.percentage :max => :max_memory, :free => :free_memory
 
 # colorizer for threads
-thread_colorizer = Yummi::Colorizers.percentage :max => :max_threads,
-                                                :using => :in_use_threads,
-                                                :threshold => {
-                                                  :warn => 0.9,
-                                                  :bad => 0.7
-                                                }
+@thread_colorizer = Yummi::Colorizers.percentage :max => :max_threads,
+                                                 :using => :in_use_threads,
+                                                 :threshold => {
+                                                   :warn => 0.9,
+                                                   :bad => 0.7
+                                                 }
 
-opt.on '--color TYPE', 'Specify the color type (zebra,cell,none)' do |type|
+def zebra_colors
+  @table.colorize_row :using => Yummi::Colorizers.stripe(:yellow, :purple)
+end
+
+def full_colors
+  @table.colorize :server_name, :with => :purple
+  @table.colorize :free_memory, :using => @memory_colorizer
+  @table.colorize :in_use_threads, :using => @thread_colorizer
+  @table.colorize [:max_memory, :max_threads], :with => :gray
+end
+
+full_colors
+
+opt.on '--color TYPE', 'Specify the color type (zebra,full,none)' do |type|
   case type
     when 'zebra'
-      @table.colorize_row :using => Yummi::Colorizers.stripe(:yellow, :purple)
-    when 'cell'
-      @table.colorize :server_name, :with => :purple
-      @table.using_row do
-        @table.colorize :free_memory, :using => memory_colorizer
-        @table.colorize :in_use_threads, :using => thread_colorizer
-      end
+      zebra_colors
+    when 'full'
+      full_colors
     when 'none'
       @table.no_colors
     else
@@ -99,11 +108,25 @@ opt.parse ARGV
           :max_threads => 200,
           :in_use_threads => 170
 
-@table.add :server_name => 'Server 8',
-          :max_memory => 1_000_000_000,
-          :free_memory => 5_000_000,
-          :max_threads => 200,
-          :in_use_threads => 180
+class ServerStatus
+  attr_reader :server_name, :max_memory, :free_memory, :max_threads, :in_use_threads
+
+  def initialize server_name, max_memory, free_memory, max_threads, in_use_threads
+    @server_name = server_name
+    @max_memory = max_memory
+    @free_memory = free_memory
+    @max_threads = max_threads
+    @in_use_threads = in_use_threads
+  end
+end
+
+@table.add ServerStatus::new(
+    'Server 8',
+    1_000_000_000,
+    5_000_000,
+    200,
+    180
+  )
 
 @table.add :server_name => 'Total',
           :max_memory => @table.column(:max_memory).inject(:+),
