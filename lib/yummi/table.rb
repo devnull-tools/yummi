@@ -410,7 +410,7 @@ module Yummi
           width = max_width data, j
           alignment = (@align[j] or @default_align)
           value = Aligner.align alignment, column[:value].to_s, width
-          value = Color.colorize value, column[:color] unless @no_colors
+          value = Yummi.colorize value, column[:color] unless @no_colors
           string << value
           string << (' ' * @colspan)
         end

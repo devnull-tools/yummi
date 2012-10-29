@@ -95,8 +95,8 @@ module Yummi
 
     # Escape the given text with the given color code
     def self.escape key
-      return key unless key and COLORS[key.to_sym]
-      "\e[#{COLORS[key.to_sym]}m"
+      return key unless key and COLORS[key.to_s.to_sym]
+      "\e[#{COLORS[key.to_s.to_sym]}m"
     end
 
     # Colorize the given text with the given color
@@ -112,7 +112,13 @@ module Yummi
 
   end
 
+  # 
+  # Colorizes the text using the given color.
+  # 
+  # This method also checks if the color mode is in chain (like in "underline_bold_green").
+  # 
   # see #Color#colorize
+  #
   def self.colorize string, color
     #check if there is more than one color classifier
     modes = color.to_s.split(/_/)
