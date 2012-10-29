@@ -60,7 +60,7 @@ module Yummi
         @colors = {
           :debug => nil,
           :info => :green,
-          :warn => :brown,
+          :warn => :yellow,
           :error => :red,
           :fatal => :intense_red,
           :any => :intense_gray
