@@ -437,27 +437,19 @@ module Yummi
       output
     end
 
-    #
-    # Builds the data output for this table.
-    #
-    # Returns the color map and the formatted data.
-    #
-    def build_data_output
-      output = []
+    # maps the context for each row
+    def build_row_contexts
       rows = @data.size
-      # maps the context for each row
       row_contexts = [:default] * rows
-      i = 0
+      offset = 0
       @contexts.each do |ctx|
         if ctx == :default
           break
         end
         size = ctx[:rows]
-        row_contexts[i...(size + i)] = [ctx[:id]] * size
-        i += size
+        row_contexts[offset...(size + offset)] = [ctx[:id]] * size
+        offset += size
       end
-      rows = @data.size
-      i = 1
       @contexts.reverse_each do |ctx|
         if ctx == :default
           break
@@ -465,8 +457,18 @@ module Yummi
         size = ctx[:rows]
         row_contexts[(rows - size)...rows] = [ctx[:id]] * size
         rows -= size
-        i += 1
       end
+      row_contexts
+    end
+
+    #
+    # Builds the data output for this table.
+    #
+    # Returns the color map and the formatted data.
+    #
+    def build_data_output
+      output = []
+      row_contexts = build_row_contexts
       @data.each_index do |row_index|
         # sets the current context
         @current_context = row_contexts[row_index]
