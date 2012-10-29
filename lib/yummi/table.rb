@@ -73,7 +73,7 @@ module Yummi
 
       @align = [:left]
       @components = {}
-      @context_rows = []
+      @contexts = [:default]
       _define_ :default
       @current_context = :default
     end
@@ -88,17 +88,66 @@ module Yummi
       @no_colors = true
     end
 
+    #
+    # Groups definitions for a specified group of rows at the bottom of the table.
+    # Every customization can be used (formatter/colorizer for null values, for rows
+    # and columns). Customizations must be done in the given block.
+    #
+    # Subsequent calls to this method creates different groups. 
+    #
+    # === Args
+    #   +:rows+:: The number of rows to group using the customizations in the block
+    #
+    # === Examples
+    #
+    #   table.bottom :rows => 3 do
+    #     table.colorize :subtotal, :with => :green
+    #     table.format :approved, :using => Yummi::Formatters::boolean
+    #   end
+    #   table.bottom { table.colorize :total, :with => :white }
+    #
     def bottom params = {}
       params ||= {}
-      index = @context_rows.size
-      _define_ index
-      @context_rows.insert(index, (params[:rows] or 1))
+      rows = (params[:rows] or 1)
+      index = @contexts.index :default
+      ctx = @contexts.size
+      _define_ ctx
+      @contexts.insert(index + 1, {:id => ctx, :rows => rows})
 
-      @current_context = index
+      @current_context = ctx
       yield if block_given?
       @current_context = :default
     end
 
+    #
+    # Groups definitions for a specified group of rows at the top of the table.
+    # Every customization can be used (formatter/colorizer for null values, for rows
+    # and columns). Customizations must be done in the given block.
+    #
+    # Subsequent calls to this method creates different groups. 
+    #
+    # === Args
+    #   +:rows+:: The number of rows to group using the customizations in the block
+    #
+    # === Examples
+    #
+    #   table.top :rows => 3 do
+    #     table.colorize :subtotal, :with => :green
+    #     table.format :approved, :using => Yummi::Formatters::boolean
+    #   end
+    #   table.top { table.colorize :total, :with => :white }
+    #
+    def top params = {}
+      params ||= {}
+      rows = (params[:rows] or 1)
+      ctx = @contexts.size
+      _define_ ctx
+      @contexts.insert(0, {:id => ctx, :rows => rows})
+
+      @current_context = ctx
+      yield if block_given?
+      @current_context = :default
+    end
 
     # Sets the table print layout.
     def layout=(layout)
@@ -402,9 +451,23 @@ module Yummi
       rows = @data.size
       # maps the context for each row
       row_contexts = [:default] * rows
+      i = 0
+      @contexts.each do |ctx|
+        if ctx == :default
+          break
+        end
+        size = ctx[:rows]
+        row_contexts[i...(size + i)] = [ctx[:id]] * size
+        i += size
+      end
+      rows = @data.size
       i = 1
-      @context_rows.reverse_each do |size|
-        row_contexts[(rows - size)...rows] = [@context_rows.size - i] * size
+      @contexts.reverse_each do |ctx|
+        if ctx == :default
+          break
+        end
+        size = ctx[:rows]
+        row_contexts[(rows - size)...rows] = [ctx[:id]] * size
         rows -= size
         i += 1
       end

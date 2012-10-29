@@ -72,7 +72,7 @@ module Yummi
 
       build_components table, config
 
-      [:bottom, :up].each do |context|
+      [:bottom, :top].each do |context|
         contexts = config[context]
         if contexts
           contexts.each do |context_config|
