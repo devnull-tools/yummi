@@ -107,7 +107,7 @@ module Yummi
     #   table.bottom { table.colorize :total, :with => :white }
     #
     def bottom params = {}, &block
-      index = @contexts.index(:default) + 1
+      index = @contexts.size
       _context_ index, params, &block
     end
 
