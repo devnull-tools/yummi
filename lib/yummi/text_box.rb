@@ -155,8 +155,8 @@ module Yummi
         sizes << size
         width = [width, size].max
       end
-      left = [''] * content.size
-      right = [''] * content.size
+      left = nil
+      right = nil
       border = @style.border
       if border
         color = border[:color]
@@ -180,7 +180,10 @@ module Yummi
       i = 0
       content.each do |line|
         diff = width - sizes[i]
-        buff << left.shift.to_s << line.chomp << (' ' * diff) << right.shift.to_s << $/
+        buff << left.shift.to_s if border
+        buff << line.chomp << (' ' * diff)
+        buff << right.shift.to_s if border
+        buff << $/
         i += 1
       end
       buff << bottom if border
