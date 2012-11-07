@@ -140,11 +140,21 @@ module Yummi
     #   - MINIMUN_VALUE: COLOR_TO_USE
     #
     def self.threshold params
+      params = params.dup
+      mode = (params.delete(:mode) or :min)
       colorizer = lambda do |ctx|
         value = ctx.value
-        params.sort.reverse_each do |limit, color|
-          return color if value > limit
+        case mode.to_sym
+        when :min
+          params.sort.reverse_each do |limit, color|
+            return color if value >= limit
+          end
+        when :max
+          params.sort.each do |limit, color|
+            return color if value <= limit
+          end
         end
+        nil
       end
       Yummi::to_colorize(&colorizer)
     end
@@ -173,16 +183,22 @@ module Yummi
         @max = params[:max].to_sym
         @free = params[:free]
         @using = params[:using]
-        @color = params[:color] || {
+        color = {
           :bad => :red,
           :warn => :yellow,
           :good => :green
-        }
-        @threshold = params[:threshold] || {
+        }.merge!(params[:colors] || {})
+        threshold = {
           :warn => 0.30,
           :bad => 0.15,
           :good => 1
-        }
+        }.merge!(params[:threshold] || {})
+
+        threshold_params = { :mode => :max }
+        color.each do |type, name|
+          threshold_params[threshold[type]] = name
+        end
+        @threshold = Yummi::Colorizers.threshold threshold_params
       end
 
       def call(data)
@@ -191,9 +207,7 @@ module Yummi
 
         percentage = free / max
 
-        return @color[:bad] if percentage <= @threshold[:bad]
-        return @color[:warn] if percentage <= @threshold[:warn]
-        @color[:good]
+        @threshold.color_for(percentage)
       end
 
     end

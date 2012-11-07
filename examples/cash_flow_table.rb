@@ -44,6 +44,10 @@ end
 
 opt.on '--box', 'Prints the table inside a box' do
   @box = Yummi::TextBox::new
+  @box.style.top_left = '/'
+  @box.style.bottom_left = '\\'
+  @box.style.top_right = '\\'
+  @box.style.bottom_right = '/'
 end
 opt.on '--help', 'Prints this message' do
   puts opt

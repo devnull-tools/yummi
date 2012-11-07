@@ -35,7 +35,7 @@ opt = OptionParser::new
 
 @table.bottom do
   @table.format [:max_memory, :free_memory], :using => Yummi::Formatters.byte
-  @table.colorize_row :with => :white
+  @table.colorize_row :with => :intense_white
 end
 
 # colorizer for memory
@@ -44,9 +44,13 @@ end
 # colorizer for threads
 @thread_colorizer = Yummi::Colorizers.percentage :max => :max_threads,
                                                  :using => :in_use_threads,
+                                                 :colors => {
+                                                    :omg => :intense_red
+                                                  },
                                                  :threshold => {
                                                    :warn => 0.9,
-                                                   :bad => 0.7
+                                                   :bad => 0.5,
+                                                   :omg => 0.3
                                                  }
 
 def zebra_colors
@@ -97,7 +101,7 @@ opt.parse ARGV
   ['Server 1', 1_000_000_000, 750_000_000, 200, 170],
   ['Server 2', 1_000_000_000, 700_000_000, 200, 180],
   ['Server 3', 1_000_000_000, 50_000_000, 200, 50],
-  ['Server 4', 1_000_000_000, 200_000_000, 200, 50],
+  ['Server 4', 1_000_000_000, 200_000_000, 200, 100],
   ['Server 5', 1_000_000_000, 5_000_000, 200, 50],
   ['Server 6', 1_000_000_000, 750_000_000, 200, 50],
 ]

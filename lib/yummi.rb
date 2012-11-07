@@ -30,7 +30,7 @@ module Yummi
     module Schema
       # Normal Linux Terminal Colors, used by default in normal color types
       NORMAL_COLORS = {
-        :colors => [:black, :red, :green, :yellow, :blue, :purple, :cyan, :gray],
+        :colors => [:black, :red, :green, :yellow, :blue, :purple, :cyan, [:gray, :white]],
         :default => :gray
       }
       # Intense Linux Terminal Colors, used by default in bold color types
@@ -74,20 +74,22 @@ module Yummi
       mappings.each do |types, config|
         [*types].each do |type|
           schema = config[:schema]
-          schema[:colors].each_with_index do |color, key_code|
-            # maps the default color for a type
-            COLORS[type] = "#{config[:key_code]}#{key_code}" if color == schema[:default]
-            # do not use prefix if schema is default
-            prefix = (type == :default ? '' : "#{type}_")
-            # maps the color using color name
-            key = "#{prefix}#{color}"
-            COLORS[key.to_sym] = "#{config[:key_code]}#{key_code}"
-            # maps the color using color key code
-            key = "#{prefix}#{key_code + 1}"
-            COLORS[key.to_sym] = "#{config[:key_code]}#{key_code}"
-            # maps the color using color name if default schema does not defines it
-            # example: yellow and white are present only in strong/intense schema
-            COLORS[color.to_sym] = "#{config[:key_code]}#{key_code}" unless COLORS[color]
+          schema[:colors].each_with_index do |colors, key_code|
+            [*colors].each do |color|
+              # maps the default color for a type
+              COLORS[type] = "#{config[:key_code]}#{key_code}" if color == schema[:default]
+              # do not use prefix if schema is default
+              prefix = (type == :default ? '' : "#{type}_")
+              # maps the color using color name
+              key = "#{prefix}#{color}"
+              COLORS[key.to_sym] = "#{config[:key_code]}#{key_code}"
+              # maps the color using color key code
+              key = "#{prefix}#{key_code + 1}"
+              COLORS[key.to_sym] = "#{config[:key_code]}#{key_code}"
+              # maps the color using color name if default schema does not defines it
+              # example: yellow and white are present only in strong/intense schema
+              COLORS[color.to_sym] = "#{config[:key_code]}#{key_code}" unless COLORS[color]
+            end
           end
         end
       end
@@ -181,7 +183,9 @@ module Yummi
       extra_spaces = width - text.size
       return text unless extra_spaces > 0
       words = text.split ' '
+      # do not justify only one word
       return text if words.size == 1
+      # do not justify few words
       return text if extra_spaces / (words.size - 1) > 2
       until extra_spaces == 0
         words.each_index do |i|

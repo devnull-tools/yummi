@@ -25,17 +25,38 @@ require_relative '../lib/yummi'
 
 @box = Yummi::TextBox.new
 
-@box.width = 70
-@box.default_align = :justify
-@box.default_separator[:color] = :yellow
+@box.style.width = 70
+@box.style.align = :justify
+@box.style.separator[:color] = :yellow
 
 opt = OptionParser::new
 
 opt.on '--align ALIGN', 'Sets the default alignment to use' do |align|
-  @box.default_align = align.to_sym
+  @box.style.border[:align] = align.to_sym
 end
 opt.on '--width WIDTH', Integer, 'Sets the text box width' do |width|
-  @box.width = width
+  @box.style.border[:width] = width
+end
+opt.on '--top-left PATTERN', 'Sets the top left corner pattern' do |pattern|
+  @box.style.border[:top_left] = pattern
+end
+opt.on '--top-right PATTERN', 'Sets the top right corner pattern' do |pattern|
+  @box.style.border[:top_right] = pattern
+end
+opt.on '--bottom-left PATTERN', 'Sets the bottom left corner pattern' do |pattern|
+  @box.style.border[:bottom_left] = pattern
+end
+opt.on '--bottom-right PATTERN', 'Sets the bottom right corner pattern' do |pattern|
+  @box.style.border[:bottom_right] = pattern
+end
+opt.on '--top PATTERN', 'Sets the top line pattern' do |pattern|
+  @box.style.border[:top] = pattern
+end
+opt.on '--bottom PATTERN', 'Sets the bottom line pattern' do |pattern|
+  @box.style.border[:bottom] = pattern
+end
+opt.on '--no-border', 'Hide the text box borders' do
+  @box.no_border
 end
 opt.on '--help', 'Prints this message' do
   puts opt
@@ -56,7 +77,7 @@ opt.parse! ARGV
 @box.line_break
 @box.add 'The above copyright notice and this permission notice shall be included in all
  copies or substantial portions of the Software.'
-@box.separator :width => @box.width / 3, :align => :center
+@box.separator :width => @box.style.width / 3, :align => :center
 @box.add 'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
  PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS

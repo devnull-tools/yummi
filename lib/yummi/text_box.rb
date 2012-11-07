@@ -20,28 +20,49 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+require 'ostruct'
+
 module Yummi
 
   # A box to decorate texts
   class TextBox
-    # The border color
-    attr_accessor :color
     # The box content
     attr_accessor :content
-    # The box width (leave it null to manually manage the width)
-    attr_accessor :width
-    # The default alignment to use
-    attr_accessor :default_align
-    # The default separator parameters to use. Use the :pattern: key to set the pattern
-    # and the keys supported in #self#separator
-    attr_accessor :default_separator
+    #
+    # Holds the style information for this box. Supported properties are:
+    # 
+    # width: the box width (default: none)
+    # align: the default alignment to use (default: left)
+    # separator: the style for separators, defined as a hash
+    #   color: separator color (default: none)
+    #   pattern: separator pattern (default: '-')
+    #   width: separator width (default: box width)
+    # 
+    attr_reader :style    
 
     def initialize
       @color = :white
       @content = []
-      @default_separator = {
-        :pattern => '-'
-      }
+      @style = OpenStruct::new
+      @style.separator = {}
+      @style.separator[:pattern] = '-'
+      @style.separator[:width] = nil
+      @style.separator[:align] = :left
+
+      @style.border = {}
+      @style.border[:color] = nil
+      @style.border[:top] = '-'
+      @style.border[:bottom] = '-'
+      @style.border[:left] = '|'
+      @style.border[:right] = '|'
+      @style.border[:top_left] = '+'
+      @style.border[:top_right] = '+'
+      @style.border[:bottom_left] = '+'
+      @style.border[:bottom_right] = '+'
+    end
+
+    def no_border
+      @style.border = nil
     end
 
     #
@@ -60,8 +81,8 @@ module Yummi
     #
     def add (text, params = {})
       params = {
-        :width => @width,
-        :align => @default_align
+        :width => style.width,
+        :align => style.align
       }.merge! params
       if params[:width]
         width = params[:width]
@@ -99,26 +120,21 @@ module Yummi
     #
     # === Args
     #
-    # +pattern+::
-    #   The pattern to build the line
     # +params+::
     #   A hash of parameters. Currently supported are:
+    #     pattern: the pattern to build the line
     #     color: the separator color (see #Yummi#COLORS)
     #     width: the separator width (#self#width will be used if unset)
     #     align: the separator alignment (see #Yummi#Aligner)
     #
-    def separator (pattern = @default_separator[:pattern], params = {})
-      unless pattern.is_a? String
-        params = pattern
-        pattern = @default_separator[:pattern]
-      end
-      params = @default_separator.merge params
-      width = (params[:width] or @width)
-      if @width and width < @width
-        params[:width] = @width
-      end
-      line = pattern * width
-      add line[0...width], params
+    def separator (params = {})
+      params = style.separator.merge! params
+      params[:width] ||= style.width
+      raise Exception::new("Define a width for using separators") unless params[:width]
+      line = fill(params[:pattern], params[:width])
+      #replace the width with the box width to align the separator
+      params[:width] = style.width
+      add line, params
     end
 
     # Adds a line break to the text.
@@ -139,17 +155,31 @@ module Yummi
         sizes << size
         width = [width, size].max
       end
-      border = Yummi.colorize('+' + ('-' * width) + '+', color) + $/
-      pipe = Yummi.colorize '|', color
+      left = ''
+      right = ''
+      border = @style.border
+      if border
+        color = border[:color]
+        top = Yummi.colorize(
+          border[:top_left] + fill(border[:top], width) + border[:top_right],
+          color
+        ) + $/
+        left = Yummi.colorize border[:left], color
+        right = Yummi.colorize border[:left], color
+        bottom = Yummi.colorize(
+          border[:bottom_left] + fill(border[:bottom], width) + border[:bottom_right],
+          color
+        ) + $/
+      end
       buff = ''
-      buff << border
+      buff << top if border
       i = 0
       content.each do |line|
         diff = width - sizes[i]
-        buff << pipe << line.chomp << (' ' * diff) << pipe << $/
+        buff << left << line.chomp << (' ' * diff) << right << $/
         i += 1
       end
-      buff << border
+      buff << bottom if border
       buff
     end
 
@@ -159,7 +189,17 @@ module Yummi
       if params[:align] and params[:width]
         text = Yummi::Aligner.align params[:align], text, params[:width]
       end
-      @content << Yummi.colorize(text, params[:color])
+      @content << Yummi.colorize(truncate(text), params[:color])
+    end
+
+    def truncate text, width = style.width
+      return text[0...width] if width
+      text
+    end
+
+    def fill text, width = style.width
+      width = [width, style.width].min if style.width
+      truncate text * width, width
     end
 
   end

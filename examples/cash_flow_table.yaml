@@ -43,7 +43,7 @@ top:
           zero: "%.2f"
           negative: "%.2f"
     row_color:
-      with: white
+      with: bold_white
 bottom:
   - format:
       total:
@@ -52,4 +52,4 @@ bottom:
           zero: "%.2f"
           negative: "%.2f"
     row_color:
-      with: white
+      with: bold_white
