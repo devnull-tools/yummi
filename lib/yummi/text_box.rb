@@ -149,48 +149,50 @@ module Yummi
 
     def to_s
       width = 0
-      sizes = []
+      sizes = [] # the real size of each line
       content.each do |line|
         size = (Yummi::Color::raw line.chomp).size
         sizes << size
         width = [width, size].max
       end
-      left = nil
-      right = nil
-      border = @style.border
-      if border
-        color = border[:color]
-        top = Yummi.colorize(
-          border[:top_left] + fill(border[:top], width) + border[:top_right],
-          color
-        ) + $/
-        left = fill(border[:left], content.size).split(//).collect do |c|
-          Yummi.colorize(c, color)
-        end
-        right = fill(border[:right], content.size).split(//).collect do |c|
-          Yummi.colorize(c, color)
-        end
-        bottom = Yummi.colorize(
-          border[:bottom_left] + fill(border[:bottom], width) + border[:bottom_right],
-          color
-        ) + $/
-      end
       buff = ''
-      buff << top if border
       i = 0
       content.each do |line|
         diff = width - sizes[i]
-        buff << left.shift.to_s if border
-        buff << line.chomp << (' ' * diff)
-        buff << right.shift.to_s if border
-        buff << $/
+        buff << line.chomp << (' ' * diff) << $/
         i += 1
       end
-      buff << bottom if border
+      buff = add_border buff, width if style.border
       buff
     end
 
     private
+
+    def add_border (text, width)
+      border = style.border
+      color = border[:color]
+      left = fill(border[:left], content.size).split(//).collect do |c|
+        Yummi.colorize(c, color)
+      end
+      right = fill(border[:right], content.size).split(//).collect do |c|
+        Yummi.colorize(c, color)
+      end
+      result = Yummi.colorize(
+        border[:top_left] + fill(border[:top], width) + border[:top_right],
+        color
+      ) + $/
+      text.each_line do |line|
+        result << left.shift.to_s
+        result << line.chomp
+        result << right.shift.to_s
+        result << $/
+      end
+      result << Yummi.colorize(
+          border[:bottom_left] + fill(border[:bottom], width) + border[:bottom_right],
+          color
+        )
+      result << $/
+    end
 
     def _add_ (text, params)
       if params[:align] and params[:width]
@@ -199,12 +201,12 @@ module Yummi
       @content << Yummi.colorize(truncate(text), params[:color])
     end
 
-    def truncate text, width = style.width
+    def truncate (text, width = style.width)
       return text[0...width] if width
       text
     end
 
-    def fill text, width = style.width
+    def fill (text, width = style.width)
       width = [width, style.width].min if style.width
       truncate text * width, width
     end
