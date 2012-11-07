@@ -155,8 +155,8 @@ module Yummi
         sizes << size
         width = [width, size].max
       end
-      left = ''
-      right = ''
+      left = [''] * content.size
+      right = [''] * content.size
       border = @style.border
       if border
         color = border[:color]
@@ -164,8 +164,12 @@ module Yummi
           border[:top_left] + fill(border[:top], width) + border[:top_right],
           color
         ) + $/
-        left = Yummi.colorize border[:left], color
-        right = Yummi.colorize border[:left], color
+        left = fill(border[:left], content.size).split(//).collect do |c|
+          Yummi.colorize(c, color)
+        end
+        right = fill(border[:right], content.size).split(//).collect do |c|
+          Yummi.colorize(c, color)
+        end
         bottom = Yummi.colorize(
           border[:bottom_left] + fill(border[:bottom], width) + border[:bottom_right],
           color
@@ -176,7 +180,7 @@ module Yummi
       i = 0
       content.each do |line|
         diff = width - sizes[i]
-        buff << left << line.chomp << (' ' * diff) << right << $/
+        buff << left.shift.to_s << line.chomp << (' ' * diff) << right.shift.to_s << $/
         i += 1
       end
       buff << bottom if border

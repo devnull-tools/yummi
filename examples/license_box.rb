@@ -27,7 +27,8 @@ require_relative '../lib/yummi'
 
 @box.style.width = 70
 @box.style.align = :justify
-@box.style.separator[:color] = :yellow
+@box.style.separator[:color] = :purple
+@box.style.border[:color] = :intense_purple
 
 opt = OptionParser::new
 
@@ -36,6 +37,12 @@ opt.on '--align ALIGN', 'Sets the default alignment to use' do |align|
 end
 opt.on '--width WIDTH', Integer, 'Sets the text box width' do |width|
   @box.style.border[:width] = width
+end
+opt.on '--left PATTERN', 'Sets the left line pattern' do |pattern|
+  @box.style.border[:left] = pattern
+end
+opt.on '--right PATTERN', 'Sets the right line pattern' do |pattern|
+  @box.style.border[:right] = pattern
 end
 opt.on '--top-left PATTERN', 'Sets the top left corner pattern' do |pattern|
   @box.style.border[:top_left] = pattern
@@ -54,6 +61,9 @@ opt.on '--top PATTERN', 'Sets the top line pattern' do |pattern|
 end
 opt.on '--bottom PATTERN', 'Sets the bottom line pattern' do |pattern|
   @box.style.border[:bottom] = pattern
+end
+opt.on '--border COLOR', 'Sets the border color' do |color|
+  @box.style.border[:color] = color
 end
 opt.on '--no-border', 'Hide the text box borders' do
   @box.no_border
@@ -84,5 +94,5 @@ opt.parse! ARGV
  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
  TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  OTHER DEALINGS IN THE SOFTWARE.',
-         :color => :red
+         :color => :yellow
 @box.print
