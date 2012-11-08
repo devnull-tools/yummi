@@ -24,14 +24,14 @@ the examples dir to see how to use Yummi features.
 
 ## Command Line Tools
 
-Yummi exposes a 'colorize' program that you can use to colorize texts and apply
+Yummi exposes a 'yummi' program that you can use to colorize texts and apply
 patterns to colorize lines (usefull to tail logs).
 
 Examples:
 
-    colorize -c intense_red -m "some text"
-    echo "some text" | colorize -c intense_red
-    tail -f $JBOSS_HOME/standalone/log/server.log | colorize -p path-to-your-jboss7-mapping.yaml
+    yummi -c intense_red -m "some text"
+    echo "some text" | yummi -c intense_red
+    tail -f $JBOSS_HOME/standalone/log/server.log | yummi -p path-to-your-jboss7-mapping.yaml
 
 Line patterns are configured with an yaml file containing:
 
@@ -54,7 +54,7 @@ Yummi provides a set of mappings that you, check yummi/mappings dir.
 
 Mappings provided by yummi can be passed with the file name, example:
 
-    tail -f $JBOSS_HOME/standalone/log/server.log | colorize -p jboss7
+    tail -f $JBOSS_HOME/standalone/log/server.log | yummi -p jboss7
 
 Mappings in ~/.yummi dir may also used only with the file name.
 
