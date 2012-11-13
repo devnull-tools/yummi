@@ -46,7 +46,7 @@ end
 opt.on '--data-type', 'Defines the data type to parse the values' do |data_type|
   @data_type = data_type
 end
-opt.on '-e FILES', '--eval=FILES', Array, 'Sets a file to eval for extending components' do |files|
+opt.on '-e FILES', '--eval=FILES', Array, 'Include the files for extending components' do |files|
   files.each do |file|
     load File.expand_path(file)
   end
