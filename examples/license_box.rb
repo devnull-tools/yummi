@@ -33,7 +33,7 @@ require_relative '../lib/yummi'
 opt = OptionParser::new
 
 opt.on '--align ALIGN', 'Sets the default alignment to use' do |align|
-  @box.style.border[:align] = align.to_sym
+  @box.style.align = align.to_sym
 end
 opt.on '--width WIDTH', Integer, 'Sets the text box width' do |width|
   @box.style.border[:width] = width
