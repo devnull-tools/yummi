@@ -40,7 +40,7 @@ opt.on '--color TYPE', 'Specify the color type (zebra,file,none)' do |type|
   case type
     when 'zebra'
       @table.colorize_row :using => Yummi::Colorizers.stripe(:intense_gray, :intense_white)
-      @table.context do 
+      @table.bottom do 
         @table.colorize_row :with => :intense_blue
         @table.format :size, :using => Yummi::Formatters.byte
       end
@@ -48,7 +48,7 @@ opt.on '--color TYPE', 'Specify the color type (zebra,file,none)' do |type|
       @table.colorize_row do |data| # or |data, index| if you need the index
         data[:directory] ? :intense_gray : :intense_white
       end
-      @table.context do 
+      @table.bottom do 
         @table.colorize_row :with => :intense_blue
         @table.format :size, :using => Yummi::Formatters.byte
       end
