@@ -21,5 +21,17 @@
 # THE SOFTWARE.
 
 module Yummi
-  VERSION = "0.6.2"
+
+  module DataParser
+
+    def self.yaml(input)
+      YAML::load(input)
+    end
+
+    def self.csv(input)
+      require 'csv' #autoload will be dead, using require instead
+      CSV::parse(input, :converters => :all)
+    end
+
+  end
 end

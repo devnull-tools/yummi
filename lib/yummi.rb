@@ -322,6 +322,7 @@ end
 
 require_relative 'yummi/no_colors' if RUBY_PLATFORM['mingw'] #Windows
 
+require_relative 'yummi/data_parser'
 require_relative "yummi/colorizers"
 require_relative "yummi/formatters"
 require_relative 'yummi/color_mapping'

@@ -46,7 +46,7 @@ end
 opt.on '--data-type', 'Defines the data type to parse the values' do |data_type|
   @data_type = data_type
 end
-opt.on '-e FILES', '--eval=FILES', Array, 'Include the files for extending components' do |files|
+opt.on '-l FILES', '--load=FILES', Array, 'Include the files for extending components' do |files|
   files.each do |file|
     load File.expand_path(file)
   end
@@ -77,12 +77,9 @@ elsif @table_builder
   abort "Please give the data to print" unless @data
   table = @table_builder.build_table
   extension = File::extname(@data)[1..-1]
-  table.data = case (@data_type or extension)
-  when "yaml"
-    YAML::load_file(@data)
-  when "csv"
-    require 'csv'
-    CSV::parse(File.read(@data), :converters => :all)
+  type = (@data_type or extension).to_sym
+  if Yummi::DataParser.respond_to? type
+    table.data = Yummi::DataParser.send(type, File.read(@data))
   else
     abort "Unsupported extension #{extension}"
   end
@@ -93,6 +90,6 @@ else
       print_out line.chomp
     end
   rescue Interrupt
-    #Do nothing
+    puts Yummi::colorize("Aborted!", :red)
   end
 end
