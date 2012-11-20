@@ -243,7 +243,7 @@ module Yummi
           if File.exist? file
             params = YAML::load_file file
           else
-            ['~/.yummi', File.join(File.dirname(__FILE__), 'mappings')].each do |path|
+            [File.expand_path('~/.yummi'), File.join(File.dirname(__FILE__), 'mappings')].each do |path|
               file = File.join(path, "#{params}.yaml")
               if File.exist? file
                 params = YAML::load_file file
