@@ -37,7 +37,7 @@ params = {
 log = <<LOG
 [INFO] Starting
 [WARN] Example output
-[DEGUB] Connecting to server
+[DEBUG] Connecting to server
 [ERROR] Error while connecting
 caused by: ConnectionException
             at Connection.connect
