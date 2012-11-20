@@ -5,5 +5,4 @@ patterns:
   INFO   : white
   WARN   : yellow
   ERROR  : red
-  SEVERE : red
   FATAL  : intense_red
