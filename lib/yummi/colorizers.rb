@@ -230,15 +230,15 @@ module Yummi
       #
       # === Args
       #
-      # A hash containing the following keys:
+      # A hash (or an array of hashes) containing the following keys:
       #
       #   * prefix: a pattern prefix
       #   * suffix: a pattern suffix
       #   * patterns: a pattern => color hash
       #
-      # If a string is passed, a file containing a YAML configuration
-      # will be loaded. If the string doesn't represent a file, the
-      # following patterns will be used to find it:
+      # If a string is passed instead of a hash, a file containing a
+      # YAML configuration will be loaded. If the string doesn't represent
+      # a file, the following patterns will be used to find it:
       # 
       #   * $HOME/.yummi/PATTERN.yaml
       #   * $YUMMI_GEM/yummy/mappings/PATTERN.yaml
