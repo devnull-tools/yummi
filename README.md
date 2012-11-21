@@ -50,13 +50,13 @@ Example:
       ERROR : red
       FATAL : intense_red
 
-Yummi provides a set of mappings that you, check yummi/mappings dir.
+Yummi provides a set of patterns, check yummi/patterns dir.
 
-Mappings provided by yummi can be passed with the file name, example:
 
     tail -f $JBOSS_HOME/standalone/log/server.log | yummi -p jboss
 
-Mappings in ~/.yummi dir may also used only with the file name.
+Patterns in ~/.yummi/patterns and provided by yummi may also be used by passing
+only the file name without extension
 
 ## Contributing
 
