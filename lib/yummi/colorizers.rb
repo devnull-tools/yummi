@@ -85,8 +85,10 @@ module Yummi
     end
 
     # Returns a new instance of #LineColorizer
-    def self.line mappings
-      LineColorizer::new mappings
+    def self.line *mappings
+      colorizer = LineColorizer::new
+      mappings.each { |m| colorizer.map(m) }
+      colorizer
     end
 
     #
@@ -219,8 +221,12 @@ module Yummi
     class LineColorizer
       include Yummi::Colorizer
 
+      def initialize
+        @patterns = []
+      end
+
       #
-      # Creates a new instance using the parameters.
+      # Maps a set of patterns to colors.
       #
       # === Args
       #
@@ -237,7 +243,7 @@ module Yummi
       #   * $HOME/.yummi/PATTERN.yaml
       #   * $YUMMI_GEM/yummy/mappings/PATTERN.yaml
       #
-      def initialize params
+      def map params
         unless params.is_a? Hash
           file = File.expand_path params.to_s
           if File.exist? file
@@ -250,12 +256,16 @@ module Yummi
                 break
               end
             end
+            if params.is_a? Array
+              params.each { |p| map p }
+              return
+            end
           end
         end
         patterns = (params[:patterns] or params['patterns'])
         prefix = (params[:prefix] or params['prefix'])
         suffix = (params[:suffix] or params['suffix'])
-        @patterns = Hash[*(patterns.collect do |pattern, color|
+        @patterns << Hash[*(patterns.collect do |pattern, color|
           [/#{prefix}#{pattern.to_s}#{suffix}/, color]
         end).flatten]
 
@@ -264,10 +274,12 @@ module Yummi
 
       def call ctx
         line = ctx.value.to_s
-        @patterns.each do |regex, color|
-          if regex.match(line)
-            @last_color = color
-            return color
+        @patterns.each do |pattern|
+          pattern.each do |regex, color|
+            if regex.match(line)
+              @last_color = color
+              return color
+            end
           end
         end
         @last_color

@@ -1,0 +1,61 @@
+2012-11-20 13:05:20,215 INFO  [org.jboss.web.WebService] (main) Using RMI server codebase: http://127.0.0.1:8083/
+2012-11-20 13:05:24,640 INFO  [org.jboss.wsf.stack.jbws.NativeServerConfig] (main) JBoss Web Services - Stack Native Core
+2012-11-20 13:05:24,641 INFO  [org.jboss.wsf.stack.jbws.NativeServerConfig] (main) 3.1.2.GA
+2012-11-20 13:05:24,992 INFO  [org.jboss.dependency.plugins.AttributeCallbackItem] (main) Owner callback not implemented.
+2012-11-20 13:06:10,100 INFO  [org.jboss.bootstrap.microcontainer.ServerImpl] (JBoss Shutdown Hook) Runtime shutdown hook called, forceHalt: true
+2012-11-20 13:06:10,111 WARN  [org.jboss.system.server.profileservice.ProfileServiceBootstrap] (JBoss Shutdown Hook) Error deactivating profile: ProfileKey@32d35f5f[domain=default, server=default, name=default]
+org.jboss.profileservice.spi.NoSuchProfileException: No active profile for: ProfileKey@32d35f5f[domain=default, server=default, name=default]
+	at org.jboss.system.server.profileservice.repository.AbstractProfileService.deactivateProfile(AbstractProfileService.java:391)
+	at org.jboss.system.server.profileservice.ProfileServiceBootstrap.shutdown(ProfileServiceBootstrap.java:327)
+	at org.jboss.bootstrap.AbstractServerImpl.shutdownServer(AbstractServerImpl.java:571)
+	at org.jboss.bootstrap.AbstractServerImpl$ShutdownHook.run(AbstractServerImpl.java:909)
+2012-11-20 13:06:10,114 INFO  [org.jboss.ejb3.EJBContainer] (main) STARTED EJB: org.atatec.jboss.jmx.logger.LoggerServiceBean ejbName: LoggerServiceBean
+2012-11-20 13:06:10,135 INFO  [org.jboss.ejb3.proxy.impl.jndiregistrar.JndiSessionRegistrarBase] (main) Binding the following Entries in Global JNDI:
+
+
+2012-11-20 13:06:10,248 ERROR [org.jboss.system.server.profileservice.repository.ScopedProfileServiceController] (main) Error installing to Deploy: name=ProfileKey@4dc4e792[domain=default, server=default, name=applications] state=PreInstall mode=On Demand requiredState=Installed
+java.lang.IllegalStateException: Deployers are shutdown
+	at org.jboss.deployers.plugins.deployers.DeployersImpl.checkShutdown(DeployersImpl.java:187)
+	at org.jboss.deployers.plugins.deployers.DeployersImpl.process(DeployersImpl.java:778)
+	at org.jboss.deployers.plugins.main.MainDeployerImpl.process(MainDeployerImpl.java:702)
+	at org.jboss.system.server.profileservice.repository.MainDeployerAdapter.process(MainDeployerAdapter.java:117)
+	at org.jboss.system.server.profileservice.repository.ProfileDeployAction.install(ProfileDeployAction.java:70)
+	at org.jboss.system.server.profileservice.repository.AbstractProfileAction.install(AbstractProfileAction.java:53)
+	at org.jboss.system.server.profileservice.repository.AbstractProfileService.install(AbstractProfileService.java:361)
+	at org.jboss.dependency.plugins.AbstractControllerContext.install(AbstractControllerContext.java:348)
+	at org.jboss.dependency.plugins.AbstractController.install(AbstractController.java:1631)
+	at org.jboss.dependency.plugins.AbstractController.incrementState(AbstractController.java:934)
+	at org.jboss.dependency.plugins.AbstractController.resolveContexts(AbstractController.java:1082)
+	at org.jboss.dependency.plugins.AbstractController.resolveContexts(AbstractController.java:984)
+	at org.jboss.dependency.plugins.AbstractController.change(AbstractController.java:822)
+	at org.jboss.dependency.plugins.AbstractController.change(AbstractController.java:553)
+	at org.jboss.system.server.profileservice.repository.AbstractProfileService.activateProfile(AbstractProfileService.java:306)
+	at org.jboss.system.server.profileservice.ProfileServiceBootstrap.start(ProfileServiceBootstrap.java:271)
+	at org.jboss.bootstrap.AbstractServerImpl.start(AbstractServerImpl.java:461)
+	at org.jboss.Main.boot(Main.java:221)
+	at org.jboss.Main$1.run(Main.java:556)
+	at java.lang.Thread.run(Thread.java:662)
+2012-11-20 13:06:10,249 ERROR [STDERR] (main) Failed to boot JBoss:
+2012-11-20 13:06:10,249 ERROR [STDERR] (main) org.jboss.profileservice.spi.NoSuchProfileException: No such profile: ProfileKey@32d35f5f[domain=default, server=default, name=default]
+2012-11-20 13:06:10,249 ERROR [STDERR] (main) 	at org.jboss.system.server.profileservice.repository.AbstractProfileService.validateProfile(AbstractProfileService.java:329)
+2012-11-20 13:06:10,249 ERROR [STDERR] (main) 	at org.jboss.system.server.profileservice.ProfileServiceBootstrap.start(ProfileServiceBootstrap.java:272)
+2012-11-20 13:06:10,249 ERROR [STDERR] (main) 	at org.jboss.bootstrap.AbstractServerImpl.start(AbstractServerImpl.java:461)
+2012-11-20 13:06:10,250 ERROR [STDERR] (main) 	at org.jboss.Main.boot(Main.java:221)
+2012-11-20 13:06:10,250 ERROR [STDERR] (main) 	at org.jboss.Main$1.run(Main.java:556)
+2012-11-20 13:06:10,250 ERROR [STDERR] (main) 	at java.lang.Thread.run(Thread.java:662)
+2012-11-20 13:06:10,267 INFO  [org.jboss.web.tomcat.service.deployers.TomcatDeployment] (JBoss Shutdown Hook) undeploy, ctxPath=/invoker
+2012-11-20 13:06:10,347 INFO  [org.jboss.web.tomcat.service.deployers.TomcatDeployment] (JBoss Shutdown Hook) undeploy, ctxPath=/web-console
+2012-11-20 13:06:10,363 INFO  [org.jboss.web.tomcat.service.deployers.TomcatDeployment] (JBoss Shutdown Hook) undeploy, ctxPath=/jbossws
+2012-11-20 13:06:10,367 INFO  [org.apache.catalina.core.StandardService] (JBoss Shutdown Hook) Stopping service jboss.web
+08:03:51,797 INFO  [org.jboss.as.remoting] (MSC service thread 1-8) JBAS017100: Listening on /127.0.0.1:9999
+08:03:52,462 INFO  [org.jboss.as] (Controller Boot Thread) JBAS015951: Admin console listening on http://127.0.0.1:9990
+08:03:52,464 INFO  [org.jboss.as] (Controller Boot Thread) JBAS015874: JBoss AS 7.1.1.Final "Brontes" started in 11099ms - Started 134 of 209 services (74 services are passive or on-demand)
+08:25:56,052 ERROR [org.jboss.remoting.remote.connection] (Remoting "tripaseca:MANAGEMENT" read-1) JBREM000200: Remote connection failed: java.io.IOException: Connection reset by peer
+13:52:37,411 INFO  [org.jboss.as.configadmin] (ServerService Thread Pool -- 26) JBAS016200: Activating ConfigAdmin Subsystem
+####<Oct 8, 2012 9:37:45 AM BRT> <Info> <WebLogicServer> <pingulin> <> <[ACTIVE] ExecuteThread: '0' for queue: 'weblogic.kernel.Default (self-tuning)'> <> <> <> <1349699865472> <BEA-000000> <WebLogic Server "AdminServer" version:
+WebLogic Server 10.3.6.0  Tue Nov 15 08:52:36 PST 2011 1441050  Copyright (c) 1995, 2011, Oracle and/or its affiliates. All rights reserved.> 
+####<Oct 8, 2012 9:37:45 AM BRT> <Notice> <Log Management> <pingulin> <> <[ACTIVE] ExecuteThread: '0' for queue: 'weblogic.kernel.Default (self-tuning)'> <> <> <> <1349699865570> <BEA-170019> <The server log file /home/ataxexe/oracle/middleware/user_projects/domains/base_domain/servers/AdminServer/logs/AdminServer.log is opened. All server side log events will be written to this file.> 
+####<Oct 8, 2012 9:37:45 AM BRT> <Info> <Log Management> <pingulin> <> <[ACTIVE] ExecuteThread: '0' for queue: 'weblogic.kernel.Default (self-tuning)'> <> <> <> <1349699865574> <BEA-170023> <The Server Logging is initialized with Java Logging API implementation.> 
+####<Oct 8, 2012 9:38:04 AM BRT> <Warning> <JDBC> <pingulin> <AdminServer> <[ACTIVE] ExecuteThread: '0' for queue: 'weblogic.kernel.Default (self-tuning)'> <<WLS Kernel>> <> <0000Jd0OTJEFw000jzwkno1GSg^a000002> <1349699884384> <BEA-001552> <The logging last resource (LLR) data source FunasaDatasource will not function when it is a participant in a global transaction that spans multiple WebLogic Server instances because remote JDBC support is disabled. LLR will function in single-server configurations.> 
+####<Oct 8, 2012 9:38:11 AM BRT> <Alert> <OSB Security> <pingulin> <AdminServer> <[ACTIVE] ExecuteThread: '0' for queue: 'weblogic.kernel.Default (self-tuning)'> <<anonymous>> <> <0000Jd0OTJEFw000jzwkno1GSg^a000002> <1349699891539> <BEA-387068> <There is no PKI credential mapper provider configured in your security realm. Service key provider management will be disabled. Configure a PKI credential mapper provider if you need service provider support. This is typically the case if you have Oracle Service Bus proxy services with web service security enabled or outbound 2-way SSL connections.> 
+2012-11-20 13:05:24,992 INFO  [org.jboss.dependency.plugins.AttributeCallbackItem] (main) Owner callback not implemented.

@@ -54,7 +54,7 @@ Yummi provides a set of mappings that you, check yummi/mappings dir.
 
 Mappings provided by yummi can be passed with the file name, example:
 
-    tail -f $JBOSS_HOME/standalone/log/server.log | yummi -p jboss7
+    tail -f $JBOSS_HOME/standalone/log/server.log | yummi -p jboss
 
 Mappings in ~/.yummi dir may also used only with the file name.
 

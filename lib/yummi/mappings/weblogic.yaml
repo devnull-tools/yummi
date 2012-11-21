@@ -8,5 +8,5 @@ patterns:
   Warning   : yellow
   Error     : red
   Critical  : intense_red
-  Alert     : intense_underline_red
-  Emergency : highlight_red
+  Alert     : intense_red
+  Emergency : intense_red
