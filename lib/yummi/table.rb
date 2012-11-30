@@ -41,7 +41,7 @@ module Yummi
     # * Values: using :value key
     #
     # The colors must be supported by #Yummi#Color#parse or defined in #Yummi#Color#COLORS
-    attr_accessor :colors
+    attr_accessor :style
     # The table layout (horizontal or vertical)
     attr_reader :layout
     # The table header
@@ -59,7 +59,7 @@ module Yummi
       @header = []
       @title = nil
       @description = nil
-      @colors = {
+      @style = {
         :title => :intense_yellow,
         :description => :intense_gray,
         :header => :intense_blue,
@@ -80,7 +80,7 @@ module Yummi
 
     # Indicates that the table should not use colors.
     def no_colors
-      @colors = {
+      @style = {
         :title => nil,
         :header => nil,
         :value => nil
@@ -355,8 +355,8 @@ module Yummi
       data_output = build_data_output
 
       string = ""
-      string << Color.colorize(@title, @colors[:title]) << $/ if @title
-      string << Color.colorize(@description, @colors[:description]) << $/ if @description
+      string << Color.colorize(@title, @style[:title]) << $/ if @title
+      string << Color.colorize(@description, @style[:description]) << $/ if @description
       table_data = header_output + data_output
       if @layout == :vertical
         # don't use array transpose because the data may differ in each line size
@@ -430,7 +430,7 @@ module Yummi
       @header.each do |line|
         _data = []
         line.each do |h|
-          _data << {:value => h, :color => @colors[:header]}
+          _data << {:value => h, :color => @style[:header]}
         end
         output << _data
       end
@@ -485,7 +485,7 @@ module Yummi
           elsif colorizer
             color = colorizer.call(column)
           else
-            color = @colors[:value]
+            color = @style[:value]
           end
           formatter = component[:formatters][col_index]
           formatter = component[:null_formatter] if column.nil? and @null_formatter
