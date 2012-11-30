@@ -1,0 +1,8 @@
+prefix: '.*'
+patterns:
+  TRACE  : cyan
+  DEBUG  : blue
+  INFO   : white
+  WARN   : yellow
+  ERROR  : red
+  FATAL  : intense_red

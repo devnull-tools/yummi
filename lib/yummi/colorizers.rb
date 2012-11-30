@@ -84,11 +84,9 @@ module Yummi
       StripeColorizer::new(*colors)
     end
 
-    # Returns a new instance of #LineColorizer
-    def self.line *mappings
-      colorizer = LineColorizer::new
-      mappings.each { |m| colorizer.map(m) }
-      colorizer
+    # Returns a new instance of #PatternColorizer
+    def self.pattern *mappings
+      PatternColorizer::new(*mappings)
     end
 
     #
@@ -215,14 +213,16 @@ module Yummi
     end
 
     #
-    # A colorizer for lines that follows a pattern. This colorizer is usefull
+    # A colorizer for strings that follows a pattern. This colorizer is usefull
     # for log files.
     #
-    class LineColorizer
+    class PatternColorizer
       include Yummi::Colorizer
 
-      def initialize
+      def initialize params = nil
         @patterns = []
+        @last_color = nil
+        map params if params
       end
 
       #
@@ -240,36 +240,24 @@ module Yummi
       # YAML configuration will be loaded. If the string doesn't represent
       # a file, the following patterns will be used to find it:
       # 
-      #   * $HOME/.yummi/PATTERN.yaml
-      #   * $YUMMI_GEM/yummy/mappings/PATTERN.yaml
+      #   * $HOME/.yummi/patterns/PATTERN.yaml
+      #   * $YUMMI_GEM/yummy/patterns/PATTERN.yaml
       #
-      def map params
-        unless params.is_a? Hash
-          file = File.expand_path params.to_s
-          if File.exist? file
-            params = YAML::load_file file
-          else
-            [File.expand_path('~/.yummi'), File.join(File.dirname(__FILE__), 'mappings')].each do |path|
-              file = File.join(path, "#{params}.yaml")
-              if File.exist? file
-                params = YAML::load_file file
-                break
-              end
-            end
-            if params.is_a? Array
-              params.each { |p| map p }
-              return
-            end
+      def map *params
+        [*params].each do |p|
+          if p.is_a? String or p.is_a? Symbol
+            p = Yummi::Helpers.load_resource p, :from => :patterns
+            map p
+            return
           end
+          Yummi::Helpers.symbolize_keys(p)
+          patterns = p[:patterns]
+          prefix   = p[:prefix]
+          suffix   = p[:suffix]
+          @patterns << Hash[*(patterns.collect do |pattern, color|
+            [/#{prefix}#{pattern.to_s}#{suffix}/, color]
+          end).flatten]
         end
-        patterns = (params[:patterns] or params['patterns'])
-        prefix = (params[:prefix] or params['prefix'])
-        suffix = (params[:suffix] or params['suffix'])
-        @patterns << Hash[*(patterns.collect do |pattern, color|
-          [/#{prefix}#{pattern.to_s}#{suffix}/, color]
-        end).flatten]
-
-        @last_color = nil
       end
 
       def call ctx

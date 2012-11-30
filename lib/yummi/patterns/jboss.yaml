@@ -1,0 +1,8 @@
+prefix: '(\d{4}-\d{2}-\d{2}\s)?\d{2}:\d{2}:\d{2},\d{3}\s'
+patterns:
+  TRACE : cyan
+  DEBUG : blue
+  INFO  : white
+  WARN  : yellow
+  ERROR : red
+  FATAL : intense_red

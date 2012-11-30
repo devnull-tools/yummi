@@ -22,18 +22,6 @@
 
 require_relative '../lib/yummi'
 
-params = {
-  :prefix => /\[/,
-  :suffix => /\]/,
-  :patterns => {
-    'ERROR' => :red,
-    'FATAL' => :intense_red,
-    'WARN'  => :yellow,
-    'INFO'  => :green,
-    'DEBUG' => :gray
-  }
-}
-
 log = <<LOG
 [INFO] Starting
 [WARN] Example output
@@ -48,7 +36,15 @@ caused by: ConnectionException
 [DEBUG] Shutdown command executed
 LOG
 
-colorizer = Yummi::Colorizers.line(params)
+colorizer = Yummi::Colorizers.pattern :prefix => /\[/,
+  :suffix => /\]/,
+  :patterns => {
+    'ERROR' => :red,
+    'FATAL' => :intense_red,
+    'WARN'  => :yellow,
+    'INFO'  => :green,
+    'DEBUG' => :gray
+  }
 
 log.each_line do |line|
   puts colorizer.colorize(line.chomp)

@@ -46,9 +46,9 @@ module Yummi
       #
       # Creates a new formatter with the colors (assuming Linux default terminal colors):
       #
-      # * +DEBUG+: no color
-      # * +INFO+: green
-      # * +WARN+: brown
+      # * +DEBUG+: blue
+      # * +INFO+: white
+      # * +WARN+: yellow
       # * +ERROR+: red
       # * +FATAL+: red (intense)
       # * +ANY+: gray (intense)
@@ -58,8 +58,8 @@ module Yummi
       #
       def initialize &block
         @colors = {
-          :debug => nil,
-          :info => :green,
+          :debug => :blue,
+          :info => :white,
           :warn => :yellow,
           :error => :red,
           :fatal => :intense_red,

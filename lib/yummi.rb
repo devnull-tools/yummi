@@ -301,6 +301,23 @@ module Yummi
 
   module Helpers
 
+    def self.load_resource name, params = {:from => ''}
+      file = File.expand_path name.to_s
+      if File.exist? file
+        return YAML::load_file(file)
+      else
+        from = params[:from].to_s
+        [
+          File.join(File.expand_path('~/.yummi'), from),
+          File.join(File.dirname(__FILE__), 'yummi', from)
+        ].each do |path|
+          file = File.join(path, "#{name}.yaml")
+          return file if File.exist?(file)
+        end
+      end
+      raise Exception::new("Unable to load #{name}")
+    end
+
     def self.symbolize_keys hash
       hash.replace(hash.inject({}) do |h, (k, v)|
         v = symbolize_keys(v) if v.is_a? Hash
