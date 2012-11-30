@@ -3,7 +3,7 @@ suffix: '>'
 patterns:
   Trace     : purple
   Debug     : blue
-  Info      : gray
+  Info      : white
   Notice    : cyan
   Warning   : yellow
   Error     : red

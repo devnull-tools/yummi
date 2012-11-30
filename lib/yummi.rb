@@ -31,7 +31,7 @@ module Yummi
       # Normal Linux Terminal Colors, used by default in normal color types
       NORMAL_COLORS = {
         :colors => [:black, :red, :green, :yellow, :blue, :purple, :cyan, [:gray, :white]],
-        :default => :gray
+        :default => :white
       }
       # Intense Linux Terminal Colors, used by default in bold color types
       ALTERNATE_COLORS = {
@@ -134,6 +134,15 @@ module Yummi
     else
       Color.colorize string, color
     end
+  end
+
+  #
+  # Extracts the text from a colorized string
+  #
+  # see #Color#raw
+  #
+  def self.raw_text string
+    Color::raw(string)
   end
 
   # A module to align texts based on a reference width
