@@ -1,4 +1,5 @@
 prefix: '.*'
+options: i
 patterns:
   TRACE  : cyan
   DEBUG  : blue

@@ -234,6 +234,7 @@ module Yummi
       #
       #   * prefix: a pattern prefix
       #   * suffix: a pattern suffix
+      #   * options: option flags to use
       #   * patterns: a pattern => color hash
       #
       # If a string is passed instead of a hash, a file containing a
@@ -254,8 +255,9 @@ module Yummi
           patterns = p[:patterns]
           prefix   = p[:prefix]
           suffix   = p[:suffix]
+          options  = p[:options]
           @patterns << Hash[*(patterns.collect do |pattern, color|
-            [/#{prefix}#{pattern.to_s}#{suffix}/, color]
+            [Regexp::new("#{prefix}#{pattern.to_s}#{suffix}",options), color]
           end).flatten]
         end
       end
