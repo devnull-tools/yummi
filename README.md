@@ -35,8 +35,9 @@ Examples:
 
 Line patterns are configured with an yaml file containing:
 
-  * prefix (optional): prefix for pattern
-  * suffix (optional): suffix for pattern
+  * prefix  (optional): prefix for pattern
+  * suffix  (optional): suffix for pattern
+  * options (optional)
   * patterns: a pattern => color map
 
 Example:
