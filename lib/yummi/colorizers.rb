@@ -85,8 +85,8 @@ module Yummi
     end
 
     # Returns a new instance of #PatternColorizer
-    def self.pattern *mappings
-      PatternColorizer::new(*mappings)
+    def self.pattern mappings
+      PatternColorizer::new mappings
     end
 
     #
@@ -219,10 +219,9 @@ module Yummi
     class PatternColorizer
       include Yummi::Colorizer
 
-      def initialize params = nil
+      def initialize mappings = nil
         @patterns = []
-        @last_color = nil
-        map params if params
+        map mappings if mappings
       end
 
       #
@@ -230,11 +229,14 @@ module Yummi
       #
       # === Args
       #
-      # A hash (or an array of hashes) containing the following keys:
+      # A hash containing the following keys:
       #
       #   * prefix: a pattern prefix
       #   * suffix: a pattern suffix
       #   * options: option flags to use
+      #   * mode: the mode to use:
+      #       - all  : colorize the entire text
+      #       - grep : colorize only the matched text
       #   * patterns: a pattern => color hash
       #
       # If a string is passed instead of a hash, a file containing a
@@ -244,35 +246,75 @@ module Yummi
       #   * $HOME/.yummi/patterns/PATTERN.yaml
       #   * $YUMMI_GEM/yummy/patterns/PATTERN.yaml
       #
-      def map *params
-        [*params].each do |p|
-          if p.is_a? String or p.is_a? Symbol
-            p = Yummi::Helpers.load_resource p, :from => :patterns
-            map p
-            return
-          end
-          Yummi::Helpers.symbolize_keys(p)
-          patterns = p[:patterns]
-          prefix   = p[:prefix]
-          suffix   = p[:suffix]
-          options  = p[:options]
-          @patterns << Hash[*(patterns.collect do |pattern, color|
-            [Regexp::new("#{prefix}#{pattern.to_s}#{suffix}",options), color]
-          end).flatten]
+      def map params
+        if params.is_a? Array
+          params.each { |p| map p }
+        elsif params.is_a? String or params.is_a? Symbol
+          map Yummi::Helpers::load_resource params, :from => :patterns
+        else
+          config params
         end
       end
 
       def call ctx
-        line = ctx.value.to_s
-        @patterns.each do |pattern|
-          pattern.each do |regex, color|
-            if regex.match(line)
-              @last_color = color
-              return color
+        ctx = Yummi::Context::new(ctx) unless ctx.is_a? Context
+        text = ctx.value.to_s
+        @patterns.each do |config|
+          config[:patterns].each do |regex, color|
+            if regex.match(text)
+              return match(text, config)
             end
           end
         end
-        @last_color
+        return text.colorize(@last_color) if @last_color
+        text
+      end
+
+      alias :colorize :call
+
+      private 
+
+      def config params
+        Yummi::Helpers.symbolize_keys(params)
+        prefix  = params[:prefix]
+        suffix  = params[:suffix]
+        options = params[:options]
+        mode    = (params[:mode] or :all)
+
+        patterns = Hash[*(params[:patterns].collect do |pattern, color|
+          [
+            Regexp::new("#{prefix}#{pattern.to_s}#{suffix}",options),
+            color
+          ]
+        end).flatten]
+
+        @patterns << {
+          :mode => mode,
+          :patterns => patterns
+        }
+      end
+
+      def match(text, config)
+        send "colorize_#{config[:mode]}", text, config
+      end
+
+      def colorize_all(text, match)
+        match[:patterns].each do |regex, color|
+          if regex.match(text)
+            @last_color = color
+            return text.colorize(color)
+          end
+        end
+        text
+      end
+
+      def colorize_grep(text, match)
+        return text unless match
+        @last_color = nil
+        match[:patterns].each do |regex, color|
+          text = text.colorize regex => color
+        end
+        text
       end
 
     end

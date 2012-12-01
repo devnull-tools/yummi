@@ -151,7 +151,7 @@ module Yummi
       width = 0
       sizes = [] # the real size of each line
       content.each do |line|
-        size = (Yummi::Color::raw line.chomp).size
+        size = line.chomp.uncolorize.size
         sizes << size
         width = [width, size].max
       end

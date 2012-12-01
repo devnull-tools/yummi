@@ -30,7 +30,7 @@ module Yummi
     module Schema
       # Normal Linux Terminal Colors, used by default in normal color types
       NORMAL_COLORS = {
-        :colors => [:black, :red, :green, :yellow, :blue, :purple, :cyan, [:gray, :white]],
+        :colors => [:black, :red, :green, [:yellow, :orange], :blue, :purple, :cyan, [:gray, :white]],
         :default => :white
       }
       # Intense Linux Terminal Colors, used by default in bold color types
@@ -97,19 +97,15 @@ module Yummi
 
     # Escape the given text with the given color code
     def self.escape key
-      return key unless key and COLORS[key.to_s.to_sym]
-      "\e[#{COLORS[key.to_s.to_sym]}m"
+      return key unless key and COLORS[key.to_sym]
+      "\e[#{COLORS[key.to_sym]}m"
     end
 
     # Colorize the given text with the given color
     def self.colorize string, color
+      return string if color.to_s == 'none'
       color, end_color = [color, "\e[0;0m"].map { |key| Color.escape(key) }
       color ? "#{color}#{string}#{end_color}" : string
-    end
-
-    # Extracts the text from a colorized string
-    def self.raw string
-      string.gsub(/\e\[\d;\d{2}m/, '').gsub(/\e\[0;0m/, '')
     end
 
   end
@@ -139,10 +135,8 @@ module Yummi
   #
   # Extracts the text from a colorized string
   #
-  # see #Color#raw
-  #
-  def self.raw_text string
-    Color::raw(string)
+  def self.uncolorize string
+    string.gsub(/\e\[\d;\d{2}m/, '').gsub(/\e\[0;0m/, '')
   end
 
   # A module to align texts based on a reference width
@@ -321,7 +315,7 @@ module Yummi
           File.join(File.dirname(__FILE__), 'yummi', from)
         ].each do |path|
           file = File.join(path, "#{name}.yaml")
-          return file if File.exist?(file)
+          return YAML::load_file(file) if File.exist?(file)
         end
       end
       raise Exception::new("Unable to load #{name}")
@@ -348,6 +342,7 @@ end
 
 require_relative 'yummi/no_colors' if RUBY_PLATFORM['mingw'] #Windows
 
+require_relative 'yummi/extensions'
 require_relative 'yummi/data_parser'
 require_relative "yummi/colorizers"
 require_relative "yummi/formatters"

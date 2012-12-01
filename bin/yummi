@@ -32,7 +32,7 @@ opt.on '-c COLOR', '--color=COLOR', 'Colorize using the given color' do |color|
   @color = color
 end
 opt.on '-p PATTERNS', '--pattern=PATTERNS', Array, 'Sets a pattern to colorize each line' do |patterns|
-  @colorizer = Yummi::Colorizers.pattern(*patterns)
+  @colorizer = Yummi::Colorizers.pattern(patterns)
 end
 opt.on '--log', 'Uses the default log pattern to colorize each line' do 
   @colorizer = Yummi::Colorizers.pattern :log
