@@ -1,9 +1,11 @@
 prefix: '.*'
 options: i
 patterns:
-  TRACE  : cyan
-  DEBUG  : blue
-  INFO   : white
-  WARN   : yellow
-  ERROR  : red
-  FATAL  : intense_red
+  TRACE        : cyan
+  DEBUG        : blue
+  INFO         : white
+  WARN         : yellow
+  NOTIFICATION : yellow
+  ERROR        : red
+  SEVERE       : red
+  FATAL        : intense_red
