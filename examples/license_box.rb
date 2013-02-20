@@ -36,7 +36,7 @@ opt.on '--align ALIGN', 'Sets the default alignment to use' do |align|
   @box.style.align = align.to_sym
 end
 opt.on '--width WIDTH', Integer, 'Sets the text box width' do |width|
-  @box.style.border[:width] = width
+  @box.style.width = width
 end
 opt.on '--left PATTERN', 'Sets the left line pattern' do |pattern|
   @box.style.border[:left] = pattern
