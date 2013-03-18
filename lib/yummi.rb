@@ -113,18 +113,25 @@ module Yummi
   # 
   # Colorizes the text using the given color.
   # 
-  # This method also checks if the color mode is in chain (like in "underline_bold_green").
+  # Examples:
+  #
+  #   Yummi.colorize "message", :red # produces a red text
+  #   Yummi.colorize "message", :bold_red # produces a bold (intensive) red text
+  #   Yummi.colorize "message", :red , :bold # produces a red text
   # 
   # see #Color#colorize
   #
-  def self.colorize string, color
+  def self.colorize string, color, styles = []
+    styles ||= [] # prevents nil arguments
     #check if there is more than one color classifier
-    modes = color.to_s.split(/_/)
-    if modes.size >= 3
-      color = modes.last
-      modes.delete_at(-1)
-      modes.each do |mode|
-        string = Color.colorize(string, "#{mode}_#{color}")
+    if styles.empty?
+      styles = color.to_s.split(/_/)
+      color = styles.last
+      styles.delete_at(-1)
+    end
+    unless styles.empty?
+      [*styles].each do |style|
+        string = Color.colorize(string, "#{style}_#{color}")
       end
       string
     else

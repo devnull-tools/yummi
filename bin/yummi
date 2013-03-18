@@ -31,6 +31,9 @@ opt = OptionParser::new
 opt.on '-c COLOR', '--color=COLOR', 'Colorize using the given color' do |color|
   @color = color
 end
+opt.on '-s STYLE', '--style=STYLE', Array, 'Sets the styles to use (bold, highlight, underline, blink, ...)' do |styles|
+  @styles = styles
+end
 opt.on '-p PATTERNS', '--pattern=PATTERNS', Array, 'Sets a pattern to colorize each line' do |patterns|
   @colorizer = Yummi::Colorizers.pattern(patterns)
 end
@@ -68,7 +71,7 @@ opt.parse! ARGV
 
 def print_out message
   if @color
-    puts Yummi::colorize message, @color
+    puts Yummi::colorize message, @color, @styles
   elsif @colorizer
     puts @colorizer.colorize message
   end
