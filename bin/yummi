@@ -34,6 +34,9 @@ end
 opt.on '-s STYLE', '--style=STYLE', Array, 'Sets the styles to use (bold, highlight, underline, blink, ...)' do |styles|
   @styles = styles
 end
+opt.on '-f FORMAT', '--format=FORMAT', 'Sets the format to use (a "%s" means the colorized message)' do |format|
+  @format = format
+end
 opt.on '-p PATTERNS', '--pattern=PATTERNS', Array, 'Sets a pattern to colorize each line' do |patterns|
   @colorizer = Yummi::Colorizers.pattern(patterns)
 end
@@ -70,11 +73,13 @@ end
 opt.parse! ARGV
 
 def print_out message
-  if @color
-    puts Yummi::colorize message, @color, @styles
+  output_text = if @color
+    Yummi::colorize message, @color, @styles
   elsif @colorizer
-    puts @colorizer.colorize message
+    @colorizer.colorize message
   end
+  output_text = "#{@format}" % output_text if @format
+  puts output_text
 end
 
 if @message
