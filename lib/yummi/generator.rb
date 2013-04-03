@@ -42,6 +42,8 @@ FUNCTION
           content << function
         end
 
+        content << "printf $(\"color_$@\")"
+
         content
       end
 
