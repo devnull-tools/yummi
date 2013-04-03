@@ -358,6 +358,7 @@ require_relative 'yummi/table'
 require_relative 'yummi/table_builder'
 require_relative 'yummi/text_box'
 require_relative 'yummi/logger'
+require_relative 'yummi/generator'
 
 # if the output is being piped, turn off the colors
 unless $stdout.isatty

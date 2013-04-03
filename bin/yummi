@@ -60,6 +60,11 @@ opt.on '-l FILES', '--load=FILES', Array, 'Include the files for extending compo
     load File.expand_path(file)
   end
 end
+opt.on '--shell-script', 'Outputs a shell script containing the color scheme functions' do 
+  generator = Yummi::Generator::ShellScript::new
+  puts generator.generate
+  exit 0
+end
 opt.on '-h', '--help', 'Display this help message' do
   puts opt
   exit 0
