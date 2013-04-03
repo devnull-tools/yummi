@@ -35,7 +35,7 @@ module Yummi
 END
         Yummi::Color::COLORS.each do |key, pattern|
           function = <<FUNCTION
-function #{key} {
+function color_#{key} {
   echo \"\\e[#{pattern}m$1\\e[0;0m\"
 }
 FUNCTION
