@@ -65,7 +65,7 @@ END
       end
 
       def install
-        puts "Please input the desired information".colorize(:bold_yellow)
+        puts ".: Yummi shell script installation :.".colorize(:bold_yellow)
         name = get "Program name", "color"
         location = File.expand_path(get("Install location", "~/bin"))
         file = File.join(location, name)
