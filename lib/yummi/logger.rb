@@ -1,6 +1,6 @@
 #                         The MIT License
 #
-# Copyright (c) 2012 Marcelo Guimarães <ataxexe@gmail.com>
+# Copyright (c) 2013 Marcelo Guimarães <ataxexe@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -56,7 +56,7 @@ module Yummi
       # If a block is passed, it will be used to format the message. The block can use
       # the following variables: severity, time, program_name and message.
       #
-      def initialize &block
+      def initialize colors = {}, &block
         @colors = {
           :debug => :blue,
           :info => :white,
@@ -64,7 +64,7 @@ module Yummi
           :error => :red,
           :fatal => :intense_red,
           :any => :intense_gray
-        }
+        }.merge! colors
         @format_block = block
       end
 

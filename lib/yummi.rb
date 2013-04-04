@@ -1,6 +1,6 @@
 #                         The MIT License
 #
-# Copyright (c) 2012 Marcelo Guimarães <ataxexe@gmail.com>
+# Copyright (c) 2013 Marcelo Guimarães <ataxexe@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -30,12 +30,12 @@ module Yummi
     module Schema
       # Normal Linux Terminal Colors, used by default in normal color types
       NORMAL_COLORS = {
-        :colors => [:black, :red, :green, [:yellow, :orange], :blue, :purple, :cyan, [:gray, :white]],
+        :colors => [:black, :red, :green, [:yellow, :orange], :blue, [:purple, :magenta], :cyan, [:gray, :white]],
         :default => :white
       }
       # Intense Linux Terminal Colors, used by default in bold color types
       ALTERNATE_COLORS = {
-        :colors => [:gray, :red, :green, :yellow, :blue, :purple, :cyan, :white],
+        :colors => [:gray, :red, :green, :yellow, :blue, [:purple, :magenta], :cyan, :white],
         :default => :gray
       }
     end

@@ -2,7 +2,7 @@
 
 #                         The MIT License
 #
-# Copyright (c) 2011 Marcelo Guimarães <ataxexe@gmail.com>
+# Copyright (c) 2013 Marcelo Guimarães <ataxexe@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -60,9 +60,14 @@ opt.on '-l FILES', '--load=FILES', Array, 'Include the files for extending compo
     load File.expand_path(file)
   end
 end
-opt.on '--shell-script', 'Outputs a shell script containing the color scheme functions' do 
+opt.on '--shell-script', 'Outputs a shell script program to colorize texts without a ruby environment' do 
   generator = Yummi::Generator::ShellScript::new
   puts generator.generate
+  exit 0
+end
+opt.on '--install', 'Installs a shell script program to colorize texts without a ruby environment' do 
+  generator = Yummi::Generator::ShellScript::new
+  generator.install
   exit 0
 end
 opt.on '-h', '--help', 'Display this help message' do

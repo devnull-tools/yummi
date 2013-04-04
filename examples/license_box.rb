@@ -1,6 +1,6 @@
 #                         The MIT License
 #
-# Copyright (c) 2012 Marcelo Guimarães <ataxexe@gmail.com>
+# Copyright (c) 2013 Marcelo Guimarães <ataxexe@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -77,7 +77,7 @@ opt.parse! ARGV
 
 @box.add 'The MIT License', :color => :intense_yellow, :align => :center
 @box.line_break
-@box.add 'Copyright (c) 2012 Marcelo Guimaraes <ataxexe@gmail.com>', :color => :green, :align => :center
+@box.add 'Copyright (c) 2013 Marcelo Guimaraes <ataxexe@gmail.com>', :color => :green, :align => :center
 @box.separator
 @box.add 'Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in the Software
