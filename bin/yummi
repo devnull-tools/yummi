@@ -68,11 +68,15 @@ opt.on '-l FILES', '--load=FILES', Array, 'Include the files for extending compo
   end
 end
 opt.on '--shell-script', 'Outputs a shell script program to colorize texts without a ruby environment' do 
+  abort "Environment not supported" unless Yummi::Color::supported?
+  
   generator = Yummi::Generator::ShellScript::new
   puts generator.generate
   exit 0
 end
 opt.on '--install', 'Installs a shell script program to colorize texts without a ruby environment' do 
+  abort "Environment not supported" unless Yummi::Color::supported?
+
   puts ".: Yummi shell script installation :.".colorize(:bold_yellow)
   name = get_input "Program name", "colorize"
   location = File.expand_path(get_input("Install location", "~/bin"))

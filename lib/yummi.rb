@@ -44,6 +44,16 @@ module Yummi
     COLORS = {}
 
     #
+    # Checks if the environment is supported by Yummi.
+    #
+    # Currently (known) unsupported environments are:
+    #   * Windows
+    #
+    def self.supported?
+      not RUBY_PLATFORM['mingw'] #Windows
+    end
+
+    #
     # Clears all color mappings and add this ones
     #
     # see #add_color_map
@@ -347,7 +357,7 @@ module Yummi
 
 end
 
-require_relative 'yummi/no_colors' if RUBY_PLATFORM['mingw'] #Windows
+require_relative 'yummi/no_colors' unless Yummi::Color::supported?
 
 require_relative 'yummi/extensions'
 require_relative 'yummi/data_parser'
