@@ -4,7 +4,9 @@
 
 usage() {
   echo "Usage: $0 COLOR TEXT [FORMAT]"
-
+  echo "  COLOR: a name or a number [1..8]. A modifier may also be used in a form $MOD_$COLOR"
+  echo "  TEXT: the text to colorize"
+  echo "  FORMAT: a format to use (defaults to \"%s\")"
   exit 1
 }
 
