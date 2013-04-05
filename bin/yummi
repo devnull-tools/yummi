@@ -27,6 +27,13 @@ require 'optparse'
 
 @params = []
 
+def get_input message, default
+  puts(message.colorize(:blue) << ": " << " [#{default}]".colorize(:yellow))
+  input = gets.chomp
+  return default if input.empty?
+  input
+end
+
 opt = OptionParser::new
 opt.on '-c COLOR', '--color=COLOR', 'Colorize using the given color' do |color|
   @color = color
@@ -66,8 +73,15 @@ opt.on '--shell-script', 'Outputs a shell script program to colorize texts witho
   exit 0
 end
 opt.on '--install', 'Installs a shell script program to colorize texts without a ruby environment' do 
+  puts ".: Yummi shell script installation :.".colorize(:bold_yellow)
+  name = get_input "Program name", "colorize"
+  location = File.expand_path(get_input("Install location", "~/bin"))
+  file = File.join(location, name)
+
   generator = Yummi::Generator::ShellScript::new
-  generator.install
+  generator.install file
+
+  puts "Program installed!".colorize(:bold_green)
   exit 0
 end
 opt.on '-h', '--help', 'Display this help message' do
