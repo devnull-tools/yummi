@@ -11,13 +11,12 @@ usage() {
 }
 <% Yummi::Color::COLORS.each do |key, pattern| %>
 function color_<%= key %> {
-  echo "<%= "$1".colorize(key) %>"
+  printf "\e[<%= pattern %>m$1\e[0;0m"
 }
 <% end %>
 [ "$#" = "0" ] && usage
 
 format="%s\n"
-
 [ ! -z "$3" ] && format="$3"
 
 printf "$format" $(color_"$@")
