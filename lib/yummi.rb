@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+require 'set'
 require_relative "yummi/version"
 
 module Yummi
@@ -42,6 +43,8 @@ module Yummi
 
     # Color mappings
     COLORS = {}
+    TYPE_NAMES = Set::new
+    COLOR_NAMES = Set::new
 
     #
     # Checks if the environment is supported by Yummi.
@@ -75,7 +78,7 @@ module Yummi
     #
     # +key_code+::
     #   The key code to map this type. If the type name is :default, the mapping will not
-    #   use the name "default" (:normal_red will become only :red)
+    #   use the name "default" (:default_red will become only :red)
     # +schema+::
     #   An array with the color names. Each name will be mapped and their positions
     #  (1 based) too. (:intense_red and :intense_2, for example)
@@ -83,11 +86,11 @@ module Yummi
     def self.add_color_map mappings
       mappings.each do |types, config|
         [*types].each do |type|
+          TYPE_NAMES << type.to_s
           schema = config[:schema]
           schema[:colors].each_with_index do |colors, key_code|
             [*colors].each do |color|
-              # maps the default color for a type
-              COLORS[type] = "#{config[:key_code]}#{key_code}" if color == schema[:default]
+              COLOR_NAMES << color.to_s
               # do not use prefix if schema is default
               prefix = (type == :default ? '' : "#{type}_")
               # maps the color using color name
@@ -116,6 +119,14 @@ module Yummi
       return string if color.to_s == 'none'
       color, end_color = [color, "\e[0;0m"].map { |key| Color.escape(key) }
       color ? "#{color}#{string}#{end_color}" : string
+    end
+
+    def self.color_names
+      COLOR_NAMES.to_a
+    end
+
+    def self.type_names
+      TYPE_NAMES.to_a
     end
 
   end

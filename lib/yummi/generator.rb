@@ -28,16 +28,46 @@ module Yummi
 
     class ShellScript
 
-      def generate
-        file = File.join(File.dirname(__FILE__), "generate/colorize.sh.erb")
+      def initialize params = {}
+        params = {
+          :function_prefix => "color_",
+          :colors => Yummi::Color::color_names,
+          :types => Yummi::Color::type_names,
+          :use_color_numbers => true
+        }.merge! params
+        @function_prefix = params[:function_prefix]
+        colors = Yummi::Color::color_names & params[:colors]
+        colors += (1..7).to_a if params[:use_color_numbers]
+        types = Yummi::Color::type_names & params[:types]
+        @colors = Yummi::Color::COLORS.select do |key, pattern|
+          type, color = key.to_s.split("_") if key.to_s.include?("_")
+          type ||= "default" unless color
+          color ||= key.to_s
+          colors.include?(color) and types.include?(type)
+        end
+      end
+
+      def generate_library file
+        @header = parse "header"
+        script = parse("colorize-functions")
+        File.open(file, "w") { |f| f.write script }
+      end
+
+      def generate_program file
+        @functions = parse "colorize-functions"
+        @header = parse "header"
+        script = parse("colorize")
+        File.open(file, "w") { |f| f.write script }
+        File.chmod(0755, file)
+      end
+
+      private
+
+      def parse template
+        file = File.join(File.dirname(__FILE__), "generate/#{template}.sh.erb")
         content = File.read(file)
         erb = ERB::new(content, 0, "%<>")
         erb.result binding
-      end
-
-      def install file
-        File.open(file, "w") { |f| f.write generate }
-        File.chmod(0755, file)
       end
 
     end

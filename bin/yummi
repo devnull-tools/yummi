@@ -25,14 +25,37 @@
 require_relative '../lib/yummi'
 require 'optparse'
 
-@params = []
-
-def get_input message, default
+def get_input message, default, params = {}
   puts(message.colorize(:blue) << ": " << " [#{default}]".colorize(:yellow))
   input = gets.chomp
   return default if input.empty?
+  return input.split(params[:split]) if params[:split]
   input
 end
+
+def get_script_params
+  prefix = get_input "Function Prefix", "", :optional => true
+
+  puts "Colors:".colorize(:bold_white)
+  puts Yummi::Color::color_names.colorize(:yellow)
+  colors = get_input "Colors to include", "all", :split => /\s*,\s*/
+  colors = Yummi::Color::color_names if colors == "all"
+
+  puts "Types:".colorize(:bold_white)
+  puts Yummi::Color::type_names.colorize(:yellow)
+  types = get_input "Types to include", "all", :split => /\s*,\s*/
+  types = Yummi::Color::type_names if types == "all"
+  
+  include_numbers = get_input("Include color numbers?", "yes").downcase == "yes"
+  {
+    :function_prefix => prefix,
+    :colors => colors,
+    :types => types,
+    :include_color_numbers => include_numbers
+  }
+end
+
+@params = []
 
 opt = OptionParser::new
 opt.on '-c COLOR', '--color=COLOR', 'Colorize using the given color' do |color|
@@ -67,14 +90,7 @@ opt.on '-l FILES', '--load=FILES', Array, 'Include the files for extending compo
     load File.expand_path(file)
   end
 end
-opt.on '--shell-script', 'Outputs a shell script program to colorize texts without a ruby environment' do 
-  abort "Environment not supported" unless Yummi::Color::supported?
-  
-  generator = Yummi::Generator::ShellScript::new
-  puts generator.generate
-  exit 0
-end
-opt.on '--install', 'Installs a shell script program to colorize texts without a ruby environment' do 
+opt.on '--shell-script', 'Generates a shell script program to colorize texts without a ruby environment' do 
   abort "Environment not supported" unless Yummi::Color::supported?
 
   puts ".: Yummi shell script installation :.".colorize(:bold_yellow)
@@ -82,10 +98,18 @@ opt.on '--install', 'Installs a shell script program to colorize texts without a
   location = File.expand_path(get_input("Install location", "~/bin"))
   file = File.join(location, name)
 
-  generator = Yummi::Generator::ShellScript::new
-  generator.install file
-
-  puts "Program installed!".colorize(:bold_green)
+  generator = Yummi::Generator::ShellScript::new get_script_params
+  
+  case get_input("Install as? (program, library)", "program").downcase.to_sym
+  when :program
+    generator.generate_program file
+  when :library
+    generator.generate_library file
+  else
+    puts "Invalid mode!"
+    exit 1
+  end
+  puts "Done!".colorize(:bold_green)
   exit 0
 end
 opt.on '-h', '--help', 'Display this help message' do

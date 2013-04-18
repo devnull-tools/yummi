@@ -38,3 +38,15 @@ class String
   end
 
 end
+
+class Array
+
+  def colorize params
+    map {|n| n.to_s.colorize params}
+  end
+
+  def uncolorize
+    map {|n| n.to_s.uncolorize}
+  end
+  
+end
