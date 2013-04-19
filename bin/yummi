@@ -34,8 +34,6 @@ def get_input message, default, params = {}
 end
 
 def get_script_params
-  prefix = get_input "Function Prefix", "", :optional => true
-
   puts "Colors:".colorize(:bold_white)
   puts Yummi::Color::color_names.colorize(:yellow)
   colors = get_input "Colors to include", "all", :split => /\s*,\s*/
@@ -48,7 +46,6 @@ def get_script_params
   
   include_numbers = get_input("Include color numbers?", "yes").downcase == "yes"
   {
-    :function_prefix => prefix,
     :colors => colors,
     :types => types,
     :include_color_numbers => include_numbers
@@ -97,13 +94,16 @@ opt.on '--shell-script', 'Generates a shell script program to colorize texts wit
   name = get_input "Program name", "colorize"
   location = File.expand_path(get_input("Install location", "~/bin"))
   file = File.join(location, name)
-
-  generator = Yummi::Generator::ShellScript::new get_script_params
   
   case get_input("Install as? (program, library)", "program").downcase.to_sym
   when :program
+    generator = Yummi::Generator::ShellScript::new get_script_params
     generator.generate_program file
   when :library
+    prefix = get_input("Function Prefix", "")
+    params = get_script_params
+    params[:function_prefix] = prefix
+    generator = Yummi::Generator::ShellScript::new params
     generator.generate_library file
   else
     puts "Invalid mode!"
