@@ -334,7 +334,7 @@ module Yummi
 
     def self.load_resource name, params = {:from => ''}
       file = File.expand_path name.to_s
-      if File.exist? file
+      if File.file? file
         return YAML::load_file(file)
       else
         from = params[:from].to_s
