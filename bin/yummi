@@ -25,33 +25,6 @@
 require_relative '../lib/yummi'
 require 'optparse'
 
-def get_input message, default, params = {}
-  puts(message.colorize(:blue) << ": " << " [#{default}]".colorize(:yellow))
-  input = gets.chomp
-  return default if input.empty?
-  return input.split(params[:split]) if params[:split]
-  input
-end
-
-def get_script_params
-  puts "Colors:".colorize(:intense_white)
-  puts Yummi::Color::color_names.colorize(:yellow)
-  colors = get_input "Colors to include", "all", :split => /\s*,\s*/
-  colors = Yummi::Color::color_names if colors == "all"
-
-  puts "Types:".colorize(:intense_white)
-  puts Yummi::Color::type_names.colorize(:yellow)
-  types = get_input "Types to include", "all", :split => /\s*,\s*/
-  types = Yummi::Color::type_names if types == "all"
-  
-  include_numbers = get_input("Include color numbers?", "yes").downcase == "yes"
-  {
-    :colors => colors,
-    :types => types,
-    :include_color_numbers => include_numbers
-  }
-end
-
 @params = []
 
 opt = OptionParser::new
@@ -125,6 +98,6 @@ else
       print_out line.chomp
     end
   rescue Interrupt
-    puts Yummi::colorize("Aborted!", :red)
+    puts "Aborted!".red
   end
 end
