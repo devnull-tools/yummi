@@ -49,8 +49,8 @@ module Yummi
     
     # Creates a new table with the default attributes:
     #
-    # * Title color: intense_yellow
-    # * Header color: intense_blue
+    # * Title color: bold.yellow
+    # * Header color: bold.blue
     # * Values color: none
     # * Colspan: 2
     # * Default Align: right and first element to left
@@ -60,9 +60,9 @@ module Yummi
       @title = nil
       @description = nil
       @style = {
-        :title => :intense_yellow,
-        :description => :intense_black,
-        :header => :intense_blue,
+        :title => "bold.yellow",
+        :description => "bold.black",
+        :header => "bold.blue",
         :value => nil
       }
 
