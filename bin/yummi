@@ -71,7 +71,7 @@ opt.parse! ARGV
 
 def print_out message
   output_text = if @color
-    Yummi::colorize message, @color, @styles
+    Yummi::colorize message, @color
   elsif @colorizer
     @colorizer.colorize message
   end
