@@ -23,10 +23,6 @@
 class String
   include Term::ANSIColor
 
-  def uncolorize
-    Yummi::uncolorize self
-  end
-
   def colorize params
     if params.is_a? Hash
       text = self
@@ -46,8 +42,8 @@ class Array
     map {|n| n.to_s.colorize params}
   end
 
-  def uncolorize
-    map {|n| n.to_s.uncolorize}
+  def uncolored
+    map {|n| n.to_s.uncolored}
   end
   
 end
