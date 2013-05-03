@@ -8,4 +8,4 @@ patterns:
   NOTIFICATION : yellow
   ERROR        : red
   SEVERE       : red
-  FATAL        : intense_red
+  FATAL        : bold.red

@@ -7,6 +7,6 @@ patterns:
   Notice    : cyan
   Warning   : yellow
   Error     : red
-  Critical  : intense_red
-  Alert     : intense_red
-  Emergency : intense_red
+  Critical  : bold.red
+  Alert     : bold.red
+  Emergency : bold.red

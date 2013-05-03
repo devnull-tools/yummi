@@ -5,4 +5,4 @@ patterns:
   INFO  : white
   WARN  : yellow
   ERROR : red
-  FATAL : intense_red
+  FATAL : bold.red
