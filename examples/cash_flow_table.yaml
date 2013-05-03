@@ -18,9 +18,9 @@ format:
     with: none
 color:
   description:
-    with: purple
+    with: magenta
   authentication_code:
-    with: highlight_gray
+    with: black.on_intense_white
   eletronic:
     boolean:
       if_true: blue
@@ -28,7 +28,7 @@ color:
   value,total:
     numeric:
       positive: green
-      zero: gray
+      zero: white
       negative: red
   undefined:
     with: red
@@ -43,7 +43,7 @@ top:
           zero: "%.2f"
           negative: "%.2f"
     row_color:
-      with: bold_white
+      with: intense_white
 bottom:
   - format:
       total:
@@ -52,4 +52,4 @@ bottom:
           zero: "%.2f"
           negative: "%.2f"
     row_color:
-      with: bold_white
+      with: intense_white

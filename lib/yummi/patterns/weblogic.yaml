@@ -1,7 +1,7 @@
 prefix: '####<[^>]+>\s<'
 suffix: '>'
 patterns:
-  Trace     : purple
+  Trace     : magenta
   Debug     : blue
   Info      : white
   Notice    : cyan

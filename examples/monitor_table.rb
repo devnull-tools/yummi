@@ -54,14 +54,14 @@ end
                                                  }
 
 def zebra_colors
-  @table.colorize_row :using => Yummi::Colorizers.stripe(:yellow, :purple)
+  @table.colorize_row :using => Yummi::Colorizers.stripe(:yellow, :magenta)
 end
 
 def full_colors
-  @table.colorize :server_name, :with => :purple
+  @table.colorize :server_name, :with => :magenta
   @table.colorize :free_memory, :using => @memory_colorizer
   @table.colorize :in_use_threads, :using => @thread_colorizer
-  @table.colorize [:max_memory, :max_threads], :with => :gray
+  @table.colorize [:max_memory, :max_threads], :with => :black
 end
 
 full_colors

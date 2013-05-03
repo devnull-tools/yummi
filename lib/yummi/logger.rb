@@ -51,7 +51,7 @@ module Yummi
       # * +WARN+: yellow
       # * +ERROR+: red
       # * +FATAL+: red (intense)
-      # * +ANY+: gray (intense)
+      # * +ANY+: black (intense)
       #
       # If a block is passed, it will be used to format the message. The block can use
       # the following variables: severity, time, program_name and message.
@@ -63,7 +63,7 @@ module Yummi
           :warn => :yellow,
           :error => :red,
           :fatal => :intense_red,
-          :any => :intense_gray
+          :any => :intense_black
         }.merge! colors
         @format_block = block
       end

@@ -61,7 +61,7 @@ module Yummi
       @description = nil
       @style = {
         :title => :intense_yellow,
-        :description => :intense_gray,
+        :description => :intense_black,
         :header => :intense_blue,
         :value => nil
       }
@@ -256,7 +256,7 @@ module Yummi
     #
     # === Example
     #
-    #   table.colorize :description, :with => :purple
+    #   table.colorize :description, :with => :magenta
     #   table.colorize([:value, :total]) { |value| :red if value < 0 }
     #
     def colorize (indexes, params = {}, &block)
@@ -355,8 +355,8 @@ module Yummi
       data_output = build_data_output
 
       string = ""
-      string << Color.colorize(@title, @style[:title]) << $/ if @title
-      string << Color.colorize(@description, @style[:description]) << $/ if @description
+      string << Yummi.colorize(@title, @style[:title]) << $/ if @title
+      string << Yummi.colorize(@description, @style[:description]) << $/ if @description
       table_data = header_output + data_output
       if @layout == :vertical
         # don't use array transpose because the data may differ in each line size

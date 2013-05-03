@@ -46,7 +46,7 @@ Example:
     patterns:
       TRACE : cyan
       DEBUG : blue
-      INFO  : gray
+      INFO  : black
       WARN  : yellow
       ERROR : red
       FATAL : intense_red

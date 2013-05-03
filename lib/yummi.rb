@@ -37,12 +37,15 @@ module Yummi
   end
 
   def self.colorize string, color
+    return string unless color
     if color.is_a? Fixnum
       string.color color
-    elsif color.match(/_/)
+    elsif color.match(/\./)
       result = string
-      color.to_s.split(/_/).each { |c| result = colorize(result, c) }
+      color.to_s.split(/\./).each { |c| result = colorize(result, c) }
       result
+    elsif color.match(/\d+/)
+      string.color color.to_i
     else
       string.send color
     end

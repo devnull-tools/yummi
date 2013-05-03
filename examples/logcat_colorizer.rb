@@ -43,7 +43,7 @@ colorizer = Yummi::Colorizers.pattern :prefix => /\[/,
     'FATAL' => :intense_red,
     'WARN'  => :yellow,
     'INFO'  => :green,
-    'DEBUG' => :gray
+    'DEBUG' => :black
   }
 
 log.each_line do |line|
