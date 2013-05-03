@@ -58,9 +58,6 @@ opt = OptionParser::new
 opt.on '-c COLOR', '--color=COLOR', 'Colorize using the given color' do |color|
   @color = color
 end
-opt.on '-s STYLE', '--style=STYLE', Array, 'Sets the styles to use (bold, highlight, underline, blink, ...)' do |styles|
-  @styles = styles
-end
 opt.on '-f FORMAT', '--format=FORMAT', 'Sets the format to use (a "%s" means the colorized message)' do |format|
   @format = format
 end
@@ -86,31 +83,6 @@ opt.on '-l FILES', '--load=FILES', Array, 'Include the files for extending compo
   files.each do |file|
     load File.expand_path(file)
   end
-end
-opt.on '--shell-script', 'Generates a shell script program to colorize texts without a ruby environment' do 
-  abort "Environment not supported" unless Yummi::Color::supported?
-
-  puts ".: Yummi shell script installation :.".colorize(:bold_yellow)
-  name = get_input "Program name", "colorize"
-  location = File.expand_path(get_input("Install location", "~/bin"))
-  file = File.join(location, name)
-  
-  case get_input("Install as? (program, library)", "program").downcase.to_sym
-  when :program
-    generator = Yummi::Generator::ShellScript::new get_script_params
-    generator.generate_program file
-  when :library
-    prefix = get_input("Function Prefix", "")
-    params = get_script_params
-    params[:function_prefix] = prefix
-    generator = Yummi::Generator::ShellScript::new params
-    generator.generate_library file
-  else
-    puts "Invalid mode!"
-    exit 1
-  end
-  puts "Done!".colorize(:bold_green)
-  exit 0
 end
 opt.on '-h', '--help', 'Display this help message' do
   puts opt

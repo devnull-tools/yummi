@@ -20,14 +20,4 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-module Yummi
-
-  module Color
-
-    def self.colorize(str, color)
-      str
-    end
-
-  end
-
-end
+Term::ANSIColor::coloring = false

@@ -21,150 +21,31 @@
 # THE SOFTWARE.
 
 require 'set'
+require 'term/ansicolor'
 require_relative "yummi/version"
 
 module Yummi
-  # Base for colorizing
-  module Color
 
-    # The Color Schema Definition
-    module Schema
-      # Normal Linux Terminal Colors, used by default in normal color types
-      NORMAL_COLORS = {
-        :colors => [:black, :red, :green, [:yellow, :orange], :blue, [:purple, :magenta], :cyan, [:gray, :white]],
-        :default => :white
-      }
-      # Intense Linux Terminal Colors, used by default in bold color types
-      ALTERNATE_COLORS = {
-        :colors => [:gray, :red, :green, :yellow, :blue, [:purple, :magenta], :cyan, :white],
-        :default => :gray
-      }
-    end
-
-    # Color mappings
-    COLORS = {}
-    TYPE_NAMES = Set::new
-    COLOR_NAMES = Set::new
-
-    #
-    # Checks if the environment is supported by Yummi.
-    #
-    # Currently (known) unsupported environments are:
-    #   * Windows
-    #
-    def self.supported?
-      not RUBY_PLATFORM['mingw'] #Windows
-    end
-
-    #
-    # Clears all color mappings and add this ones
-    #
-    # see #add_color_map
-    #
-    def self.load_color_map mappings
-      COLORS.clear
-      add_color_map mappings
-    end
-
-    #
-    # Adds the given color mappings, overriding the already defined.
-    #
-    # Colors are printed using a "[#{type_key_code}:3#{color_key_code}m" prefix.
-    #
-    # === Args
-    #
-    # The mappings is a Hash of Hashes, each parent hash must define a type key and the
-    # child hash must contain the following keys:
-    #
-    # +key_code+::
-    #   The key code to map this type. If the type name is :default, the mapping will not
-    #   use the name "default" (:default_red will become only :red)
-    # +schema+::
-    #   An array with the color names. Each name will be mapped and their positions
-    #  (1 based) too. (:intense_red and :intense_2, for example)
-    #
-    def self.add_color_map mappings
-      mappings.each do |types, config|
-        [*types].each do |type|
-          TYPE_NAMES << type.to_s
-          schema = config[:schema]
-          schema[:colors].each_with_index do |colors, key_code|
-            [*colors].each do |color|
-              COLOR_NAMES << color.to_s
-              # do not use prefix if schema is default
-              prefix = (type == :default ? '' : "#{type}_")
-              # maps the color using color name
-              key = "#{prefix}#{color}"
-              COLORS[key.to_sym] = "#{config[:key_code]}#{key_code}"
-              # maps the color using color key code
-              key = "#{prefix}#{key_code + 1}"
-              COLORS[key.to_sym] = "#{config[:key_code]}#{key_code}"
-              # maps the color using color name if default schema does not defines it
-              # example: yellow and white are present only in strong/intense schema
-              COLORS[color.to_sym] = "#{config[:key_code]}#{key_code}" unless COLORS[color]
-            end
-          end
-        end
-      end
-    end
-
-    # Escape the given text with the given color code
-    def self.escape key
-      return key unless key and COLORS[key.to_sym]
-      "\e[#{COLORS[key.to_sym]}m"
-    end
-
-    # Colorize the given text with the given color
-    def self.colorize string, color
-      return string if color.to_s == 'none'
-      color, end_color = [color, "\e[0;0m"].map { |key| Color.escape(key) }
-      color ? "#{color}#{string}#{end_color}" : string
-    end
-
-    def self.color_names
-      COLOR_NAMES.to_a
-    end
-
-    def self.type_names
-      TYPE_NAMES.to_a
-    end
-
+  #
+  # Checks if the environment is supported by Yummi.
+  #
+  # Currently (known) unsupported environments are:
+  #   * Windows
+  #
+  def self.supported?
+    not RUBY_PLATFORM['mingw'] #Windows
   end
 
-  # 
-  # Colorizes the text using the given color.
-  # 
-  # Examples:
-  #
-  #   Yummi.colorize "message", :red # produces a red text
-  #   Yummi.colorize "message", :bold_red # produces a bold (intensive) red text
-  #   Yummi.colorize "message", :red , :bold # produces a red text
-  # 
-  # see #Color#colorize
-  #
-  def self.colorize string, color, styles = []
-    styles ||= [] # prevents nil arguments
-    #check if there is more than one color classifier
-    if styles.empty?
-      styles = color.to_s.split(/_/)
-      color = styles.last
-      styles.delete_at(-1)
-    end
-    unless styles.empty?
-      [*styles].each do |style|
-        string = Color.colorize(string, "#{style}_#{color}")
-      end
-      string
+  def self.colorize string, color
+    if color.is_a? Fixnum
+      string.color color
+    elsif color.match(/_/)
+      result = string
+      color.to_s.split(/_/).each { |c| result = colorize(result, c) }
+      result
     else
-      Color.colorize string, color
+      string.send color
     end
-  end
-
-  #
-  # Extracts the text from a colorized string
-  #
-  def self.uncolorize string
-    string.gsub(/\e\[\d;\d{2}m/, '').gsub(/\e\[0;0m/, '')
   end
 
   # A module to align texts based on a reference width
@@ -368,18 +249,16 @@ module Yummi
 
 end
 
-require_relative 'yummi/no_colors' unless Yummi::Color::supported?
+require_relative 'yummi/no_colors' unless Yummi::supported?
 
 require_relative 'yummi/extensions'
 require_relative 'yummi/data_parser'
 require_relative "yummi/colorizers"
 require_relative "yummi/formatters"
-require_relative 'yummi/color_mapping'
 require_relative 'yummi/table'
 require_relative 'yummi/table_builder'
 require_relative 'yummi/text_box'
 require_relative 'yummi/logger'
-require_relative 'yummi/generator'
 
 # if the output is being piped, turn off the colors
 unless $stdout.isatty

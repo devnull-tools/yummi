@@ -21,6 +21,7 @@
 # THE SOFTWARE.
 
 class String
+  include Term::ANSIColor
 
   def uncolorize
     Yummi::uncolorize self

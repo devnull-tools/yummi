@@ -1,9 +1,0 @@
-<%= @header %>
-<% @colors.each do |key, pattern|
-function_name = "#{@function_prefix}#{key}"
-next unless function_name.match /^[a-z][a-zA-Z0-9_]*$/
- %>
-function <%= function_name %> {
-  printf "\e[<%= pattern %>m$1\e[0;0m"
-}
-<% end %>
