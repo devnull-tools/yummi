@@ -72,7 +72,7 @@ module Yummi
 
       def call(severity, time, program_name, message)
         color = @colors[severity.downcase.to_sym]
-        Yummi::Color.colorize output(severity, time, program_name, message), color
+        Yummi::colorize output(severity, time, program_name, message), color
       end
 
       # Formats the message, override this method instead of #call
