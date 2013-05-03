@@ -1,6 +1,7 @@
 # Yummi
 
-This is a tool to colorize your console app.
+This is a tool to make your console app more tasty. Yummi provides a set of console line elements
+also with a delegator for colorizing Strings using the awesome gem term-ansicolor.
 
 ## Installation
 
