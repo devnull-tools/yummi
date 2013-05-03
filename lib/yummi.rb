@@ -36,6 +36,16 @@ module Yummi
     not RUBY_PLATFORM['mingw'] #Windows
   end
 
+  #
+  # Colorizes the given string with the given color
+  # 
+  # The color may be an integer, a string or a dot
+  # separated color style (ex: "bold.yellow" or 
+  # "underline.bold.green").
+  # 
+  # Since this method delegates to Term::ANSIColor,
+  # the given color should be compatible with it.
+  #
   def self.colorize string, color
     return string unless color
     if color.is_a? Fixnum
