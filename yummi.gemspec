@@ -8,7 +8,7 @@ Gem::Specification.new do |gem|
   gem.summary       = "A tool to colorize your console application."
   gem.homepage      = "https://github.com/ataxexe/yummi"
 
-  gem.add_dependency 'term-ansicolor', '>=1.1.5'
+  gem.add_dependency 'term-ansicolor', '>=1.1'
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
