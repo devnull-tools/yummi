@@ -365,11 +365,14 @@ module Yummi
       string << content(table_data)
     end
 
+    #
+    # Calculates the table width using the rendered lines
+    #
     def width
       string = to_s
       max_width = 0
       string.each_line do |line|
-        max_width = [max_width, line.uncolored.size].max
+        max_width = [max_width, line.uncolored.chomp.size].max
       end
       max_width
     end
