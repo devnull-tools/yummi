@@ -365,6 +365,15 @@ module Yummi
       string << content(table_data)
     end
 
+    def width
+      string = to_s
+      max_width = 0
+      string.each_line do |line|
+        max_width = [max_width, line.uncolored.size].max
+      end
+      max_width
+    end
+
     private
 
     def extract_component params, &block
