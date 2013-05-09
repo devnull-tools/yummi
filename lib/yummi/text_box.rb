@@ -47,6 +47,7 @@ module Yummi
       @style.separator = {}
       @style.separator[:pattern] = '-'
       @style.separator[:width] = nil
+      @style.separator[:color] = nil
       @style.separator[:align] = :left
 
       @style.border = {}
@@ -128,7 +129,7 @@ module Yummi
     #     align: the separator alignment (see #Yummi#Aligner)
     #
     def separator (params = {})
-      params = style.separator.merge! params
+      params = style.separator.merge params
       params[:width] ||= style.width
       raise Exception::new("Define a width for using separators") unless params[:width]
       line = fill(params[:pattern], params[:width])
