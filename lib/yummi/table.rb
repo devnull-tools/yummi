@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+require 'ostruct'
+
 module Yummi
   # A Table that supports colorizing title, header, values and also formatting the values.
   class Table
@@ -47,28 +49,39 @@ module Yummi
     # The table header
     attr_reader :header
     
-    # Creates a new table with the default attributes:
     #
-    # * Title color: bold.yellow
-    # * Header color: bold.blue
-    # * Values color: none
-    # * Colspan: 2
-    # * Default Align: right and first element to left
-    def initialize
+    # Creates a new table. A hash containing the style properties may be given to override
+    # the defaults.
+    #
+    # * Title (title): none
+    # * Description (description): none
+    # * Header (header): none
+    #
+    # Hash in "style" key:
+    #
+    # * Title color (title): bold.yellow
+    # * Header color (header): bold.blue
+    # * Values color (color): none
+    # * Colspan (colspan): 2
+    # * Default Align (align): right and first element to left
+    #
+    def initialize params = {}
+      params = OpenStruct::new params
+      params.style ||= {}
       @data = []
       @header = []
-      @title = nil
-      @description = nil
+      @title = (params.title or nil)
+      @description = (params.description or nil)
       @style = {
-        :title => "bold.yellow",
-        :description => "bold.black",
-        :header => "bold.blue",
-        :value => nil
+        :title => (params.style[:title] or "bold.yellow"),
+        :description => (params.style[:description] or "bold.black"),
+        :header => (params.style[:header] or "bold.blue"),
+        :value => (params.style[:color] or nil)
       }
 
-      @colspan = 2
-      @layout = :horizontal
-      @default_align = :right
+      @colspan = (params.colspan or 2)
+      @layout = (params.layout or :horizontal)
+      @default_align = (params.align or :right)
       @aliases = []
 
       @align = [:left]
@@ -76,6 +89,8 @@ module Yummi
       @contexts = [:default]
       _define_ :default
       @current_context = :default
+
+      self.header = params.header if params.header
     end
 
     # Indicates that the table should not use colors.
