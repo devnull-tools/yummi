@@ -23,6 +23,14 @@
 class String
   include Term::ANSIColor
 
+  #
+  # Colorizes the string using #Yummi#colorize
+  # 
+  # If params is a hash, the keys will be used as a regexp and the
+  # result of #gsub will be colorized using the value color.
+  #
+  # Otherwise, the params will be sended to Yummi#colorize
+  #
   def colorize params
     if params.is_a? Hash
       text = self
@@ -34,16 +42,43 @@ class String
     Yummi::colorize self, params
   end
 
+  #
+  # Returns the string wrapped in a #Yummi#TextBox. The given parameters will be used
+  # to instantiate the TextBox.
+  #
+  def on_box params = {}
+    box = Yummi::TextBox::new params
+    box.add self
+    return box
+  end
+
 end
 
 class Array
 
+  #
+  # Colorizes each array item in a new String array
+  #
   def colorize params
     map {|n| n.to_s.colorize params}
   end
 
+  #
+  # Returns a new array using the items with no color applied
+  #
   def uncolored
     map {|n| n.to_s.uncolored}
   end
-  
+
+  #
+  # Returns a #Yummi#Table using the array content as the data.
+  #
+  # The parameters will be used to instantiate the table.
+  #
+  def on_table params = {}
+    table = Yummi::Table::new params
+    table.data = self
+    return table
+  end
+
 end
