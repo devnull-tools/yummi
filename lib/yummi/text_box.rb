@@ -31,35 +31,52 @@ module Yummi
     #
     # Holds the style information for this box. Supported properties are:
     # 
-    # width: the box width (default: none)
+    # width: the box width (default: bold.black)
     # align: the default alignment to use (default: left)
     # separator: the style for separators, defined as a hash
-    #   color: separator color (default: none)
+    #   color: separator color (default: bold.black)
     #   pattern: separator pattern (default: '-')
     #   width: separator width (default: box width)
     # 
     attr_reader :style    
 
-    def initialize
-      @color = :white
+    #
+    # Initializes a text box using the parameters to define the style
+    #
+    # Example:
+    #
+    # <pre><code>
+    #   TextBox::new :align => :center,
+    #                :border => {:color => :red},
+    #                :separator => {:color => :green}
+    # </pre></code>
+    #
+    def initialize params = {}
+      params = OpenStruct::new params
+      params.separator ||= {}
+      params.border ||= {}
       @content = []
       @style = OpenStruct::new
+
+      @style.width = (params.width or nil)
+      @style.align = (params.align or :left)
+
       @style.separator = {}
-      @style.separator[:pattern] = '-'
-      @style.separator[:width] = nil
-      @style.separator[:color] = nil
-      @style.separator[:align] = :left
+      @style.separator[:pattern] = (params.separator[:pattern] or '-')
+      @style.separator[:width] = (params.separator[:width] or nil)
+      @style.separator[:color] = (params.separator[:color] or "bold.black")
+      @style.separator[:align] = (params.separator[:align] or :left)
 
       @style.border = {}
-      @style.border[:color] = nil
-      @style.border[:top] = '-'
-      @style.border[:bottom] = '-'
-      @style.border[:left] = '|'
-      @style.border[:right] = '|'
-      @style.border[:top_left] = '+'
-      @style.border[:top_right] = '+'
-      @style.border[:bottom_left] = '+'
-      @style.border[:bottom_right] = '+'
+      @style.border[:color] = (params.border[:color] or "bold.black")
+      @style.border[:top] = (params.border[:top] or '-')
+      @style.border[:bottom] = (params.border[:bottom] or '-')
+      @style.border[:left] = (params.border[:left] or '|')
+      @style.border[:right] = (params.border[:right] or '|')
+      @style.border[:top_left] = (params.border[:top_left] or '+')
+      @style.border[:top_right] = (params.border[:top_right] or '+')
+      @style.border[:bottom_left] = (params.border[:bottom_left] or '+')
+      @style.border[:bottom_right] = (params.border[:bottom_right] or '+')
     end
 
     def no_border
@@ -78,6 +95,7 @@ module Yummi
     #     color: the text color (see #Yummi#COLORS)
     #     width: the text maximum width. Set this to break the lines automatically.
     #            If the #width is set, this will override the box width for this lines.
+    #     raw:   if true, the entire text will be used as one word to align the text.
     #     align: the text alignment (see #Yummi#Aligner)
     #
     def add (text, params = {})
@@ -87,7 +105,8 @@ module Yummi
       }.merge! params
       if params[:width]
         width = params[:width]
-        words = text.gsub($/, ' ').split(' ')
+        words = text.gsub($/, ' ').split(' ') unless params[:raw]
+        words ||= [text]
         buff = ''
         words.each do |word|
           # go to next line if the current word blows up the width limit
