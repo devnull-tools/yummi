@@ -326,6 +326,7 @@ module Yummi
       # Creates a new colorizer using the given colors
       def initialize (*colors)
         @colors = colors.flatten
+        @colors = [nil] if @colors.empty?
         @count = -1
       end
 
