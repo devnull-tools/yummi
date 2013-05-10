@@ -45,11 +45,7 @@ module Yummi
     #
     # Example:
     #
-    # <pre><code>
-    #   TextBox::new :align => :center,
-    #                :border => {:color => :red},
-    #                :separator => {:color => :green}
-    # </pre></code>
+    #   TextBox::new :align => :center, :border => {:color => :red}, :separator => {:color => :green}
     #
     def initialize params = {}
       params = OpenStruct::new params
