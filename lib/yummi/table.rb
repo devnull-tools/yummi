@@ -25,6 +25,8 @@ require 'ostruct'
 module Yummi
   # A Table that supports colorizing title, header, values and also formatting the values.
   class Table
+    include Yummi::OnBox
+
     # The table title
     attr_accessor :title
     # The table description
