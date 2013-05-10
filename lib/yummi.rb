@@ -27,12 +27,26 @@ require_relative "yummi/version"
 module Yummi
 
   #
+  # Disable coloring
+  #
+  def self.no_colors
+    Term::ANSIColor::coloring = false
+  end
+
+  #
+  # Enable coloring
+  #
+  def self.colors
+    Term::ANSIColor::coloring = true
+  end
+
+  #
   # Checks if the environment is supported by Yummi.
   #
   # Currently (known) unsupported environments are:
   #   * Windows
   #
-  def self.supported?
+  def self.coloring_supported?
     not RUBY_PLATFORM['mingw'] #Windows
   end
 
@@ -262,7 +276,7 @@ module Yummi
 
 end
 
-require_relative 'yummi/no_colors' unless Yummi::supported?
+Yummi.no_colors unless Yummi::coloring_supported?
 
 require_relative 'yummi/extensions'
 require_relative 'yummi/data_parser'
@@ -275,5 +289,5 @@ require_relative 'yummi/logger'
 
 # if the output is being piped, turn off the colors
 unless $stdout.isatty
-  require 'yummi/no_colors'
+  Yummi.no_colors
 end
