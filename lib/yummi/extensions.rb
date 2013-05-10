@@ -20,8 +20,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+module Yummi
+  module OnBox
+
+    #
+    # Returns the string wrapped in a #Yummi#TextBox. The given parameters will be used
+    # to instantiate the TextBox.
+    #
+    def on_box params = {}
+      box = Yummi::TextBox::new params
+      box.add self
+      return box
+    end
+    
+  end
+
+end
+
 class String
   include Term::ANSIColor
+  include Yummi::OnBox
 
   #
   # Colorizes the string using #Yummi#colorize
@@ -40,16 +58,6 @@ class String
       return text
     end
     Yummi::colorize self, params
-  end
-
-  #
-  # Returns the string wrapped in a #Yummi#TextBox. The given parameters will be used
-  # to instantiate the TextBox.
-  #
-  def on_box params = {}
-    box = Yummi::TextBox::new params
-    box.add self
-    return box
   end
 
 end
