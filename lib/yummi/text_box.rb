@@ -84,8 +84,8 @@ module Yummi
     #
     # === Args
     #
-    # +line_text+::
-    #   The text to add.
+    # +obj+::
+    #   The obj to add (will be converted to string).
     # +params+::
     #   A hash of parameters. Currently supported are:
     #     color: the text color (see #Yummi#COLORS)
@@ -94,7 +94,8 @@ module Yummi
     #     raw:   if true, the entire text will be used as one word to align the text.
     #     align: the text alignment (see #Yummi#Aligner)
     #
-    def add (text, params = {})
+    def add (obj, params = {})
+      text = obj.to_s
       params = {
         :width => style.width,
         :align => style.align
