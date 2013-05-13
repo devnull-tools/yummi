@@ -77,6 +77,8 @@ def print_out message
     Yummi::colorize message, @color
   elsif @colorizer
     @colorizer.colorize message
+  else
+    message
   end
   output_text = "#{@format}" % output_text if @format
   output_text = output_text.on_box if @box
