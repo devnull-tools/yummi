@@ -57,6 +57,9 @@ opt.on '-l FILES', '--load=FILES', Array, 'Include the files for extending compo
     load File.expand_path(file)
   end
 end
+opt.on '--box', 'Wraps the given text in a box' do
+  @box = true
+end
 opt.on '-h', '--help', 'Display this help message' do
   puts opt
   exit 0
@@ -76,6 +79,7 @@ def print_out message
     @colorizer.colorize message
   end
   output_text = "#{@format}" % output_text if @format
+  output_text = output_text.on_box if @box
   puts output_text
 end
 
