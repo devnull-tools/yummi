@@ -97,6 +97,7 @@ elsif @table_builder
   else
     abort "Unsupported extension #{extension}"
   end
+  table = table.on_box if @box
   puts table
 else
   begin
