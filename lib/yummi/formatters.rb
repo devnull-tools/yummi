@@ -84,16 +84,20 @@ module Yummi
     # :negative => format to use when value is negative
     # :zero => format to use when value is zero
     # :positive => format to use when value is positive
+    # :any => format to use on any value
     #
     def self.numeric params
       Yummi::to_format do |ctx|
         value = ctx.value
-        if params[:negative] and value < 0
-          params[:negative] % value.abs
-        elsif params[:positive] and value > 0
-          params[:positive] % value
-        elsif params[:zero] and value == 0
-          params[:zero] % value
+        negative = (params[:negative] or params[:any])
+        positive = (params[:positive] or params[:any])
+        zero = (params[:zero] or params[:any])
+        if negative and value < 0
+          negative % value.abs
+        elsif positive and value > 0
+          positive % value
+        elsif zero and value == 0
+          zero % value
         end
       end
     end

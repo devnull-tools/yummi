@@ -166,12 +166,15 @@ module Yummi
     def self.numeric params
       Yummi::to_format do |ctx|
         value = ctx.value
-        if params[:negative] and value < 0
-          params[:negative]
-        elsif params[:positive] and value > 0
-          params[:positive]
-        elsif params[:zero] and value == 0
-          params[:zero]
+        negative = (params[:negative] or params[:any])
+        positive = (params[:positive] or params[:any])
+        zero = (params[:zero] or params[:any])
+        if negative and value < 0
+          negative
+        elsif positive and value > 0
+          positive
+        elsif zero and value == 0
+          zero
         end
       end
     end

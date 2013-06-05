@@ -11,9 +11,8 @@ format:
   eletronic: boolean
   value,total:
     numeric:
-      positive: "%.2f"
-      zero: "%.2f"
-      negative: "%.2f"
+      any: "%.2f"
+      negative: "(%.2f)"
   undefined:
     with: none
 color:
@@ -38,18 +37,12 @@ row_color:
 top:
   - format:
       total:
-        numeric:
-          positive: "%.2f"
-          zero: "%.2f"
-          negative: "%.2f"
+        with: "%.2f"
     row_color:
       with: intense_white
 bottom:
   - format:
       total:
-        numeric:
-          positive: "%.2f"
-          zero: "%.2f"
-          negative: "%.2f"
+        with: "%.2f"
     row_color:
       with: intense_white
