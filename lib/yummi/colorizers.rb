@@ -163,6 +163,16 @@ module Yummi
       PercentageColorizer::new params
     end
 
+    #
+    # A colorizer for numeric values
+    #
+    # === Hash Args
+    #
+    # :negative => color to use when value is negative
+    # :zero => color to use when value is zero
+    # :positive => color to use when value is positive
+    # :any => color to use for any value (overridable by the options above)
+    #
     def self.numeric params
       Yummi::to_format do |ctx|
         value = ctx.value

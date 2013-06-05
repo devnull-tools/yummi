@@ -84,7 +84,7 @@ module Yummi
     # :negative => format to use when value is negative
     # :zero => format to use when value is zero
     # :positive => format to use when value is positive
-    # :any => format to use on any value
+    # :any => format to use for any value (overridable by the options above)
     #
     def self.numeric params
       Yummi::to_format do |ctx|
