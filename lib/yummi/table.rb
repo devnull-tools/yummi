@@ -199,7 +199,9 @@ module Yummi
     def header= (header)
       header = [header] unless header.respond_to? :each
       @header = normalize(header)
-      @aliases = header.map { |n| n.downcase.gsub(' ', '_').gsub("\n", '_').to_sym } if @aliases.empty?
+      @aliases = header.map do |n|
+        n.downcase.gsub(' ', '_').gsub("\n", '_').to_sym
+      end if @aliases.empty?
     end
 
     #
@@ -331,8 +333,8 @@ module Yummi
         index = parse_index(index)
         if index
           component[:formatters][index] = (params[:using] or block)
-          component[:formatters][index] ||= proc do |value|
-            params[:with] % value
+          component[:formatters][index] ||= proc do |ctx|
+            params[:with] % ctx.value
           end
         else
           format_null params, &block
