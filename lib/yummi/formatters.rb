@@ -99,9 +99,9 @@ module Yummi
     end
 
     #
-    # A formatter for percentual values.
+    # A formatter for percent values.
     #
-    # Paramters:
+    # Parameters:
     #   The precision to use (defaults to 3)
     #
     def self.percentage precision = 3
@@ -145,7 +145,7 @@ module Yummi
         params[:precision] ||= 1
         result = value
         range.each_index do |i|
-          minimun = (step ** i)
+          minimun = (step.** i)
           result = "%.#{params[:precision]}f #{range[i]}" % (value.to_f / minimun) if value >= minimun
         end
         result
