@@ -54,7 +54,6 @@ Example:
 
 Yummi provides a set of patterns, check yummi/patterns dir.
 
-
     tail -f $JBOSS_HOME/standalone/log/server.log | yummi -p jboss
 
 Patterns in ~/.yummi/patterns and provided by yummi may also be used by passing
