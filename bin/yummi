@@ -88,7 +88,7 @@ end
 if @message
   print_out @message
 elsif @table_builder
-  abort "Please give the data to print" unless @data
+  abort "Please give the data to print".red unless @data
   table = @table_builder.build_table
   extension = File::extname(@data)[1..-1]
   type = (@data_type or extension).to_sym
