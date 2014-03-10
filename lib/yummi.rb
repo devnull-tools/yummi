@@ -240,18 +240,13 @@ module Yummi
   module Helpers
 
     def self.load_resource name, params = {:from => ''}
-      file = File.expand_path name.to_s
-      if File.file? file
-        return YAML::load_file(file)
-      else
-        from = params[:from].to_s
-        [
-          File.join(File.expand_path('~/.yummi'), from),
-          File.join(File.dirname(__FILE__), 'yummi', from)
-        ].each do |path|
-          file = File.join(path, "#{name}.yaml")
-          return YAML::load_file(file) if File.exist?(file)
-        end
+      from = params[:from].to_s
+      [
+        File.join(File.expand_path('~/.yummi'), from),
+        File.join(File.dirname(__FILE__), 'yummi', from)
+      ].each do |path|
+        file = File.join(path, "#{name}.yaml")
+        return YAML::load_file(file) if File.exist?(file)
       end
       raise Exception::new("Unable to load #{name}")
     end
