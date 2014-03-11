@@ -85,8 +85,10 @@ module Yummi
     end
 
     # Returns a new instance of #PatternColorizer
-    def self.pattern mappings
-      PatternColorizer::new mappings
+    def self.pattern mappings, level = nil
+      colorizer = PatternColorizer::new(mappings)
+      colorizer.level = level if level
+      colorizer
     end
 
     #
@@ -232,6 +234,8 @@ module Yummi
     class PatternColorizer
       include Yummi::Colorizer
 
+      attr_writer :level
+
       def initialize mappings = nil
         @patterns = []
         map mappings if mappings
@@ -263,7 +267,7 @@ module Yummi
         if params.is_a? Array
           params.each { |p| map p }
         elsif params.is_a? String or params.is_a? Symbol
-          map Yummi::Helpers::load_resource params, :from => :patterns
+          map Yummi::Helpers::load_resource(params, :from => :patterns)
         else
           config params
         end
@@ -273,7 +277,10 @@ module Yummi
         ctx = Yummi::Context::new(ctx) unless ctx.is_a? Context
         text = ctx.value.to_s
         @patterns.each do |config|
+          level = -1
           config[:patterns].each do |regex, color|
+            level += 1
+            return if @level and level > @level and not @last_color
             if regex.match(text)
               return match(text, config)
             end

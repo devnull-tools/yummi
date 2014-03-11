@@ -34,11 +34,14 @@ end
 opt.on '-f FORMAT', '--format=FORMAT', 'Sets the format to use (a "%s" means the colorized message)' do |format|
   @format = format
 end
+opt.on '-n LEVEL', '--level=LEVEL', Integer, 'Sets the level to filter the patterns' do |n|
+  @level = n
+end
 opt.on '-p PATTERNS', '--pattern=PATTERNS', Array, 'Sets a pattern to colorize each line' do |patterns|
   @colorizer = Yummi::Colorizers.pattern(patterns)
 end
 opt.on '--log', 'Uses the default log pattern to colorize each line' do 
-  @colorizer = Yummi::Colorizers.pattern :log
+  @colorizer = Yummi::Colorizers.pattern(:log)
 end
 opt.on '-m message', '--message=MESSAGE', 'Colorize the given message' do |message|
   @message = message
@@ -72,6 +75,8 @@ end
 
 opt.parse! ARGV
 
+@colorizer.level = @level if @level
+
 def print_out message
   output_text = if @color
     Yummi::colorize message, @color
@@ -80,9 +85,11 @@ def print_out message
   else
     message
   end
-  output_text = "#{@format}" % output_text if @format
-  output_text = output_text.on_box if @box
-  puts output_text
+  if output_text
+    output_text = "#{@format}" % output_text if @format
+    output_text = output_text.on_box if @box
+    puts output_text
+  end
 end
 
 if @message
