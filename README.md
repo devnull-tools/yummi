@@ -32,7 +32,7 @@ Examples:
 
     yummi -c intense_red -m "some text"
     echo "some text" | yummi -c intense_red
-    tail -f $JBOSS_HOME/standalone/log/server.log | yummi -p path-to-your-jboss7-mapping.yaml
+    tail -f $JBOSS_HOME/standalone/log/server.log | yummi -p defined-pattern
 
 Line patterns are configured with an yaml file containing:
 
@@ -56,8 +56,18 @@ Yummi provides a set of patterns, check yummi/patterns dir.
 
     tail -f $JBOSS_HOME/standalone/log/server.log | yummi -p jboss
 
-Patterns in ~/.yummi/patterns and provided by yummi may also be used by passing
-only the file name without extension
+User patterns must be in `~/.yummi/patterns` directory with the name `$PATTERN_NAME.yaml`. User patterns can override builtin patterns.
+
+Patterns also has levels according to the order in the mapping file. The example above generates the following levels:
+
+- TRACE : 0
+- DEBUG : 1
+- INFO  : 2
+- WARN  : 3
+- ERROR : 4
+- FATAL : 5
+
+To limit the levels in console, use the parameter `--level`. If you set it to 3, for example, only messages with the patterns `TRACE`, `DEBUG`, `INFO` and `WARN` will be displayed. This is usefull for filtering log files using `cat` or `tail`.
 
 ## Contributing
 
