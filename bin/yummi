@@ -63,6 +63,10 @@ end
 opt.on '--box', 'Wraps the given text in a box' do
   @box = true
 end
+opt.on '-v', '--version' , 'Shows the yummi version' do
+  puts Yummi::VERSION
+  exit
+end
 opt.on '-h', '--help', 'Display this help message' do
   puts opt
   exit 0
