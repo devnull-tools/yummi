@@ -1,0 +1,14 @@
+# Based on NCSA Common log format and applies colors using http status codes
+suffix: \d{2}\s\d+$
+options: i
+patterns:
+  # info
+  1 : white
+  # success
+  2 : green
+  # redirect
+  3 : yellow
+  # client error
+  4 : red
+  # server error
+  5 : bold.red
