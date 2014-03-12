@@ -1,6 +1,7 @@
 # Based on NCSA Common log format and applies colors using http status codes
+# The suffix approach is more easy to understand than using a prefix, the two
+# last numbers are http status and the total bytes, so, we only parse the status
 suffix: \d{2}\s\d+$
-options: i
 patterns:
   # info
   1 : white
