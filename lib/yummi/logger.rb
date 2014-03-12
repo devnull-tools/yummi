@@ -62,8 +62,8 @@ module Yummi
             :info => :white,
             :warn => :yellow,
             :error => :red,
-            :fatal => :intense_red,
-            :any => :intense_black
+            :fatal => 'bold.red',
+            :any => 'bold.black'
         }.merge! colors
         @format_block = block
       end

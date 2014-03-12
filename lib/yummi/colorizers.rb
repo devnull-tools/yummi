@@ -85,10 +85,8 @@ module Yummi
     end
 
     # Returns a new instance of #PatternColorizer
-    def self.pattern mappings, level = nil
-      colorizer = PatternColorizer::new(mappings)
-      colorizer.level = level if level
-      colorizer
+    def self.pattern mappings
+      PatternColorizer::new(mappings)
     end
 
     #
@@ -127,7 +125,7 @@ module Yummi
     def self.boolean params = {}
       Yummi::to_colorize do |ctx|
         value = ctx.value
-        if value.to_s.downcase == "true"
+        if value.to_s.downcase == 'true'
           (params[:if_true] or :green)
         else
           (params[:if_false] or :yellow)
@@ -136,10 +134,10 @@ module Yummi
     end
     
     #
-    # A colorizer that uses a set of minimun values to use a color.
+    # A colorizer that uses a set of minimum values to use a color.
     #
     # Parameters:
-    #   - MINIMUN_VALUE: COLOR_TO_USE
+    #   - MINIMUM_VALUE: COLOR_TO_USE
     #
     def self.threshold params
       params = params.dup
@@ -228,7 +226,7 @@ module Yummi
     end
 
     #
-    # A colorizer for strings that follows a pattern. This colorizer is usefull
+    # A colorizer for strings that follows a pattern. This colorizer is useful
     # for log files.
     #
     class PatternColorizer
