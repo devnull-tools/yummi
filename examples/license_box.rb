@@ -75,7 +75,7 @@ end
 
 opt.parse! ARGV
 
-@box.add 'The MIT License', :color => :intense_yellow, :align => :center
+@box.add 'The MIT License', :color => 'bold.yellow', :align => :center
 @box.line_break
 @box.add 'Copyright (c) 2013 Marcelo Guimaraes <ataxexe@gmail.com>', :color => :green, :align => :center
 @box.separator
