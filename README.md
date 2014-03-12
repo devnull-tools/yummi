@@ -58,17 +58,6 @@ Yummi provides a set of patterns, check yummi/patterns dir.
 
 User patterns must be in `~/.yummi/patterns` directory with the name `$PATTERN_NAME.yaml`. User patterns can override builtin patterns.
 
-Patterns also has levels according to the order in the mapping file. The example above generates the following levels:
-
-- TRACE : 0
-- DEBUG : 1
-- INFO  : 2
-- WARN  : 3
-- ERROR : 4
-- FATAL : 5
-
-To limit the levels in console, use the parameter `--level`. If you set it to 3, for example, only messages with the patterns `TRACE`, `DEBUG`, `INFO` and `WARN` will be displayed. This is usefull for filtering log files using `cat` or `tail`.
-
 ## Contributing
 
 1. Fork it

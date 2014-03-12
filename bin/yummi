@@ -28,34 +28,38 @@ require 'optparse'
 @params = []
 
 opt = OptionParser::new
-opt.on '-c COLOR', '--color=COLOR', 'Colorize using the given color' do |color|
+opt.on '-c COLOR', '--color=COLOR',
+       'Colorize using the given color' do |color|
   @color = color
 end
-opt.on '-f FORMAT', '--format=FORMAT', 'Sets the format to use (a "%s" means the colorized message)' do |format|
+opt.on '-f FORMAT', '--format=FORMAT',
+       'Sets the format to use (a "%s" means the colorized message)' do |format|
   @format = format
 end
-opt.on '-n LEVEL', '--level=LEVEL', Integer, 'Sets the level to filter the patterns' do |n|
-  @level = n
-end
-opt.on '-p PATTERNS', '--pattern=PATTERNS', Array, 'Sets a pattern to colorize each line' do |patterns|
+opt.on '-p PATTERNS', '--pattern=PATTERNS', Array,
+       'Sets a pattern to colorize each line' do |patterns|
   @colorizer = Yummi::Colorizers.pattern(patterns)
 end
 opt.on '--log', 'Uses the default log pattern to colorize each line' do 
   @colorizer = Yummi::Colorizers.pattern(:log)
 end
-opt.on '-m message', '--message=MESSAGE', 'Colorize the given message' do |message|
+opt.on '-m message', '--message=MESSAGE',
+       'Colorize the given message' do |message|
   @message = message
 end
-opt.on '-t file', '--table=FILE', 'Defines the file mapping the table to print' do |file|
+opt.on '-t file', '--table=FILE',
+       'Defines the file mapping the table to print' do |file|
   @table_builder = Yummi::TableBuilder::new(file).defaults
 end
-opt.on '-d data', '--data=FILE', 'Defines the file containing the data to print' do |data|
+opt.on '-d data', '--data=FILE',
+       'Defines the file containing the data to print' do |data|
   @data = File.expand_path(data)
 end
 opt.on '--data-type', 'Defines the data type to parse the values' do |data_type|
   @data_type = data_type
 end
-opt.on '-l FILES', '--load=FILES', Array, 'Include the files for extending components' do |files|
+opt.on '-l FILES', '--load=FILES', Array,
+       'Include the files for extending components' do |files|
   files.each do |file|
     load File.expand_path(file)
   end
@@ -79,9 +83,7 @@ end
 
 opt.parse! ARGV
 
-@colorizer.level = @level if @level
-
-def print_out message
+def print_out(message)
   output_text = if @color
     Yummi::colorize message, @color
   elsif @colorizer
@@ -99,7 +101,7 @@ end
 if @message
   print_out @message
 elsif @table_builder
-  abort "Please give the data to print".red unless @data
+  abort 'Please give the data to print'.red unless @data
   table = @table_builder.build_table
   extension = File::extname(@data)[1..-1]
   type = (@data_type or extension).to_sym
@@ -116,6 +118,6 @@ else
       print_out line.chomp
     end
   rescue Interrupt
-    puts "Aborted!".red
+    puts 'Aborted!'.red
   end
 end

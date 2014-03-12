@@ -173,7 +173,7 @@ module Yummi
     # :negative => color to use when value is negative
     # :zero => color to use when value is zero
     # :positive => color to use when value is positive
-    # :any => color to use for any value (overridable by the options above)
+    # :any => color to use for any value without specified color
     #
     def self.numeric params
       Yummi::to_format do |ctx|
@@ -236,7 +236,7 @@ module Yummi
 
       attr_writer :level
 
-      def initialize mappings = nil
+      def initialize(mappings = nil)
         @patterns = []
         map mappings if mappings
       end
@@ -263,7 +263,7 @@ module Yummi
       #   * $HOME/.yummi/patterns/PATTERN.yaml
       #   * $YUMMI_GEM/yummy/patterns/PATTERN.yaml
       #
-      def map params
+      def map(params)
         if params.is_a? Array
           params.each { |p| map p }
         elsif params.is_a? String or params.is_a? Symbol
@@ -273,14 +273,11 @@ module Yummi
         end
       end
 
-      def call ctx
+      def call(ctx)
         ctx = Yummi::Context::new(ctx) unless ctx.is_a? Context
         text = ctx.value.to_s
         @patterns.each do |config|
-          level = -1
-          config[:patterns].each do |regex, color|
-            level += 1
-            return if @level and level > @level and not @last_color
+          config[:patterns].each_key do |regex|
             if regex.match(text)
               return match(text, config)
             end
@@ -294,16 +291,16 @@ module Yummi
 
       private 
 
-      def config params
+      def config(params)
         Yummi::Helpers.symbolize_keys(params)
-        prefix  = params[:prefix]
-        suffix  = params[:suffix]
+        prefix = params[:prefix]
+        suffix = params[:suffix]
         options = params[:options]
-        mode    = (params[:mode] or :all)
+        mode = (params[:mode] or :all)
 
         patterns = Hash[*(params[:patterns].collect do |pattern, color|
           [
-            Regexp::new("#{prefix}#{pattern.to_s}#{suffix}",options),
+            Regexp::new("#{prefix}#{pattern.to_s}#{suffix}", options),
             color
           ]
         end).flatten]
@@ -350,7 +347,7 @@ module Yummi
         @count = -1
       end
 
-      def call *args
+      def call(*args)
         @count += 1
         @colors[@count % @colors.size]
       end
