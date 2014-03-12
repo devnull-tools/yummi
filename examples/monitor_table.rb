@@ -32,6 +32,9 @@ opt = OptionParser::new
 @table.title = 'Server Runtime Info'
 # formats memory info for easily reading
 @table.format [:max_memory, :free_memory], :using => Yummi::Formatters.byte
+@table.format [:max_threads, :in_use_threads], :using => Yummi::Formatters.numeric(
+    :separator => ','
+)
 
 @table.bottom do
   @table.format [:max_memory, :free_memory], :using => Yummi::Formatters.byte
@@ -102,8 +105,8 @@ opt.parse ARGV
   ['Server 2', 1_000_000_000, 700_000_000, 200, 180],
   ['Server 3', 1_000_000_000, 50_000_000, 200, 50],
   ['Server 4', 1_000_000_000, 200_000_000, 200, 100],
-  ['Server 5', 1_000_000_000, 5_000_000, 200, 50],
-  ['Server 6', 1_000_000_000, 750_000_000, 200, 50],
+  ['Server 5', 1_000_000_000, 5_000_000, 2000, 50],
+  ['Server 6', 1_000_000_000, 750_000_000, 200, 0],
 ]
 
 @table.add :server_name => 'Server 7',
