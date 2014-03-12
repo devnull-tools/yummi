@@ -54,7 +54,7 @@ module Yummi
         value = ctx.value
         if value.to_s.downcase == 'true'
           (params[:if_true] or 'Yes')
-        else 
+        else
           (params[:if_false] or 'No')
         end
       end
@@ -85,8 +85,9 @@ module Yummi
     # :zero => format to use when value is zero
     # :positive => format to use when value is positive
     # :any => format to use for any value without a specific format
+    # :separator => a thousand separator for use instead of the formats above
     #
-    def self.numeric params
+    def self.numeric(params)
       Yummi::to_format do |ctx|
         value = ctx.value
         negative = (params[:negative] or params[:any])
@@ -98,6 +99,12 @@ module Yummi
           positive % value
         elsif zero and value == 0
           zero % value
+        else
+          if params[:separator]
+            value.to_s.gsub(/(\d)(?=(\d\d\d)+(?!\d))/, "\\1#{params[:separator]}")
+          else
+            value
+          end
         end
       end
     end
@@ -117,14 +124,14 @@ module Yummi
 
     # Defines the modes to format a byte value
     BYTE_MODES = {
-      :iec => {
-        :range => %w{B KiB MiB GiB TiB PiB EiB ZiB YiB},
-        :step => 1024
-      },
-      :si => {
-        :range => %w{B KB MB GB TB PB EB ZB YB},
-        :step => 1000
-      }
+        :iec => {
+            :range => %w{B KiB MiB GiB TiB PiB EiB ZiB YiB},
+            :step => 1024
+        },
+        :si => {
+            :range => %w{B KB MB GB TB PB EB ZB YB},
+            :step => 1000
+        }
     }
 
     #
