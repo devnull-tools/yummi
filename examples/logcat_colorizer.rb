@@ -40,7 +40,7 @@ colorizer = Yummi::Colorizers.pattern :prefix => /\[/,
   :suffix => /\]/,
   :patterns => {
     'ERROR' => :red,
-    'FATAL' => :intense_red,
+    'FATAL' => :'red.bold',
     'WARN'  => :yellow,
     'INFO'  => :green,
     'DEBUG' => :black
