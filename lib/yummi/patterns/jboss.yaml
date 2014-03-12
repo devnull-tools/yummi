@@ -1,3 +1,4 @@
+# A pattern for JBoss AS logs, works for versions 5 and above
 prefix: '(\d{4}-\d{2}-\d{2}\s)?\d{2}:\d{2}:\d{2},\d{3}\s'
 patterns:
   TRACE : cyan

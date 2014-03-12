@@ -1,3 +1,4 @@
+# A pattern for weblogic server log (but not for the diagnostic logs)
 prefix: '####<[^>]+>\s<'
 suffix: '>'
 patterns:
