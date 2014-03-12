@@ -21,7 +21,7 @@
 # THE SOFTWARE.
 
 require 'term/ansicolor'
-require_relative "yummi/version"
+require_relative 'yummi/version'
 
 module Yummi
 
@@ -274,8 +274,8 @@ Yummi.no_colors unless Yummi::coloring_supported?
 
 require_relative 'yummi/extensions'
 require_relative 'yummi/data_parser'
-require_relative "yummi/colorizers"
-require_relative "yummi/formatters"
+require_relative 'yummi/colorizers'
+require_relative 'yummi/formatters'
 require_relative 'yummi/table'
 require_relative 'yummi/table_builder'
 require_relative 'yummi/text_box'

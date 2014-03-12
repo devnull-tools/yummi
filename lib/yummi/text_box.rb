@@ -47,7 +47,7 @@ module Yummi
     #
     #   TextBox::new :align => :center, :border => {:color => :red}, :separator => {:color => :green}
     #
-    def initialize params = {}
+    def initialize(params = {})
       params = OpenStruct::new params
       params.separator ||= {}
       params.border ||= {}
@@ -60,11 +60,11 @@ module Yummi
       @style.separator = {}
       @style.separator[:pattern] = (params.separator[:pattern] or '-')
       @style.separator[:width] = (params.separator[:width] or nil)
-      @style.separator[:color] = (params.separator[:color] or "bold.black")
+      @style.separator[:color] = (params.separator[:color] or 'bold.black')
       @style.separator[:align] = (params.separator[:align] or :left)
 
       @style.border = {}
-      @style.border[:color] = (params.border[:color] or "bold.black")
+      @style.border[:color] = (params.border[:color] or 'bold.black')
       @style.border[:top] = (params.border[:top] or '-')
       @style.border[:bottom] = (params.border[:bottom] or '-')
       @style.border[:left] = (params.border[:left] or '|')
@@ -147,7 +147,7 @@ module Yummi
     def separator (params = {})
       params = style.separator.merge params
       params[:width] ||= style.width
-      raise Exception::new("Define a width for using separators") unless params[:width]
+      raise Exception::new('Define a width for using separators') unless params[:width]
       line = fill(params[:pattern], params[:width])
       #replace the width with the box width to align the separator
       params[:width] = style.width

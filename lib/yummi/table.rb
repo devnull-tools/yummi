@@ -644,7 +644,7 @@ module Yummi
 
     attr_reader :row_index, :column_index
 
-    def initialize params
+    def initialize(params)
       @row_index = params[:row_index]
       @column_index = params[:column_index]
       @value = params[:value]

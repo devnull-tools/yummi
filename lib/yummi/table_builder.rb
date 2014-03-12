@@ -25,16 +25,16 @@ module Yummi
 
     attr_accessor :config, :repositories
 
-    def initialize config = {}
+    def initialize(config = {})
       if config.is_a? String
         config = Yummi::Helpers::symbolize_keys(YAML::load_file(config))
       end
       @config = config
       @repositories = {}
-    
-      @repositories[:formatters] = [Yummi::Formatters]    
-      @repositories[:colorizers] = [Yummi::Colorizers]    
-      @repositories[:row_colorizers] = [Yummi::Colorizers]    
+
+      @repositories[:formatters] = [Yummi::Formatters]
+      @repositories[:colorizers] = [Yummi::Colorizers]
+      @repositories[:row_colorizers] = [Yummi::Colorizers]
     end
 
     def defaults
@@ -56,7 +56,7 @@ module Yummi
       @components
     end
 
-    def component keys, params
+    def component(keys, params)
       [*keys].each do |key|
         components[key] = params
       end

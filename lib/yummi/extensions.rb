@@ -27,7 +27,7 @@ module Yummi
     # Returns the string wrapped in a #Yummi#TextBox. The given parameters will be used
     # to instantiate the TextBox.
     #
-    def on_box params = {}
+    def on_box(params = {})
       box = Yummi::TextBox::new params
       box.add self
       return box
@@ -47,9 +47,9 @@ class String
   # If params is a hash, the keys will be used as a regexp and the
   # result of #gsub will be colorized using the value color.
   #
-  # Otherwise, the params will be sended to Yummi#colorize
+  # Otherwise, the params will be sent to Yummi#colorize
   #
-  def colorize params
+  def colorize(params)
     if params.is_a? Hash
       text = self
       params.each do |regexp, color|
@@ -67,8 +67,8 @@ class Array
   #
   # Colorizes each array item in a new String array
   #
-  def colorize params
-    map {|n| n.to_s.colorize params}
+  def colorize(params)
+    map { |n| n.to_s.colorize params }
   end
 
   #
@@ -83,7 +83,7 @@ class Array
   #
   # The parameters will be used to instantiate the table.
   #
-  def on_table params = {}
+  def on_table(params = {})
     table = Yummi::Table::new params
     table.data = self
     return table

@@ -35,7 +35,7 @@ opt = OptionParser::new
 
 @table.bottom do
   @table.format [:max_memory, :free_memory], :using => Yummi::Formatters.byte
-  @table.colorize_row :with => :intense_white
+  @table.colorize_row :with => 'bold.white'
 end
 
 # colorizer for memory
@@ -45,7 +45,7 @@ end
 @thread_colorizer = Yummi::Colorizers.percentage :max => :max_threads,
                                                  :using => :in_use_threads,
                                                  :colors => {
-                                                    :omg => :intense_red
+                                                    :omg => 'bold.red'
                                                   },
                                                  :threshold => {
                                                    :warn => 0.9,
@@ -61,7 +61,7 @@ def full_colors
   @table.colorize :server_name, :with => :magenta
   @table.colorize :free_memory, :using => @memory_colorizer
   @table.colorize :in_use_threads, :using => @thread_colorizer
-  @table.colorize [:max_memory, :max_threads], :with => :black
+  @table.colorize [:max_memory, :max_threads], :with => :white
 end
 
 full_colors
@@ -115,7 +115,7 @@ opt.parse ARGV
 class ServerStatus
   attr_reader :server_name, :max_memory, :free_memory, :max_threads, :in_use_threads
 
-  def initialize server_name, max_memory, free_memory, max_threads, in_use_threads
+  def initialize(server_name, max_memory, free_memory, max_threads, in_use_threads)
     @server_name = server_name
     @max_memory = max_memory
     @free_memory = free_memory

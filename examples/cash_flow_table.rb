@@ -31,9 +31,9 @@ tablebuilder = Yummi::TableBuilder::new('cash_flow_table.yaml')
 @table = tablebuilder.defaults.build_table
 
 @table.data = [['Initial', nil, 0, nil, nil],
-               ['Deposit', 100.58, 100.58, true, "QAWSEDRFTGH535"],
-               ['Withdraw', -50.23, 50.35, true, "34ERDTF6GYU"],
-               ['Withdraw', -100, -49.65, true, "2344EDRFT5"],
+               ['Deposit', 100.58, 100.58, true, 'QAWSEDRFTGH535'],
+               ['Withdraw', -50.23, 50.35, true, '34ERDTF6GYU'],
+               ['Withdraw', -100, -49.65, true, '2344EDRFT5'],
                ['Deposit', 50, 0.35, false, nil],
                ['Deposit', 600, 600.35, false, nil],
                ['Total', nil, 600.35, nil, nil]]

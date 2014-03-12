@@ -30,8 +30,8 @@ logger.formatter = Yummi::Formatter::LogFormatter.new do |severity, message|
 end
 
 logger.debug __FILE__
-logger.info "Example started"
-logger.warn "Warning message"
-logger.error "An error has occurred"
-logger.fatal "A fatal exception has occurred"
-logger.unknown "Unknown severity message"
+logger.info 'Example started'
+logger.warn 'Warning message'
+logger.error 'An error has occurred'
+logger.fatal 'A fatal exception has occurred'
+logger.unknown 'Unknown severity message'

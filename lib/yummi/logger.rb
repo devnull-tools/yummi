@@ -56,14 +56,14 @@ module Yummi
       # If a block is passed, it will be used to format the message. The block can use
       # the following variables: severity, time, program_name and message.
       #
-      def initialize colors = {}, &block
+      def initialize(colors = {}, &block)
         @colors = {
-          :debug => :blue,
-          :info => :white,
-          :warn => :yellow,
-          :error => :red,
-          :fatal => :intense_red,
-          :any => :intense_black
+            :debug => :blue,
+            :info => :white,
+            :warn => :yellow,
+            :error => :red,
+            :fatal => :intense_red,
+            :any => :intense_black
         }.merge! colors
         @format_block = block
       end
@@ -76,13 +76,13 @@ module Yummi
       end
 
       # Formats the message, override this method instead of #call
-      def output severity, time, program_name, message
+      def output(severity, time, program_name, message)
         if @format_block
           context = {
-            :severity => severity,
-            :time => time,
-            :program_name => program_name,
-            :message => message
+              :severity => severity,
+              :time => time,
+              :program_name => program_name,
+              :message => message
           }
           block_call(context, &@format_block) << $/
         else

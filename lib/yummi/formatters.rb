@@ -52,10 +52,10 @@ module Yummi
     def self.boolean params = {}
       Yummi::to_format do |ctx|
         value = ctx.value
-        if value.to_s.downcase == "true"
-          (params[:if_true] or "Yes")
+        if value.to_s.downcase == 'true'
+          (params[:if_true] or 'Yes')
         else 
-          (params[:if_false] or "No")
+          (params[:if_false] or 'No')
         end
       end
     end
@@ -84,7 +84,7 @@ module Yummi
     # :negative => format to use when value is negative
     # :zero => format to use when value is zero
     # :positive => format to use when value is positive
-    # :any => format to use for any value (overridable by the options above)
+    # :any => format to use for any value without a specific format
     #
     def self.numeric params
       Yummi::to_format do |ctx|
