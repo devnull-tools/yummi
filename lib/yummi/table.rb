@@ -50,7 +50,7 @@ module Yummi
     attr_reader :layout
     # The table header
     attr_reader :header
-    
+
     #
     # Creates a new table. A hash containing the style properties may be given to override
     # the defaults.
@@ -75,10 +75,10 @@ module Yummi
       @title = (params.title or nil)
       @description = (params.description or nil)
       @style = {
-        :title => (params.style[:title] or "bold.yellow"),
-        :description => (params.style[:description] or "bold.black"),
-        :header => (params.style[:header] or "bold.blue"),
-        :value => (params.style[:color] or nil)
+          :title => (params.style[:title] or 'bold.yellow'),
+          :description => (params.style[:description] or 'bold.black'),
+          :header => (params.style[:header] or 'bold.blue'),
+          :value => (params.style[:color] or nil)
       }
 
       @colspan = (params.colspan or 2)
@@ -98,9 +98,9 @@ module Yummi
     # Indicates that the table should not use colors.
     def no_colors
       @style = {
-        :title => nil,
-        :header => nil,
-        :value => nil
+          :title => nil,
+          :header => nil,
+          :value => nil
       }
       @no_colors = true
     end
@@ -123,7 +123,7 @@ module Yummi
     #   end
     #   table.bottom { table.colorize :total, :with => :white }
     #
-    def bottom params = {}, &block
+    def bottom(params = {}, &block)
       index = @contexts.size
       _context_ index, params, &block
     end
@@ -146,7 +146,7 @@ module Yummi
     #   end
     #   table.top { table.colorize :total, :with => :white }
     #
-    def top params = {}, &block
+    def top(params = {}, &block)
       _context_ 0, params, &block
     end
 
@@ -196,7 +196,7 @@ module Yummi
     #
     # This will create the following aliases: :name, :email, :work_phone and :home_phone
     #
-    def header= (header)
+    def header=(header)
       header = [header] unless header.respond_to? :each
       @header = normalize(header)
       @aliases = header.map do |n|
@@ -219,7 +219,7 @@ module Yummi
     #   table.align :description, :left
     #   table.align [:value, :total], :right
     #
-    def align (indexes, type)
+    def align(indexes, type)
       [*indexes].each do |index|
         index = parse_index(index)
         raise Exception::new "Undefined column #{index}" unless index
@@ -236,13 +236,13 @@ module Yummi
     #
     #   table.colorize_row { |i, row| :red if row[:value] < 0 }
     #
-    def colorize_row (params = nil, &block)
+    def colorize_row(params = nil, &block)
       obj = extract_component(params, &block)
       component[:row_colorizer] = obj
     end
 
     # Sets the table data
-    def data= (data)
+    def data=(data)
       @data = data
     end
 
@@ -250,7 +250,7 @@ module Yummi
     # Adds the given data as a row. If the argument is a hash, its keys will be used
     # to match header alias for building the row data.
     #
-    def add (row)
+    def add(row)
       @data << row
     end
 
@@ -278,7 +278,7 @@ module Yummi
     #   table.colorize :description, :with => :magenta
     #   table.colorize([:value, :total]) { |value| :red if value < 0 }
     #
-    def colorize (indexes, params = {}, &block)
+    def colorize(indexes, params = {}, &block)
       [*indexes].each do |index|
         index = parse_index(index)
         if index
@@ -300,7 +300,7 @@ module Yummi
     #     - :using defines the component to use
     #     - :with defines the format to use
     #
-    def colorize_null (params = {}, &block)
+    def colorize_null(params = {}, &block)
       component[:null_colorizer] = (params[:using] or block)
       component[:null_colorizer] ||= proc do |value|
         params[:with]
@@ -328,7 +328,7 @@ module Yummi
     #   table.format :value, :with => '%.2f'
     #   table.format [:value, :total], :with => '%.2f'
     #
-    def format (indexes, params = {}, &block)
+    def format(indexes, params = {}, &block)
       [*indexes].each do |index|
         index = parse_index(index)
         if index
@@ -352,7 +352,7 @@ module Yummi
     #     - :using defines the component to use
     #     - :with defines the format to use
     #
-    def format_null (params = {}, &block)
+    def format_null(params = {}, &block)
       component[:null_formatter] = (params[:using] or block)
       component[:null_formatter] ||= proc do |value|
         params[:with] % value
@@ -362,7 +362,7 @@ module Yummi
     #
     # Prints the #to_s into the given object.
     #
-    def print (to = $stdout)
+    def print(to = $stdout)
       to.print to_s
     end
 
@@ -373,7 +373,7 @@ module Yummi
       header_output = build_header_output
       data_output = build_data_output
 
-      string = ""
+      string = ''
       string << Yummi.colorize(@title, @style[:title]) << $/ if @title
       string << Yummi.colorize(@description, @style[:description]) << $/ if @description
       table_data = header_output + data_output
@@ -398,7 +398,7 @@ module Yummi
 
     private
 
-    def extract_component params, &block
+    def extract_component(params, &block)
       if params and params[:using]
         params[:using]
       elsif params and params[:with]
@@ -408,15 +408,15 @@ module Yummi
       end
     end
 
-    def _define_ context
+    def _define_(context)
       @components[context] = {
-        :formatters => [],
-        :colorizers => [],
-        :row_colorizer => nil,
+          :formatters => [],
+          :colorizers => [],
+          :row_colorizer => nil,
       }
     end
 
-    def _context_ index, params, &block
+    def _context_(index, params, &block)
       params ||= {}
       rows = (params[:rows] or 1)
       ctx = @contexts.size
@@ -432,7 +432,7 @@ module Yummi
     # Gets the content string for the given color map and content
     #
     def content (data)
-      string = ""
+      string = ''
       data.each_index do |i|
         row = data[i]
         row.each_index do |j|
@@ -531,13 +531,13 @@ module Yummi
         end
 
         _row_data = normalize(
-          _row_data,
-          :extract => proc do |data|
-            data[:value].to_s
-          end,
-          :new => proc do |value, data|
-            {:value => value, :color => data[:color]}
-          end
+            _row_data,
+            :extract => proc do |data|
+              data[:value].to_s
+            end,
+            :new => proc do |value, data|
+              {:value => value, :color => data[:color]}
+            end
         )
         _row_data.each do |_row|
           output << _row
@@ -552,34 +552,36 @@ module Yummi
       if row.is_a? Hash
         @aliases.each_index do |column_index|
           obj = TableContext::new(
-            :obj => row,
-            :row_index => row_index,
-            :column_index => column_index,
-            :value => row[@aliases[column_index]]
+              :obj => row,
+              :row_index => row_index,
+              :column_index => column_index,
+              :value => row[@aliases[column_index]]
           )
           array << obj
         end
       elsif row.is_a? Array
         row.each_index do |column_index|
           obj = TableContext::new(
-            :obj => IndexedData::new(@aliases, row),
-            :row_index => row_index,
-            :column_index => column_index,
-            :value => row[column_index]
+              :obj => IndexedData::new(@aliases, row),
+              :row_index => row_index,
+              :column_index => column_index,
+              :value => row[column_index]
           )
           array << obj
         end
       else
         @aliases.each_index do |column_index|
           obj = TableContext::new(
-            :obj => row,
-            :row_index => row_index,
-            :column_index => column_index,
-            :value => row.send(@aliases[column_index])
+              :obj => row,
+              :row_index => row_index,
+              :column_index => column_index,
+              :value => row.send(@aliases[column_index])
           )
+
           def obj.[] (index)
             obj.send(index)
           end
+
           array << obj
         end
       end
