@@ -39,17 +39,17 @@ opt = OptionParser::new
 opt.on '--color TYPE', 'Specify the color type (zebra,file,none)' do |type|
   case type
     when 'zebra'
-      @table.colorize_row :using => Yummi::Colorizers.stripe(:intense_black, :intense_white)
+      @table.colorize_row :using => Yummi::Colorizers.stripe('yellow.bold', 'white.bold')
       @table.bottom do 
-        @table.colorize_row :with => :intense_blue
+        @table.colorize_row :with => 'blue.bold'
         @table.format :size, :using => Yummi::Formatters.byte
       end
     when 'file'
       @table.colorize_row do |data| # or |data, index| if you need the index
-        data[:directory] ? :intense_black : :intense_white
+        data[:directory] ? :intense_black : 'white.bold'
       end
       @table.bottom do 
-        @table.colorize_row :with => :intense_blue
+        @table.colorize_row :with => 'blue.bold'
         @table.format :size, :using => Yummi::Formatters.byte
       end
     when 'none'
@@ -72,6 +72,6 @@ files.each do |f|
   data << [f, File.size(f), File.directory?(f)] # the last value will not be printed
 end
 @table.data = data
-@table << ["Total", @table.column(:size).inject(:+)]
+@table << ['Total', @table.column(:size).inject(:+)]
 
 @table.print
