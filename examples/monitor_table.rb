@@ -27,7 +27,7 @@ opt = OptionParser::new
 
 @table = Yummi::Table::new
 # setting the header sets the aliases automatically
-@table.header = ['Server Name', 'Max Memory', 'Free Memory', "Max Threads", "In Use Threads"]
+@table.header = ['Server Name', 'Max Memory', 'Free Memory', 'Max Threads', 'In Use Threads']
 # sets the title
 @table.title = 'Server Runtime Info'
 # formats memory info for easily reading
