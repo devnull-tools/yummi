@@ -38,6 +38,9 @@ opt = OptionParser::new
 
 @table.bottom do
   @table.format [:max_memory, :free_memory], :using => Yummi::Formatters.byte
+  @table.format [:max_threads, :in_use_threads], :using => Yummi::Formatters.numeric(
+      :separator => ','
+  )
   @table.colorize_row :with => 'bold.white'
 end
 

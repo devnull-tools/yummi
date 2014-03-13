@@ -67,7 +67,7 @@ module Yummi
     # * Colspan (colspan): 2
     # * Default Align (align): right and first element to left
     #
-    def initialize params = {}
+    def initialize(params = {})
       params = OpenStruct::new params
       params.style ||= {}
       @data = []
