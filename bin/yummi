@@ -40,7 +40,7 @@ opt.on '-p PATTERNS', '--pattern=PATTERNS', Array,
        'Sets a pattern to colorize each line' do |patterns|
   @colorizer = Yummi::Colorizers.pattern(patterns)
 end
-opt.on '--log', 'Uses the default log pattern to colorize each line' do 
+opt.on '--log', 'Uses the default log pattern to colorize each line' do
   @colorizer = Yummi::Colorizers.pattern(:log)
 end
 opt.on '-m message', '--message=MESSAGE',
@@ -67,7 +67,7 @@ end
 opt.on '--box', 'Wraps the given text in a box' do
   @box = true
 end
-opt.on '-v', '--version' , 'Shows the yummi version' do
+opt.on '-v', '--version', 'Shows the yummi version' do
   puts Yummi::VERSION
   exit
 end
@@ -106,7 +106,10 @@ elsif @table_builder
   extension = File::extname(@data)[1..-1]
   type = (@data_type or extension).to_sym
   if Yummi::DataParser.respond_to? type
-    table.data = Yummi::DataParser.send(type, File.read(@data))
+    data = Yummi::DataParser.send(type, File.read(@data))
+    data.each do |row|
+      table.add row
+    end
   else
     abort "Unsupported extension #{extension}"
   end

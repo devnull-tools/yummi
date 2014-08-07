@@ -182,7 +182,7 @@ module Yummi
   class IndexedData
 
     def initialize (aliases, data)
-      @aliases = aliases.collect {|a| a.to_s}
+      @aliases = aliases.collect { |a| a.to_s }
       @data = data
     end
 
