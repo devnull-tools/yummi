@@ -26,7 +26,7 @@ module Yummi
   module FormatterBlock
 
     # Calls the :call: method
-    def format (arg)
+    def format(arg)
       arg = Yummi::Context::new(arg) unless arg.is_a? Context
       call value
     end
@@ -34,7 +34,7 @@ module Yummi
   end
 
   # Extends the given block with #FormatterBlock
-  def self.to_format &block
+  def self.to_format(&block)
     block.extend FormatterBlock
   end
 
@@ -49,7 +49,7 @@ module Yummi
     # :if_true => String to use when value is true
     # :if_false => String to use when value is false
     #
-    def self.boolean params = {}
+    def self.boolean(params = {})
       Yummi::to_format do |ctx|
         value = ctx.value
         if value.to_s.downcase == 'true'
@@ -61,7 +61,7 @@ module Yummi
     end
 
     # A formatter to round float values
-    def self.round precision
+    def self.round(precision)
       Yummi::to_format do |ctx|
         value = ctx.value
         "%.#{precision}f" % value
@@ -69,7 +69,7 @@ module Yummi
     end
 
     # A formatter that uses the given format
-    def self.with format
+    def self.with(format)
       Yummi::to_format do |ctx|
         value = ctx.value
         format % value
@@ -115,7 +115,7 @@ module Yummi
     # Parameters:
     #   The precision to use (defaults to 3)
     #
-    def self.percentage precision = 3
+    def self.percentage(precision = 3)
       Yummi::to_format do |ctx|
         value = ctx.value
         "%.#{precision}f%%" % (value * 100)
@@ -146,7 +146,7 @@ module Yummi
     #
     # See #BYTE_MODES
     #
-    def self.byte params = {}
+    def self.byte(params = {})
       Yummi::to_format do |ctx|
         value = ctx.value
         value = value.to_i if value.is_a? String
@@ -157,7 +157,8 @@ module Yummi
         result = value
         range.each_index do |i|
           minimun = (step.** i)
-          result = "%.#{params[:precision]}f #{range[i]}" % (value.to_f / minimun) if value >= minimun
+          result = "%.#{params[:precision]}f #{range[i]}" %
+            (value.to_f / minimun) if value >= minimun
         end
         result
       end
