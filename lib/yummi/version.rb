@@ -21,5 +21,5 @@
 # THE SOFTWARE.
 
 module Yummi
-  VERSION = '0.9.5'
+  VERSION = '0.9.4'
 end
