@@ -21,11 +21,13 @@
 # THE SOFTWARE.
 
 require 'ostruct'
+require_relative 'row_extractor'
 
 module Yummi
   # A Table that supports colorizing title, header, values and also formatting the values.
   class Table
     include Yummi::OnBox
+    include Yummi::RowExtractor
 
     # The table title
     attr_accessor :title
@@ -75,10 +77,10 @@ module Yummi
       @title = (params.title or nil)
       @description = (params.description or nil)
       @style = {
-          :title => (params.style[:title] or 'bold.yellow'),
-          :description => (params.style[:description] or 'bold.black'),
-          :header => (params.style[:header] or 'bold.blue'),
-          :value => (params.style[:color] or nil)
+        :title => (params.style[:title] or 'bold.yellow'),
+        :description => (params.style[:description] or 'bold.black'),
+        :header => (params.style[:header] or 'bold.blue'),
+        :value => (params.style[:color] or nil)
       }
 
       @colspan = (params.colspan or 2)
@@ -98,9 +100,9 @@ module Yummi
     # Indicates that the table should not use colors.
     def no_colors
       @style = {
-          :title => nil,
-          :header => nil,
-          :value => nil
+        :title => nil,
+        :header => nil,
+        :value => nil
       }
       @no_colors = true
     end
@@ -152,8 +154,8 @@ module Yummi
 
     # Sets the table print layout.
     def layout=(layout)
-      @layout = layout
-      case layout
+      @layout = layout.to_sym
+      case @layout
         when :horizontal
           @default_align = :right
         when :vertical
@@ -194,7 +196,7 @@ module Yummi
     #
     #   table.header = ['Name', 'Email', 'Work Phone', "Home\nPhone"]
     #
-    # This will create the following aliases: :name, :email, :work_phone and :home_phone
+    # This will create the following aliases: :key, :email, :work_phone and :home_phone
     #
     def header=(header)
       header = [header] unless header.respond_to? :each
@@ -410,9 +412,9 @@ module Yummi
 
     def _define_(context)
       @components[context] = {
-          :formatters => [],
-          :colorizers => [],
-          :row_colorizer => nil,
+        :formatters => [],
+        :colorizers => [],
+        :row_colorizer => nil,
       }
     end
 
@@ -507,21 +509,25 @@ module Yummi
         _row_data = []
         row.each_index do |col_index|
           next if not @header.empty? and @header[0].size < col_index + 1
-          color = nil
-          value = nil
           column = row[col_index]
           colorizer = component[:colorizers][col_index]
-          if component[:null_colorizer] and column.nil?
-            color = component[:null_colorizer].call(column)
+          color = if component[:null_colorizer] and column.value.nil?
+            component[:null_colorizer].call(column)
           elsif colorizer
-            color = colorizer.call(column)
+            colorizer.call(column)
           else
-            color = @style[:value]
+            @style[:value]
           end
-          formatter = component[:formatters][col_index]
-          formatter = component[:null_formatter] if column.nil? and @null_formatter
-          value = (formatter ? formatter.call(column) : column.value)
-
+          formatter = if column.value.nil?
+            @null_formatter
+          else
+            component[:formatters][col_index]
+          end
+          value = if formatter
+            formatter.call(column)
+          else
+            column.value
+          end
           _row_data << {:value => value, :color => color}
         end
         row_colorizer = component[:row_colorizer]
@@ -531,13 +537,13 @@ module Yummi
         end
 
         _row_data = normalize(
-            _row_data,
-            :extract => proc do |data|
-              data[:value].to_s
-            end,
-            :new => proc do |value, data|
-              {:value => value, :color => data[:color]}
-            end
+          _row_data,
+          :extract => proc do |data|
+            data[:value].to_s
+          end,
+          :new => proc do |value, data|
+            {:value => value, :color => data[:color]}
+          end
         )
         _row_data.each do |_row|
           output << _row
@@ -547,45 +553,9 @@ module Yummi
     end
 
     def row_to_array (row, row_index = nil)
-      array = []
-      row = row.to_a if row.is_a? Range
-      if row.is_a? Hash
-        @aliases.each_index do |column_index|
-          obj = TableContext::new(
-              :obj => row,
-              :row_index => row_index,
-              :column_index => column_index,
-              :value => row[@aliases[column_index]]
-          )
-          array << obj
-        end
-      elsif row.is_a? Array
-        row.each_index do |column_index|
-          obj = TableContext::new(
-              :obj => IndexedData::new(@aliases, row),
-              :row_index => row_index,
-              :column_index => column_index,
-              :value => row[column_index]
-          )
-          array << obj
-        end
-      else
-        @aliases.each_index do |column_index|
-          obj = TableContext::new(
-              :obj => row,
-              :row_index => row_index,
-              :column_index => column_index,
-              :value => row.send(@aliases[column_index])
-          )
-
-          def obj.[] (index)
-            obj.send(index)
-          end
-
-          array << obj
-        end
-      end
-      array
+      message_name = "extract_row_from_#{row.class.to_s.downcase}".to_sym
+      message_name = :extract_row_from_object unless respond_to? message_name
+      send(message_name, row, row_index)
     end
 
     def component
