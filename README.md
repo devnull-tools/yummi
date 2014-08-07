@@ -1,7 +1,6 @@
 # Yummi
 
-This is a tool to make your console app more tasty. Yummi provides a set of console line elements
-also with a delegator for colorizing Strings using the awesome gem term-ansicolor.
+This is a tool to make your console app more tasty. Yummi provides a set of console line elements also with a delegator for colorizing Strings using the awesome gem [term-ansicolor](https://rubygems.org/gems/term-ansicolor).
 
 ## Installation
 
@@ -19,14 +18,11 @@ Or install it yourself as:
 
 ## Ruby Tools
 
-Yummi module provides a set of tools to colorize inputs. Check docs for more information
-about how to build tables, text boxes, colored log formatters and more. You can also check
-the examples dir to see how to use Yummi features.
+Yummi module provides a set of tools to colorize inputs. Check docs for more information about how to build tables, text boxes, colored log formatters and more. You can also check the examples dir to see how to use Yummi features.
 
 ## Command Line Tools
 
-Yummi exposes a 'yummi' program that you can use to colorize texts and apply
-patterns to colorize lines (usefull to tail logs).
+Yummi exposes a 'yummi' program that you can use to colorize texts and apply patterns to colorize lines (usefull to tail logs).
 
 Examples:
 
@@ -52,7 +48,7 @@ Example:
       ERROR : red
       FATAL : intense_red
 
-Yummi provides a set of patterns, check yummi/patterns dir.
+Yummi provides a set of patterns, check `yummi/patterns` dir.
 
     tail -f $JBOSS_HOME/standalone/log/server.log | yummi -p jboss
 
