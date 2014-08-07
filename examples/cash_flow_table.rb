@@ -39,7 +39,7 @@ tablebuilder = Yummi::TableBuilder::new('cash_flow_table.yaml')
                ['Total', nil, 600.35, nil, nil]]
 
 opt.on '--layout LAYOUT', 'Defines the table layout (horizontal or vertical)' do |layout|
-  @table.layout = layout.to_sym
+  @table.layout = layout
 end
 
 opt.on '--box', 'Prints the table inside a box' do

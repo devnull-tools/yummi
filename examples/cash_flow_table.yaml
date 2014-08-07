@@ -1,12 +1,14 @@
 title: Cash Flow
 description: How you spend your money
 layout: horizontal
+
 header:
   - Description
   - Value
   - Total
   - Eletronic
   - "Authentication\nCode"
+
 format:
   eletronic: boolean
   value,total:
@@ -15,6 +17,7 @@ format:
       negative: "(%.2f)"
   undefined:
     with: none
+
 color:
   description:
     with: magenta
@@ -31,6 +34,7 @@ color:
       negative: red
   undefined:
     with: red
+
 row_color:
   blessed_income: yellow
 
@@ -40,6 +44,7 @@ top:
         with: "%.2f"
     row_color:
       with: intense_white
+
 bottom:
   - format:
       total:

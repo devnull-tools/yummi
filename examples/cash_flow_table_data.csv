@@ -1,7 +1,7 @@
-Initial, , 0, false
-Deposit, 100.58, 100.58, true, QAWSEDRFTGH535
-Withdraw, -50.23, 50.35, true, 34ERDTF6GYU
-Withdraw, -100, -49.65, true, 2344EDRFT5
-Deposit, 50, 0.35, false
-Deposit, 600, 600.35, false
-Total, , 600.35
+Initial,,0,
+Deposit,100.58,100.58,true,QAWSEDRFTGH535
+Withdraw,-50.23,50.35,true,34ERDTF6GYU
+Withdraw,-100,-49.65,true,2344EDRFT5
+Deposit,50,0.35,false
+Deposit,600,600.35,false
+Total,,600.35
