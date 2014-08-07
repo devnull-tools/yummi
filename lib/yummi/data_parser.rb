@@ -28,6 +28,10 @@ module Yummi
       YAML::load(input)
     end
 
+    def self.yml(input)
+      YAML::load(input)
+    end
+
     def self.csv(input)
       require 'csv' #autoload will be dead, using require instead
       CSV::parse(input, :converters => :all)
