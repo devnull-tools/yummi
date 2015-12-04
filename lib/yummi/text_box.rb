@@ -31,14 +31,14 @@ module Yummi
     #
     # Holds the style information for this box. Supported properties are:
     # 
-    # width: the box width (default: bold.black)
+    # width: the box width (default: bold.white)
     # align: the default alignment to use (default: left)
     # separator: the style for separators, defined as a hash
-    #   color: separator color (default: bold.black)
+    #   color: separator color (default: bold.white)
     #   pattern: separator pattern (default: '-')
     #   width: separator width (default: box width)
     # 
-    attr_reader :style    
+    attr_reader :style
 
     #
     # Initializes a text box using the parameters to define the style
@@ -60,11 +60,11 @@ module Yummi
       @style.separator = {}
       @style.separator[:pattern] = (params.separator[:pattern] or '-')
       @style.separator[:width] = (params.separator[:width] or nil)
-      @style.separator[:color] = (params.separator[:color] or 'bold.black')
+      @style.separator[:color] = (params.separator[:color] or 'bold.white')
       @style.separator[:align] = (params.separator[:align] or :left)
 
       @style.border = {}
-      @style.border[:color] = (params.border[:color] or 'bold.black')
+      @style.border[:color] = (params.border[:color] or 'bold.white')
       @style.border[:top] = (params.border[:top] or '-')
       @style.border[:bottom] = (params.border[:bottom] or '-')
       @style.border[:left] = (params.border[:left] or '|')
